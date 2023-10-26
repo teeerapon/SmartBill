@@ -1398,6 +1398,7 @@ export default function AddressForm() {
                                 "& .MuiInputBase-input.Mui-disabled": {
                                   WebkitTextFillColor: "#000000",
                                 },
+                                input: { textAlign: "right" }
                               }}
                               onChange={(e) => {
                                 const list = [...smartBill_Withdraw]
@@ -1433,6 +1434,7 @@ export default function AddressForm() {
                                 "& .MuiInputBase-input.Mui-disabled": {
                                   WebkitTextFillColor: "#000000",
                                 },
+                                input: { textAlign: "right" }
                               }}
                               InputProps={{
                                 inputComponent: NumericFormatCustom,
@@ -2012,6 +2014,7 @@ export default function AddressForm() {
                                 "& .MuiInputBase-input.Mui-disabled": {
                                   WebkitTextFillColor: "#000000",
                                 },
+                                input: { textAlign: "right" }
                               }}
                               disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
                               InputProps={{
@@ -2024,7 +2027,7 @@ export default function AddressForm() {
                                   </InputAdornment>
                                 ),
                                 endAdornment: (
-                                  <InputAdornment position="end">
+                                  <InputAdornment position="end" sx={{ px: 1 }}>
                                     <Typography color="black">
                                       บาท
                                     </Typography>
@@ -2043,6 +2046,7 @@ export default function AddressForm() {
                                 "& .MuiInputBase-input.Mui-disabled": {
                                   WebkitTextFillColor: "#000000",
                                 },
+                                input: { textAlign: "right" }
                               }}
                               InputProps={{
                                 inputComponent: NumericFormatCustom,
@@ -2054,7 +2058,7 @@ export default function AddressForm() {
                                   </InputAdornment>
                                 ),
                                 endAdornment: (
-                                  <InputAdornment position="end">
+                                  <InputAdornment position="end" sx={{ px: 1 }}>
                                     <Typography color="black">
                                       บาท
                                     </Typography>
