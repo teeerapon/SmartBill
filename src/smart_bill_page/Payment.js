@@ -3,18 +3,14 @@ import Typography from '@mui/material/Typography';
 import { NumericFormat } from 'react-number-format';
 import PropTypes from 'prop-types';
 import CssBaseline from '@mui/material/CssBaseline';
-import AppBar from '@mui/material/AppBar';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
 import Axios from "axios";
 import config from '../config'
 import swal from 'sweetalert';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
-import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
-import ListIcon from '@mui/icons-material/List';
 import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArticleIcon from '@mui/icons-material/Article';
@@ -140,6 +136,7 @@ export default function AddressForm() {
     car_tier: '',
     car_color: '',
     car_remarks: '',
+    car_payname: '',
   }])
 
   const [carInfoDataCompanny, setCarInfoDataCompanny] = React.useState([]);
@@ -311,6 +308,7 @@ export default function AddressForm() {
           list[0]['car_tier'] = event.target.value === 0 ? '' : list[0]['car_tier']
           list[0]['car_color'] = event.target.value === 0 ? '' : list[0]['car_color']
           list[0]['car_remarks'] = event.target.value === 0 ? '' : list[0]['car_remarks']
+          list[0]['car_payname'] = event.target.value === 0 ? '' : list[0]['car_payname']
           setCarInfo(list)
 
           setCarInfoDataCompanny(response.data.filter((res) => res.car_infostatus_companny === true)); // 1 รถบริษัท
@@ -334,6 +332,7 @@ export default function AddressForm() {
           list[0]['car_tier'] = event.target.value === 0 ? '' : list[0]['car_tier']
           list[0]['car_color'] = event.target.value === 0 ? '' : list[0]['car_color']
           list[0]['car_remarks'] = event.target.value === 0 ? '' : list[0]['car_remarks']
+          list[0]['car_payname'] = event.target.value === 0 ? '' : list[0]['car_payname']
           setCarInfo(list)
 
           setCarInfoDataCompanny(response.data.filter((res) => res.car_infostatus_companny === true)); // 1 รถบริษัท
@@ -354,6 +353,7 @@ export default function AddressForm() {
           list[0]['car_tier'] = event.target.value === 0 ? '' : list[0]['car_tier']
           list[0]['car_color'] = event.target.value === 0 ? '' : list[0]['car_color']
           list[0]['car_remarks'] = event.target.value === 0 ? '' : list[0]['car_remarks']
+          list[0]['car_payname'] = event.target.value === 0 ? '' : list[0]['car_payname']
           setCarInfo(list)
 
           setCarInfoData(response.data.filter((res) => res.car_infostatus_companny === false)); //  0 รถส่วนตัว
@@ -376,6 +376,7 @@ export default function AddressForm() {
         car_tier: '',
         car_color: '',
         car_remarks: '',
+        car_payname: '',
       }])
     }
   };
@@ -532,7 +533,7 @@ export default function AddressForm() {
     setOpenDialogPayOther(false);
   };
 
-  // เบิกตามจริง
+  // เบิกตามบิลจริง
   const [payTrueDtl, setPayTrueDtl] = React.useState({
     sbwdtl_id: '',
     cost_id: '',
@@ -1018,6 +1019,7 @@ export default function AddressForm() {
                   list[0]['car_tier'] = res.data[0].car_tier
                   list[0]['car_color'] = res.data[0].car_color
                   list[0]['car_remarks'] = res.data[0].car_remarks
+                  list[0]['car_payname'] = res.data[0].car_payname
                   setCarInfo(list)
                 }
               })
@@ -1036,6 +1038,7 @@ export default function AddressForm() {
                   list[0]['car_tier'] = res.data[0].car_tier
                   list[0]['car_color'] = res.data[0].car_color
                   list[0]['car_remarks'] = res.data[0].car_remarks
+                  list[0]['car_payname'] = res.data[0].car_payname
                   setCarInfo(list)
                 }
               })
@@ -1117,7 +1120,7 @@ export default function AddressForm() {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell align="center" colSpan={9}>
+                  <TableCell align="center" colSpan={10}>
                     <Grid
                       container
                       direction="row"
@@ -1159,7 +1162,7 @@ export default function AddressForm() {
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell align="left" colSpan={2}>
+                  <TableCell align="left" colSpan={3}>
                     <Autocomplete
                       id="free-solo-demo"
                       freeSolo
@@ -1200,7 +1203,7 @@ export default function AddressForm() {
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell align="left" colSpan={2}>
+                  <TableCell align="left" colSpan={1}>
                     <FormControl fullWidth>
                       <InputLabel id="demo-simple-select-label">ใช้พาหนะเดินทางหรือไม่</InputLabel>
                       <Select
@@ -1215,7 +1218,7 @@ export default function AddressForm() {
                       </Select>
                     </FormControl>
                   </TableCell>
-                  <TableCell align="left" colSpan={3}>
+                  <TableCell align="left" colSpan={2}>
                     {typePay === 0 || typePay === '0' ? null : (
                       <FormControl fullWidth>
                         <InputLabel id="demo-simple-select-label">ประเภทของพาหนะ</InputLabel>
@@ -1257,6 +1260,7 @@ export default function AddressForm() {
                                 list[0]['car_tier'] = ''
                                 list[0]['car_color'] = ''
                                 list[0]['car_remarks'] = ''
+                                list[0]['car_payname'] = ''
                                 setCarInfo(list)
 
                                 const listCar = [...smartBill_WithdrawSave]
@@ -1277,6 +1281,7 @@ export default function AddressForm() {
                                       list[0]['car_tier'] = response.data[0].car_tier
                                       list[0]['car_color'] = response.data[0].car_color
                                       list[0]['car_remarks'] = response.data[0].car_remarks
+                                      list[0]['car_payname'] = response.data[0].car_payname
                                       setCarInfo(list)
 
                                       const listCar = [...smartBill_WithdrawSave]
@@ -1300,8 +1305,11 @@ export default function AddressForm() {
                   <TableCell align="left" colSpan={2}>
                     ยี่ห้อ: {carInfo[0]['car_band']}
                   </TableCell>
-                  <TableCell align="left" colSpan={3}>
+                  <TableCell align="left" colSpan={4}>
                     รุ่น: {carInfo[0]['car_tier']}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {carInfo[0]['car_payname']}
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -1310,21 +1318,22 @@ export default function AddressForm() {
                   <TableCell align="center" sx={{ width: '12.5%' }}>วันที่เริ่มต้น</TableCell>
                   <TableCell align="center" sx={{ width: '12.5%' }}>วันที่สิ้นสุด</TableCell>
                   <TableCell align="center" sx={{ width: '10%' }}>บันทึกกิจกรรม</TableCell>
-                  <TableCell align="center" sx={{ width: '6.5%' }}>เริ่มต้น</TableCell>
-                  <TableCell align="center" sx={{ width: '6.5%' }}>สิ้นสุด</TableCell>
-                  <TableCell align="center" sx={{ width: '6.5%' }}>ระยะทาง</TableCell>
-                  <TableCell align="center" sx={{ width: '6.5%' }}>อัตราชดเชย</TableCell>
-                  <TableCell align="center" sx={{ width: '6.5%' }}>เงินบาท</TableCell>
-                  <TableCell align="center" sx={{ width: '6.5%' }}>ค่าน้ำมัน</TableCell>
-                  <TableCell align="center" sx={{ width: '6.5%' }}>เบี้ยเลี้ยง</TableCell>
-                  <TableCell align="center" sx={{ width: '6.5%' }}>ที่พัก</TableCell>
-                  <TableCell align="center" sx={{ width: '6.5%' }}>ทางด่วน</TableCell>
-                  <TableCell align="center" sx={{ width: '6.5%' }}>รวม</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>เริ่มต้น</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>สิ้นสุด</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>ระยะทาง</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>อัตราชดเชย</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>เบิกตามไมล์เรท</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>เบิกตามบิลจริง</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>เบี้ยเลี้ยง</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>ที่พัก</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>ทางด่วน</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>อื่น ๆ</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>รวม</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 <TableRow>
-                  {['', '', '', '', '', '', '', '', '', '', '', '', ''].map((res) => (
+                  {['', '', '', '', '', '', '', '', '', '', '', '', '', ''].map((res) => (
                     <TableCell
                       align="center"
                     >
@@ -1346,7 +1355,7 @@ export default function AddressForm() {
               <TableHead>
                 <TableRow>
                   <TableCell align="left" colSpan={5}><b>รวม</b></TableCell>
-                  {['', '', '', '0', '0', '0', '0', '0'].map((res) => (
+                  {['', '', '', '0', '0', '0', '0', '0', '0'].map((res) => (
                     <TableCell
                       align="center"
                       sx={{
@@ -1361,7 +1370,7 @@ export default function AddressForm() {
               </TableHead>
               <TableHead>
                 <TableRow>
-                  <TableCell align="left" colSpan={13}>
+                  <TableCell align="left" colSpan={14}>
                     <Grid
                       container
                       spacing={2}
@@ -1623,7 +1632,7 @@ export default function AddressForm() {
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell align="left" colSpan={2}>
+                  <TableCell align="left" colSpan={1}>
                     <FormControl fullWidth>
                       <InputLabel id="demo-simple-select-label">ใช้พาหนะเดินทางหรือไม่</InputLabel>
                       <Select
@@ -1644,7 +1653,7 @@ export default function AddressForm() {
                       </Select>
                     </FormControl>
                   </TableCell>
-                  <TableCell align="left" colSpan={3}>
+                  <TableCell align="left" colSpan={2}>
                     {typePay === 0 || typePay === '0' ? null : (
                       <FormControl fullWidth>
                         <InputLabel id="demo-simple-select-label">ประเภทของพาหนะ</InputLabel>
@@ -1699,6 +1708,7 @@ export default function AddressForm() {
                                 list[0]['car_tier'] = ''
                                 list[0]['car_color'] = ''
                                 list[0]['car_remarks'] = ''
+                                list[0]['car_payname'] = ''
                                 setCarInfo(list)
 
                                 const listCar = [...smartBill_WithdrawSave]
@@ -1719,6 +1729,7 @@ export default function AddressForm() {
                                       list[0]['car_tier'] = response.data[0].car_tier
                                       list[0]['car_color'] = response.data[0].car_color
                                       list[0]['car_remarks'] = response.data[0].car_remarks
+                                      list[0]['car_payname'] = response.data[0].car_payname
                                       setCarInfo(list)
 
                                       const listCar = [...smartBill_WithdrawSave]
@@ -1739,11 +1750,14 @@ export default function AddressForm() {
                         </Grid>
                       )}
                   </TableCell>
-                  <TableCell align="left" colSpan={3}>
+                  <TableCell align="left" colSpan={2}>
                     ยี่ห้อ: {carInfo[0]['car_band']}
                   </TableCell>
-                  <TableCell align="left" colSpan={3}>
+                  <TableCell align="left" colSpan={4}>
                     รุ่น: {carInfo[0]['car_tier']}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {carInfo[0]['car_payname']}
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -1763,17 +1777,17 @@ export default function AddressForm() {
                   <TableCell align="center" sx={{ width: '12.5%' }}>วันที่เริ่มต้น</TableCell>
                   <TableCell align="center" sx={{ width: '12.5%' }}>วันที่สิ้นสุด</TableCell>
                   <TableCell align="center" sx={{ width: '10%' }}>บันทึกกิจกรรม</TableCell>
-                  <TableCell align="center">เริ่มต้น</TableCell>
-                  <TableCell align="center">สิ้นสุด</TableCell>
-                  <TableCell align="center">ระยะทาง</TableCell>
-                  <TableCell align="center">อัตราชดเชย</TableCell>
-                  <TableCell align="center">เงินบาท</TableCell>
-                  <TableCell align="center">ค่าน้ำมัน</TableCell>
-                  <TableCell align="center">เบี้ยเลี้ยง</TableCell>
-                  <TableCell align="center">ที่พัก</TableCell>
-                  <TableCell align="center">ทางด่วน</TableCell>
-                  <TableCell align="center">อื่น ๆ</TableCell>
-                  <TableCell align="center">รวม</TableCell>
+                  <TableCell align="center" sx={{ width: '5.6%' }}>เริ่มต้น</TableCell>
+                  <TableCell align="center" sx={{ width: '5.6%' }}>สิ้นสุด</TableCell>
+                  <TableCell align="center" sx={{ width: '5.6%' }}>ระยะทาง</TableCell>
+                  <TableCell align="center" sx={{ width: '5.6%' }}>อัตราชดเชย</TableCell>
+                  <TableCell align="center" sx={{ width: '5.6%' }}>เบิกตามไมล์เรท</TableCell>
+                  <TableCell align="center" sx={{ width: '5.6%' }}>เบิกตามบิลจริง</TableCell>
+                  <TableCell align="center" sx={{ width: '5.6%' }}>เบี้ยเลี้ยง</TableCell>
+                  <TableCell align="center" sx={{ width: '5.6%' }}>ที่พัก</TableCell>
+                  <TableCell align="center" sx={{ width: '5.6%' }}>ทางด่วน</TableCell>
+                  <TableCell align="center" sx={{ width: '5.6%' }}>อื่น ๆ</TableCell>
+                  <TableCell align="center" sx={{ width: '5.6%' }}>รวม</TableCell>
                   <TableCell align="center" sx={{ width: '3%' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
@@ -2464,7 +2478,7 @@ export default function AddressForm() {
             </Button>
           </DialogActions>
         </BootstrapDialog>
-        {/* เบิกตามจริง */}
+        {/* เบิกตามบิลจริง */}
         <BootstrapDialog
           onClose={handleCloseDialogPayTrue}
           aria-labelledby="customized-dialog-title"

@@ -24,17 +24,12 @@ import PropTypes from 'prop-types';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import Divider from '@mui/material/Divider';
 import CssBaseline from '@mui/material/CssBaseline';
-import AppBar from '@mui/material/AppBar';
 import Container from '@mui/material/Container';
-import Toolbar from '@mui/material/Toolbar';
 import Paper from '@mui/material/Paper';
 import Axios from "axios";
 import config from '../config'
 import swal from 'sweetalert';
 import Autocomplete from '@mui/material/Autocomplete';
-import NoteAddIcon from '@mui/icons-material/NoteAdd';
-import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
-import ListIcon from '@mui/icons-material/List';
 import NavBar from './NavBar'
 
 const NumericFormatCustom = React.forwardRef(function NumericFormatCustom(
@@ -81,7 +76,6 @@ const VisuallyHiddenInput = styled('input')`
 
 export default function FormsStart() {
   const [typeCar, setTypeCar] = React.useState('');
-  const [typeGroup, setTypeGroup] = React.useState(0);
   const [carInfoDataCompanny, setCarInfoDataCompanny] = React.useState([]);
   const [carInfoData, setCarInfoData] = React.useState([]);
   const [users, setUsers] = React.useState([]);
@@ -160,24 +154,10 @@ export default function FormsStart() {
     }]);
   };
 
-  const handleServiceRemoveDate = (index) => {
+  const handleServiceRemoveDate = () => {
     const list = [...smartBill_Operation];
-    list.splice(index, 1);
+    list.splice((smartBill_Operation.length - 1), 1);
     setSmartBill_Operation(list);
-  };
-
-  const handleServiceAddGroupJoin = (index) => {
-    setSmartBill_Associate([...smartBill_Associate, {
-      allowance_usercode: '',
-      sb_associate_startdate: '',
-      sb_associate_enddate: '',
-    }]);
-  };
-
-  const handleServiceRemoveGroupJoin = (index) => {
-    const list = [...smartBill_Associate];
-    list.splice(index, 1);
-    setSmartBill_Associate(list);
   };
 
   const handleSubmit = async () => {
@@ -267,7 +247,7 @@ export default function FormsStart() {
       <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
         <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
           <Typography sx={{ py: 5 }} component="h1" variant="h4" align="center" className="Header-Forms">
-            Smart Bill Form
+            Smart-Car Form
           </Typography>
           <React.Fragment>
             <React.Fragment>
