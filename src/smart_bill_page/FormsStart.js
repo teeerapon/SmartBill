@@ -240,6 +240,8 @@ export default function FormsStart() {
     gettingUsers();
   }, [])
 
+  console.log(carInfo);
+
   return (
     <React.Fragment>
       <CssBaseline />

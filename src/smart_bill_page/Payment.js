@@ -124,6 +124,7 @@ export default function AddressForm() {
   const [openAllowance, setOpenAllowance] = React.useState(false);
   const [openCostHotel, setOpenCostHotel] = React.useState(false);
   const [openSmartBill_WithdrawDtlSave, setOpenSmartBill_WithdrawDtlSave] = React.useState(false);
+  const [costOther, setCostOther] = React.useState()
 
   //Header
 
@@ -996,6 +997,11 @@ export default function AddressForm() {
       .then((response) => {
         setCarInfoData(response.data);
         setCarInfoDataCompanny(response.data.filter((res) => res.car_infostatus_companny === true));
+      });
+
+    await Axios.get(config.http + '/SmartBill_Withdraw_SelectCostOther', config.headers)
+      .then((response) => {
+        setCostOther(response.data[0]);
       });
 
     if (sbw_code) {
@@ -2434,17 +2440,30 @@ export default function AddressForm() {
               {payOther.map((res, index) => (
                 <React.Fragment>
                   <Grid item xs={7}>
-                    <TextField
-                      key={index}
-                      label="รายละเอียด"
+                    <Autocomplete
+                      id="free-solo-demo"
+                      freeSolo
+                      name="costOther"
                       value={res.category_name}
-                      onChange={(e) => {
-                        const list = [...payOther]
-                        list[index]['category_name'] = e.target.value
-                        setPayOther(list)
+                      options={costOther.map((option) => option.category_name)}
+                      onChange={(event, newValue, reason) => {
+                        if (reason === 'clear') {
+                          const list = [...payOther]
+                          list[index]['category_name'] = ''
+                          setPayOther(list)
+                        } else {
+                          const list = [...payOther]
+                          list[index]['category_name'] = newValue
+                          setPayOther(list)
+                        }
                       }}
-                      multiline
-                      fullWidth
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label={`รายละเอียด`}
+                          fullWidth
+                        />
+                      )}
                     />
                   </Grid>
                   <Grid item xs={3}>
