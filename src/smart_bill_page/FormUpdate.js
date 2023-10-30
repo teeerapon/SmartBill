@@ -34,6 +34,9 @@ import swal from 'sweetalert';
 import Autocomplete from '@mui/material/Autocomplete';
 import dayjs from 'dayjs';
 import NavBar from './NavBar'
+import ImageListItemBar from '@mui/material/ImageListItemBar';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import IconButton from '@mui/material/IconButton';
 
 const NumericFormatCustom = React.forwardRef(function NumericFormatCustom(
   props,
@@ -255,7 +258,13 @@ export default function AddressForm() {
           </Typography>
           <React.Fragment>
             <React.Fragment>
-              <Grid container spacing={3}>
+              <Grid
+                container
+                spacing={3}
+                direction="row"
+                alignItems="center"
+                justifyContent="flex-start"
+              >
                 <Grid item xs={12}>
                   <TextField
                     required
@@ -670,7 +679,13 @@ export default function AddressForm() {
                       <Grid item xs={12}>
                         <Divider textAlign="center" sx={{ pb: 1 }}>การใช้งานครั้งที่ {index + 1}</Divider>
                       </Grid>
-                      <Grid container spacing={3}>
+                      <Grid
+                        container
+                        spacing={3}
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="flex-start"
+                      >
                         <Grid item xs={6} sm={2}>
                           <FormControl fullWidth>
                             <InputLabel id="demo-simple-select-label">Pay</InputLabel>
@@ -723,7 +738,14 @@ export default function AddressForm() {
                           />
                         </Grid>
                       </Grid>
-                      <Grid container spacing={3} sx={{ py: 2 }}>
+                      <Grid
+                        container
+                        spacing={3}
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="flex-start"
+                        sx={{ py: 2 }}
+                      >
                         <Grid item xs={12} sm={6}>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DateTimePicker
@@ -1054,17 +1076,39 @@ export default function AddressForm() {
                 </Grid>
                 <Grid item xs={12}>
                   <ImageList cols={6} variant="quilted">
-                    {dataFilesCount ? dataFilesCount.map((item) => (
+                    {dataFilesCount ? dataFilesCount.map((item, index) => (
                       <ImageListItem key={item.img}>
                         <a target="_blank" href={item.file}>
                           <img
                             src={item.file}
                             srcSet={item.file}
                             alt={item.filename}
-                            style={{ maxWidth: 100, width: '100%' }}
+                            style={{ maxWidth: 150, width: '100%' }}
                             loading="lazy"
                           />
                         </a>
+                        <ImageListItemBar
+                          style={{ width: '100%' }}
+                          actionIcon={
+                            <IconButton
+                              sx={{ color: 'rgba(255, 255, 255, 1)' }}
+                              aria-label={`info about ${item.filename}`}
+                              onClick={async (e) => {
+                                await Axios.post(config.http + '/NonPO_Delete_Attach_By_attachid', { attachid: item.filename }, config.headers)
+                                  .then((response) => {
+                                    if (response.status === 200) {
+                                      const list = [...dataFilesCount];
+                                      list.splice(index, 1);
+                                      setDataFilesCount(list);
+                                    }
+                                  })
+                              }}
+                            >
+                              <DeleteForeverIcon />
+                              DELETE
+                            </IconButton>
+                          }
+                        />
                       </ImageListItem>
                     )) : null}
                   </ImageList>

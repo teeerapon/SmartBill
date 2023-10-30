@@ -31,6 +31,10 @@ import config from '../config'
 import swal from 'sweetalert';
 import Autocomplete from '@mui/material/Autocomplete';
 import NavBar from './NavBar'
+import ImageListItemBar from '@mui/material/ImageListItemBar';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import IconButton from '@mui/material/IconButton';
+
 
 const NumericFormatCustom = React.forwardRef(function NumericFormatCustom(
   props,
@@ -239,8 +243,6 @@ export default function FormsStart() {
   React.useEffect(() => {
     gettingUsers();
   }, [])
-
-  console.log(carInfo);
 
   return (
     <React.Fragment>
@@ -925,17 +927,34 @@ export default function FormsStart() {
             <Typography>{res.filename}</Typography>
           )) : null} */}
                   <ImageList cols={6} variant="quilted">
-                    {dataFilesCount ? dataFilesCount.map((item) => (
+                    {dataFilesCount ? dataFilesCount.map((item, index) => (
                       <ImageListItem key={item.img}>
                         <a target="_blank" href={item.file}>
                           <img
                             src={item.file}
                             srcSet={item.file}
                             alt={item.filename}
-                            style={{ maxWidth: 100, width: '100%' }}
+                            style={{ maxWidth: 150, width: '100%' }}
                             loading="lazy"
                           />
                         </a>
+                        <ImageListItemBar
+                          style={{ width: '100%' }}
+                          actionIcon={
+                            <IconButton
+                              sx={{ color: 'rgba(255, 255, 255, 1)' }}
+                              aria-label={`info about ${item.filename}`}
+                              onClick={(e) => {
+                                const list = [...dataFilesCount];
+                                list.splice(index, 1);
+                                setDataFilesCount(list);
+                              }}
+                            >
+                              <DeleteForeverIcon />
+                              DELETE
+                            </IconButton>
+                          }
+                        />
                       </ImageListItem>
                     )) : null}
                   </ImageList>
