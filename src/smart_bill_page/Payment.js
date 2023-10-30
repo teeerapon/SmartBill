@@ -125,6 +125,7 @@ export default function AddressForm() {
   const [openCostHotel, setOpenCostHotel] = React.useState(false);
   const [openSmartBill_WithdrawDtlSave, setOpenSmartBill_WithdrawDtlSave] = React.useState(false);
   const [costOther, setCostOther] = React.useState()
+  const [province, setProvince] = React.useState()
 
   //Header
 
@@ -1002,6 +1003,11 @@ export default function AddressForm() {
     await Axios.get(config.http + '/SmartBill_Withdraw_SelectCostOther', config.headers)
       .then((response) => {
         setCostOther(response.data[0]);
+      });
+
+    await Axios.get('https://raw.githubusercontent.com/kongvut/thai-province-data/master/api_province.json', config.headers)
+      .then((response) => {
+        setProvince(response.data.map((res) => res.name_th));
       });
 
     if (sbw_code) {
@@ -2959,18 +2965,31 @@ export default function AddressForm() {
                     </LocalizationProvider>
                   </Grid>
                   <Grid item xs={3}>
-                    <TextField
-                      disabled={payHotelCase === 0 || payHotelCase === "0" ? true : false}
-                      key={index}
-                      value={res.sbc_hotelProvince}
-                      label={`จังหวัด`}
-                      onChange={(event) => {
-                        const list = [...smartBill_CostHotel]
-                        list[index]['sbc_hotelProvince'] = event.target.value
-                        setSmartBill_CostHotel(list)
-                      }}
-                      fullWidth
+                    <Autocomplete
+                      id="free-solo-demo"
+                      freeSolo
                       name="sbc_hotelProvince"
+                      disabled={payHotelCase === 0 || payHotelCase === "0" ? true : false}
+                      value={res.sbc_hotelProvince}
+                      options={province}
+                      onChange={(event, newValue, reason) => {
+                        if (reason === 'clear') {
+                          const list = [...smartBill_CostHotel]
+                          list[index]['sbc_hotelProvince'] = ''
+                          setSmartBill_CostHotel(list)
+                        } else {
+                          const list = [...smartBill_CostHotel]
+                          list[index]['sbc_hotelProvince'] = newValue
+                          setSmartBill_CostHotel(list)
+                        }
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label={`จังหวัด`}
+                          fullWidth
+                        />
+                      )}
                     />
                   </Grid>
                   <Grid item xs={3}>
