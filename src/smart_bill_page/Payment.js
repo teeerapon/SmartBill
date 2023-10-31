@@ -1120,8 +1120,10 @@ export default function AddressForm() {
     }
     await Axios.post(config.http + '/SmartBill_Withdraw_updateSBW', body, config.headers)
       .then((response) => {
-        if (response.status === 200) {
+        if (response.status === 200 && response.data !== 'กรุณายกเลิกใบ PAY ก่อน') {
           window.location.href = '/Payment?' + sbw_code;
+        } else if (response.data === 'กรุณายกเลิกใบ PAY ก่อน') {
+          swal("แจ้งเตือน", response.data, "error")
         } else {
           swal("แจ้งเตือน", 'error code #DEO0012', "error")
         }
