@@ -3169,7 +3169,7 @@ export default function AddressForm() {
                           )}
                         />
                       </Grid>
-                      <Grid item xs={5}>
+                      <Grid item xs={3}>
                         <TextField
                           InputProps={{
                             inputComponent: NumericFormatCustom,
@@ -3183,6 +3183,24 @@ export default function AddressForm() {
                             list[index]['smartBill_CostHotelGroup'][indexGroup]['amount'] = event.target.value
                             setSmartBill_CostHotel(list)
                           }}
+                          fullWidth
+                          name="amount"
+                        />
+                      </Grid>
+                      <Grid item xs={2}>
+                        <TextField
+                          InputProps={{
+                            inputComponent: NumericFormatCustom,
+                          }}
+                          key={indexGroup}
+                          disabled
+                          sx={{
+                            "& .MuiInputBase-input.Mui-disabled": {
+                              WebkitTextFillColor: "#000000",
+                            },
+                          }}
+                          value={resGroup.amount * res.count}
+                          label="ยอดเงินที่เบิกได้"
                           fullWidth
                           name="amount"
                         />
