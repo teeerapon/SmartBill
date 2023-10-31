@@ -176,8 +176,6 @@ export default function FormsStart() {
         , "error")
     } else if (carInfo.filter((res) =>
       res.car_infocode === '' ||
-      res.car_infostatus_companny === '' ||
-      res.car_categaryid === '' ||
       res.car_typeid === '' ||
       res.car_band === '' ||
       res.car_tier === '' ||
@@ -371,7 +369,7 @@ export default function FormsStart() {
                               list[0]['car_infostatus_companny'] = event.target.value
                               list[0]['car_infocode'] = event.target.value === 0 ? '' : list[0]['car_infocode']
                               list[0]['car_infostatus_companny'] = event.target.value === 0 ? '' : list[0]['car_infostatus_companny']
-                              list[0]['car_categaryid'] = event.target.value === 0 ? '' : list[0]['car_categaryid']
+                              list[0]['car_categaryid'] = event.target.value === 0 ? 5 : list[0]['car_categaryid']
                               list[0]['car_typeid'] = event.target.value === 0 ? '' : list[0]['car_typeid']
                               list[0]['car_band'] = event.target.value === 0 ? '' : list[0]['car_band']
                               list[0]['car_tier'] = event.target.value === 0 ? '' : list[0]['car_tier']
