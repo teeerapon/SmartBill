@@ -1111,6 +1111,23 @@ export default function AddressForm() {
       });
   }
 
+  const smartBill_Withdraw_updateUnLockSBW = async () => {
+    const body = {
+      sbw_code: sbw_code,
+      usercode: smartBill_Withdraw[0].ownercode,
+      pure_card: smartBill_Withdraw[0].pure_card,
+      lock_status: 0
+    }
+    await Axios.post(config.http + '/SmartBill_Withdraw_updateSBW', body, config.headers)
+      .then((response) => {
+        if (response.status === 200) {
+          window.location.href = '/Payment?' + sbw_code;
+        } else {
+          swal("แจ้งเตือน", 'error code #DEO0012', "error")
+        }
+      });
+  }
+
 
 
 
@@ -1553,6 +1570,16 @@ export default function AddressForm() {
                 Save Lock
               </Button>
             </Grid>
+            <Grid item>
+              <Button
+                variant='contained'
+                color="error"
+                disabled={smartBill_Withdraw[0].lock_status === true ? false : true}
+                onClick={smartBill_Withdraw_updateUnLockSBW}
+              >
+                UnLock Save
+              </Button>
+            </Grid>
           </Grid>
           <Root component={Paper} sx={{ mb: 5 }}>
             <Table>
@@ -1777,7 +1804,7 @@ export default function AddressForm() {
                     <Button
                       variant="text"
                       onClick={handleOpenSmartBill_WithdrawDtlSave}
-
+                      disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
                     >
                       เพิ่มรายการ
                     </Button>
@@ -1818,7 +1845,6 @@ export default function AddressForm() {
                       <Button
                         variant="text"
                         value={`${res.sbwdtl_id},1`}
-                        disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
                         onClick={(e) => handleClickOpenDialogPayTrue(e, index)}
                         sx={{
                           fontFamily: 'monospace',
@@ -1836,7 +1862,6 @@ export default function AddressForm() {
                       <Button
                         variant="text"
                         value={`${res.sbwdtl_id},4`}
-                        disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
                         onClick={(e) => handleClickOpenDialogAllowance(e, index)}
                         sx={{
                           fontFamily: 'monospace',
@@ -1854,7 +1879,6 @@ export default function AddressForm() {
                       <Button
                         variant="text"
                         value={`${res.sbwdtl_id},3`}
-                        disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
                         onClick={(e) => handleClickOpenDialogCostHotel(e, index)}
                         sx={{
                           fontFamily: 'monospace',
@@ -1872,7 +1896,6 @@ export default function AddressForm() {
                       <Button
                         variant="text"
                         value={`${res.sbwdtl_id},2`}
-                        disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
                         onClick={(e) => handleClickOpenDialogPayRush(e, index)}
                         sx={{
                           fontFamily: 'monospace',
@@ -1890,7 +1913,6 @@ export default function AddressForm() {
                       <Button
                         variant="text"
                         value={`${res.sbwdtl_id},null`}
-                        disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
                         onClick={(e) => handleClickOpenDialogPayOther(e, index)}
                         sx={{
                           fontFamily: 'monospace',
@@ -1910,7 +1932,6 @@ export default function AddressForm() {
                         key={index}
                         variant="text"
                         color="error"
-                        disabled={(smartBill_WithdrawDtl.length === 1 || smartBill_Withdraw[0].lock_status === true) ? true : false}
                         onClick={(e) => removeSmartBill_wddtl(e, index)}
                       >
                         <DeleteIcon />
@@ -2306,7 +2327,12 @@ export default function AddressForm() {
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleSaveSmartBill_WithdrawDtl}>Save changes</Button>
+            <Button
+              disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
+              onClick={handleSaveSmartBill_WithdrawDtl}
+            >
+              Save changes
+            </Button>
           </DialogActions>
         </BootstrapDialog>
         {/* เบิกค่าทางด่วน */}
@@ -2392,7 +2418,11 @@ export default function AddressForm() {
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button autoFocus onClick={handleSavePayRush}>
+            <Button
+              autoFocus
+              onClick={handleSavePayRush}
+              disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
+            >
               Save changes
             </Button>
           </DialogActions>
@@ -2439,7 +2469,12 @@ export default function AddressForm() {
                 </RadioGroup>
               </Grid>
               <Grid item xs={12}>
-                <Button autoFocus variant='outlined' onClick={addPayOther}>
+                <Button
+                  autoFocus
+                  disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
+                  variant='outlined'
+                  onClick={addPayOther}
+                >
                   เพิ่มรายการ
                 </Button>
               </Grid>
@@ -2489,7 +2524,13 @@ export default function AddressForm() {
                     />
                   </Grid>
                   <Grid item xs={2}>
-                    <Button autoFocus variant='outlined' color="error" onClick={(e) => reMovePayOther(e, index)}>
+                    <Button
+                      autoFocus
+                      variant='outlined'
+                      color="error"
+                      onClick={(e) => reMovePayOther(e, index)}
+                      disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
+                    >
                       DELETE
                     </Button>
                   </Grid>
@@ -2498,7 +2539,11 @@ export default function AddressForm() {
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button autoFocus onClick={handleSavePayOther}>
+            <Button
+              autoFocus
+              onClick={handleSavePayOther}
+              disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
+            >
               Save changes
             </Button>
           </DialogActions>
@@ -2586,7 +2631,11 @@ export default function AddressForm() {
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button autoFocus onClick={handleSavePayTrue}>
+            <Button
+              autoFocus
+              onClick={handleSavePayTrue}
+              disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
+            >
               Save changes
             </Button>
           </DialogActions>
@@ -2654,7 +2703,11 @@ export default function AddressForm() {
                 <Grid container spacing={2}>
                   <Grid item>
                     <Button
-                      disabled={payAllowanceCase === 0 || payAllowanceCase === "0" ? true : false}
+                      disabled={
+                        (payAllowanceCase === 0 || payAllowanceCase === "0") ||
+                          smartBill_Withdraw[0].lock_status === true
+                          ? true : false
+                      }
                       onClick={handleServiceAddAllowance}
                       variant="outlined"
                       startIcon={<ArticleIcon />}
@@ -2818,7 +2871,11 @@ export default function AddressForm() {
                   </Grid>
                   <Grid item xs={2}>
                     <Button
-                      disabled={(payAllowanceCase === 0 || payAllowanceCase === "0") || smartBill_CostAllowance.length === 1 ? true : false}
+                      disabled={
+                        (payAllowanceCase === 0 || payAllowanceCase === "0") ||
+                          smartBill_CostAllowance.length === 1 ||
+                          smartBill_Withdraw[0].lock_status === true ? true : false
+                      }
                       key={index}
                       onClick={(e) => handleServiceRemoveAllowance(e, index)}
                       variant="outlined"
@@ -2838,7 +2895,11 @@ export default function AddressForm() {
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button autoFocus onClick={handleSaveAllowance}>
+            <Button
+              autoFocus
+              onClick={handleSaveAllowance}
+              disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
+            >
               Save changes
             </Button>
           </DialogActions>
@@ -2912,7 +2973,11 @@ export default function AddressForm() {
                 <Grid container spacing={2}>
                   <Grid item>
                     <Button
-                      disabled={payHotelCase === 0 || payHotelCase === "0" ? true : false}
+                      disabled={
+                        (payHotelCase === 0 || payHotelCase === "0") ||
+                          smartBill_Withdraw[0].lock_status === true
+                          ? true : false
+                      }
                       onClick={handleServiceAddCostHotel}
                       variant="outlined"
                       startIcon={<ArticleIcon />}
@@ -3040,7 +3105,12 @@ export default function AddressForm() {
                   </Grid>
                   <Grid item xs={2}>
                     <Button
-                      disabled={(payHotelCase === 0 || payHotelCase === "0") || smartBill_CostHotel.length === 1 ? true : false}
+                      disabled={
+                        (payHotelCase === 0 || payHotelCase === "0") ||
+                          smartBill_Withdraw[0].lock_status === true ||
+                          smartBill_CostHotel.length === 1
+                          ? true : false
+                      }
                       key={index}
                       onClick={(e) => handleServiceRemoveCostHotel(e, index)}
                       variant="outlined"
@@ -3052,7 +3122,11 @@ export default function AddressForm() {
                   </Grid>
                   <Grid item xs={12}>
                     <Button
-                      disabled={(payHotelCase === 0 || payHotelCase === "0") ? true : false}
+                      disabled={
+                        (payHotelCase === 0 || payHotelCase === "0") ||
+                          smartBill_Withdraw[0].lock_status === true
+                          ? true : false
+                      }
                       key={index}
                       onClick={(e) => handleServiceAddCostHotelGroup(e, index)}
                       variant="outlined"
@@ -3113,7 +3187,12 @@ export default function AddressForm() {
                       </Grid>
                       <Grid item xs={2}>
                         <Button
-                          disabled={(payHotelCase === 0 || payHotelCase === "0") || res.smartBill_CostHotelGroup.length === 1 ? true : false}
+                          disabled={
+                            (payHotelCase === 0 || payHotelCase === "0") ||
+                              res.smartBill_CostHotelGroup.length === 1 ||
+                              smartBill_Withdraw[0].lock_status === true
+                              ? true : false
+                          }
                           key={indexGroup}
                           value={`${index},${resGroup.sbc_hotelgroupid}`}
                           onClick={(e) => handleServiceRemoveHotelGroup(e, indexGroup)}
@@ -3136,7 +3215,11 @@ export default function AddressForm() {
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button autoFocus onClick={handleSaveCostHotel}>
+            <Button
+              autoFocus
+              onClick={handleSaveCostHotel}
+              disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
+            >
               Save changes
             </Button>
           </DialogActions>
