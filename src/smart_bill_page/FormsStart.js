@@ -167,12 +167,14 @@ export default function FormsStart() {
   const handleSubmit = async () => {
     if (
       smartBill_Header[0].sb_name === '' ||
+      smartBill_Header[0].usercode === '' ||
       smartBill_Header[0].sb_fristName === '' ||
       smartBill_Header[0].sb_lastName === ''
     ) {
       swal(
         "แจ้งเตือน", smartBill_Header[0].sb_name === '' ? `ระบุชื่อหัวข้อ` :
-        (smartBill_Header[0].sb_fristName === '' || smartBill_Header[0].sb_lastName === '') ? `ระบุชื่อจริง-นามสกุล` : 'Error Code #54878584'
+        (smartBill_Header[0].sb_fristName === '' || smartBill_Header[0].sb_lastName === '') ? `ระบุชื่อจริง-นามสกุล` :
+          (smartBill_Header[0].usercode === '') ? `ระบุผู้ทำรายการ` : 'Error Code #54878584'
         , "error")
     } else if (carInfo.filter((res) =>
       res.car_infocode === '' ||
