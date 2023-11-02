@@ -153,12 +153,12 @@ NumericFormatCustom.propTypes = {
 export default function AddressForm() {
 
   const [rowHeader, setRowHeader] = React.useState();
+  const data = JSON.parse(localStorage.getItem('data'));
 
   const SelectHeaders = async () => {
     await Axios.get(config.http + '/SmartBill_SelectHeaders', config.headers)
       .then((res) => {
-        console.log();
-        setRowHeader(res.data)
+        setRowHeader(res.data.filter((res) => res.usercode === data.UserCode))
       })
   }
 

@@ -162,6 +162,7 @@ export default function AddressForm() {
   const [deleteRow, setDeleteRow] = React.useState({
     id: ''
   });
+  const data = JSON.parse(localStorage.getItem('data'));
   const [deleteRowDilog, setDeleteRowDilog] = React.useState(false);
 
   const openDeleteRowDilog = (e, params) => {
@@ -193,7 +194,7 @@ export default function AddressForm() {
     await Axios.post(config.http + '/SmartBill_Withdraw_SelectAllForms', sbw_SelectAllForms, config.headers)
       .then((response) => {
         if (response.data[0]) {
-          setRowHeader(response.data[0]);
+          setRowHeader(response.data[0].filter((res) => response.usercode === data.UserCode));
         }
       });
   }

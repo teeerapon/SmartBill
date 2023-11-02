@@ -83,8 +83,9 @@ export default function FormsStart() {
   const [carInfoDataCompanny, setCarInfoDataCompanny] = React.useState([]);
   const [carInfoData, setCarInfoData] = React.useState([]);
   const [users, setUsers] = React.useState([]);
+  const data = JSON.parse(localStorage.getItem('data'));
   const [smartBill_Header, setSmartBill_Header] = React.useState([{
-    usercode: '',
+    usercode: data.UserCode,
     sb_name: '',
     sb_fristName: '',
     sb_lastName: '',

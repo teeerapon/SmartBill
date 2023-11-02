@@ -126,6 +126,7 @@ export default function AddressForm() {
   const [openSmartBill_WithdrawDtlSave, setOpenSmartBill_WithdrawDtlSave] = React.useState(false);
   const [costOther, setCostOther] = React.useState()
   const [province, setProvince] = React.useState()
+  const data = JSON.parse(localStorage.getItem('data'));
 
   //Header
 
@@ -151,7 +152,7 @@ export default function AddressForm() {
   const [smartBill_Withdraw, setSmartBill_Withdraw] = React.useState([{
     sbw_id: '',
     sbw_code: '',
-    ownercode: '',
+    ownercode: data.UserCode,
     depcode: '',
     seccode: '',
     active: '',
@@ -209,7 +210,7 @@ export default function AddressForm() {
   }
 
   const [smartBill_WithdrawSave, setSmartBill_WithdrawSave] = React.useState([{
-    ownercode: '',
+    ownercode: data.UserCode,
     car_infocode: ''
   }]);
 
