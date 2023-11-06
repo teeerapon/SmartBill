@@ -95,7 +95,7 @@ export default function AddressForm() {
     sb_lastName: '',
     clean_status: 0,
     group_status: 0,
-    remarks: '',
+    reamarks: '',
   }])
 
   const [carInfo, setCarInfo] = React.useState([{
@@ -176,7 +176,7 @@ export default function AddressForm() {
 
     await Axios.post(config.http + '/SmartBill_SelectAllForms', { sb_code: sb_code }, config.headers)
       .then(async (res) => {
-
+        console.log(res.data[0][0].reamarks);
         setSmartBill_Header([{
           usercode: res.data[0][0].usercode,
           sb_name: res.data[0][0].sb_name,
@@ -184,7 +184,7 @@ export default function AddressForm() {
           sb_lastName: res.data[0][0].sb_lastName,
           clean_status: res.data[0][0].clean_status === true ? 1 : 0,
           group_status: res.data[0][0].group_status === true ? 1 : 0,
-          remarks: res.data[0][0].remarks,
+          reamarks: res.data[0][0].reamarks,
         }])
 
         setTypeGroup(res.data[0][0].group_status === true ? 1 : 0)
@@ -1045,6 +1045,28 @@ export default function AddressForm() {
                     ))}
                   </React.Fragment>
                 ) : null} */}
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    name="reamarks"
+                    disabled
+                    sx={{
+                      "& .MuiInputBase-input.Mui-disabled": {
+                        WebkitTextFillColor: "#000000",
+                      },
+                    }}
+                    label={`ระบุสถานที่จอดรถหลังจากใช้งานแล้ว`}
+                    fullWidth
+                    value={smartBill_Header[0].reamarks}
+                    onChange={(e) => {
+                      const list = [...smartBill_Header]
+                      list[0]['reamarks'] = e.target.value
+                      setSmartBill_Header(list)
+                    }}
+                    autoComplete="shipping address-line1"
+                  // variant="standard"
+                  />
+                </Grid>
                 <Grid item xs={12} sm={4}>
                   <FormControl sx={{ pl: 1 }}>
                     <RadioGroup

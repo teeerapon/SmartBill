@@ -91,7 +91,7 @@ export default function FormsStart() {
     sb_lastName: '',
     clean_status: 0,
     group_status: 0,
-    remarks: '',
+    reamarks: '',
   }])
 
   const [carInfo, setCarInfo] = React.useState([{
@@ -170,12 +170,14 @@ export default function FormsStart() {
       smartBill_Header[0].sb_name === '' ||
       smartBill_Header[0].usercode === '' ||
       smartBill_Header[0].sb_fristName === '' ||
-      smartBill_Header[0].sb_lastName === ''
+      smartBill_Header[0].sb_lastName === '' ||
+      smartBill_Header[0].reamarks === ''
     ) {
       swal(
         "แจ้งเตือน", smartBill_Header[0].sb_name === '' ? `ระบุชื่อหัวข้อ` :
         (smartBill_Header[0].sb_fristName === '' || smartBill_Header[0].sb_lastName === '') ? `ระบุชื่อจริง-นามสกุล` :
-          (smartBill_Header[0].usercode === '') ? `ระบุผู้ทำรายการ` : 'Error Code #54878584'
+          (smartBill_Header[0].usercode === '') ? `ระบุผู้ทำรายการ` :
+            smartBill_Header[0].reamarks === '' ? 'ระบุสถานที่จอดรถหลังการใช้งาน' : 'Error Code #54878584'
         , "error")
     } else if (carInfo.filter((res) =>
       res.car_infocode === '' ||
@@ -201,7 +203,11 @@ export default function FormsStart() {
       res.sb_paystatus === '' ||
       res.sb_operationid_location === ''))[0]
     ) {
-      swal("แจ้งเตือน", 'ระบุข้อมูลการใช้งาน', "error")
+      swal("แจ้งเตือน", smartBill_Operation.filter((res) => (res.sb_operationid_startdate === '' || res.sb_operationid_enddate === ''))[0] ? 'ระบุวันที่เดินทาง' :
+        smartBill_Operation.filter((res) => (res.sb_operationid_startmile === '' || res.sb_operationid_endmile === ''))[0] ? 'ระบุเลขไมลล์เดินทาง' :
+          smartBill_Operation.filter((res) => (res.sb_operationid_startoil === '' || res.sb_operationid_endoil === ''))[0] ? 'ระบุปริมาณน้ำมัน' :
+            smartBill_Operation.filter((res) => (res.sb_operationid_location === ''))[0] ? 'ระบุกิจกรรมที่ทำ' : 'ระบุข้อมูลการใช้งานรถ'
+        , "error")
     } else if (!dataFilesCount) {
       swal("แจ้งเตือน", 'อัปโหลดรูปภาพอย่างน้อย 1 รูป', "error")
     } else {
@@ -894,6 +900,22 @@ export default function FormsStart() {
                     ))}
                   </React.Fragment>
                 ) : null} */}
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    name="reamarks"
+                    label={`ระบุสถานที่จอดรถหลังจากใช้งานแล้ว`}
+                    fullWidth
+                    value={smartBill_Header[0].reamarks}
+                    onChange={(e) => {
+                      const list = [...smartBill_Header]
+                      list[0]['reamarks'] = e.target.value
+                      setSmartBill_Header(list)
+                    }}
+                    autoComplete="shipping address-line1"
+                  // variant="standard"
+                  />
+                </Grid>
                 <Grid item xs={12} sm={4}>
                   <FormControl sx={{ pl: 1 }}>
                     <RadioGroup
