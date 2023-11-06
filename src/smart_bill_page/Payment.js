@@ -1006,7 +1006,7 @@ export default function AddressForm() {
         setCostOther(response.data[0]);
       });
 
-    await Axios.get('https://raw.githubusercontent.com/kongvut/thai-province-data/master/api_province.json', config.headers)
+    await Axios.get(config.http + '/Provinces_List', config.headers)
       .then((response) => {
         setProvince(response.data.map((res) => res.name_th));
       });
@@ -2739,13 +2739,17 @@ export default function AddressForm() {
                           setSmartBill_CostAllowance(list)
                         } else {
                           const list = [...smartBill_CostAllowance]
-                          list[index]['usercode'] = newValue
-                          setSmartBill_CostAllowance(list)
-                          await Axios.get(config.http + '/useright_getWelfare', config.headers)
+                          await Axios.post(config.http + '/useright_getWelfare', { welfaretypeid: 1, usercode: newValue }, config.headers)
                             .then((res) => {
-                              const list = [...smartBill_CostAllowance]
-                              list[index]['amount'] = res.data.data.filter((getWelFare) => getWelFare.usercode === newValue)[0].amount
-                              setSmartBill_CostAllowance(list)
+                              if (res.data.data.length > 0) {
+                                list[index]['usercode'] = newValue
+                                list[index]['amount'] = res.data.data.filter((getWelFare) => getWelFare.usercode === newValue)[0].amount ?? 0
+                                setSmartBill_CostAllowance(list)
+                              } else {
+                                list[index]['usercode'] = newValue
+                                list[index]['amount'] = 0
+                                setSmartBill_CostAllowance(list)
+                              }
                             })
                         }
                       }}
@@ -3040,7 +3044,7 @@ export default function AddressForm() {
                       disabled={payHotelCase === 0 || payHotelCase === "0" ? true : false}
                       value={res.sbc_hotelProvince}
                       options={province}
-                      onChange={(event, newValue, reason) => {
+                      onChange={async (event, newValue, reason) => {
                         if (reason === 'clear') {
                           const list = [...smartBill_CostHotel]
                           list[index]['sbc_hotelProvince'] = ''
@@ -3048,7 +3052,25 @@ export default function AddressForm() {
                         } else {
                           const list = [...smartBill_CostHotel]
                           list[index]['sbc_hotelProvince'] = newValue
-                          setSmartBill_CostHotel(list)
+                          if (list[index]['smartBill_CostHotelGroup'].filter((filterGroup) => filterGroup.usercode !== '')[0]) {
+                            const CostHotelGroup = []
+                            for (let i = 0; i < list[index]['smartBill_CostHotelGroup'].length; i++) {
+                              CostHotelGroup.push({
+                                sbc_hotelid: list[index]['smartBill_CostHotelGroup'][i].sbc_hotelid,
+                                sbc_hotelgroupid: list[index]['smartBill_CostHotelGroup'][i].sbc_hotelgroupid,
+                                usercode: list[index]['smartBill_CostHotelGroup'][i].usercode,
+                                amount: await Axios.post(config.http + '/useright_getWelfare',
+                                  {
+                                    sbc_hotelProvince: list[index]['sbc_hotelProvince'],
+                                    usercode: list[index]['smartBill_CostHotelGroup'][i].usercode
+                                  },
+                                  config.headers)
+                                  .then((resAxios) => resAxios.data.data[0].amount),
+                              })
+                            }
+                            list[index]['smartBill_CostHotelGroup'] = CostHotelGroup
+                            setSmartBill_CostHotel(list)
+                          }
                         }
                       }}
                       renderInput={(params) => (
@@ -3127,7 +3149,8 @@ export default function AddressForm() {
                     <Button
                       disabled={
                         (payHotelCase === 0 || payHotelCase === "0") ||
-                          smartBill_Withdraw[0].lock_status === true
+                          smartBill_Withdraw[0].lock_status === true ||
+                          smartBill_CostHotel[index]['sbc_hotelProvince'] === ''
                           ? true : false
                       }
                       key={index}
@@ -3145,11 +3168,11 @@ export default function AddressForm() {
                           id="free-solo-demo"
                           freeSolo
                           key={indexGroup}
-                          disabled={(payHotelCase === 0 || payHotelCase === "0") ? true : false}
+                          disabled={(payHotelCase === 0 || payHotelCase === "0") || smartBill_CostHotel[index]['sbc_hotelProvince'] === '' ? true : false}
                           name="usercode"
                           value={resGroup.usercode}
                           options={users.map((option) => option.UserCode)}
-                          onChange={(event, newValue, reason) => {
+                          onChange={async (event, newValue, reason) => {
                             if (reason === 'clear') {
                               const list = [...smartBill_CostHotel]
                               list[index]['smartBill_CostHotelGroup'][indexGroup]['usercode'] = ''
@@ -3157,8 +3180,18 @@ export default function AddressForm() {
                               setSmartBill_CostHotel(list)
                             } else {
                               const list = [...smartBill_CostHotel]
-                              list[index]['smartBill_CostHotelGroup'][indexGroup]['usercode'] = newValue
-                              setSmartBill_CostHotel(list)
+                              await Axios.post(config.http + '/useright_getWelfare', { sbc_hotelProvince: list[index]['sbc_hotelProvince'], usercode: newValue }, config.headers)
+                                .then((res) => {
+                                  if (res.data.data.length > 0) {
+                                    list[index]['smartBill_CostHotelGroup'][indexGroup]['usercode'] = newValue
+                                    list[index]['smartBill_CostHotelGroup'][indexGroup]['amount'] = res.data.data.filter((getWelFare) => getWelFare.usercode === newValue)[0].amount ?? 0
+                                    setSmartBill_CostHotel(list)
+                                  } else {
+                                    list[index]['smartBill_CostHotelGroup'][indexGroup]['usercode'] = newValue
+                                    list[index]['smartBill_CostHotelGroup'][indexGroup]['amount'] = 0
+                                    setSmartBill_CostHotel(list)
+                                  }
+                                })
                             }
                           }}
                           renderInput={(params) => (
@@ -3176,9 +3209,14 @@ export default function AddressForm() {
                             inputComponent: NumericFormatCustom,
                           }}
                           key={indexGroup}
-                          disabled={(payHotelCase === 0 || payHotelCase === "0") ? true : false}
+                          disabled
+                          sx={{
+                            "& .MuiInputBase-input.Mui-disabled": {
+                              WebkitTextFillColor: "#000000",
+                            },
+                          }}
                           value={resGroup.amount}
-                          label="ยอดเงินที่เบิกได้"
+                          label="ค่าที่พัก/คืน"
                           onChange={(event) => {
                             const list = [...smartBill_CostHotel]
                             list[index]['smartBill_CostHotelGroup'][indexGroup]['amount'] = event.target.value
