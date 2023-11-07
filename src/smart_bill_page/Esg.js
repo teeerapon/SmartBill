@@ -104,9 +104,9 @@ export default function Esg() {
   }, [])
 
   const columns = [
-    { field: 'car_infocode', headerName: 'เลขทะเบียน', flex: 1, maxWidth: 120, minWidth: 120 },
+    { field: 'car_infocode', headerName: 'เลขทะเบียน', flex: 1, maxWidth: 150, minWidth: 150 },
     { field: 'car_band', headerName: 'แบนด์', flex: 1, maxWidth: 120, minWidth: 100 },
-    { field: 'car_tier', headerName: 'รุ่น', flex: 1, minWidth: 200 },
+    { field: 'car_tier', headerName: 'รุ่น', flex: 1, minWidth: 170 },
     { field: 'car_color', headerName: 'สี', flex: 1, maxWidth: 150, minWidth: 100 },
     { field: 'rateoil', headerName: 'อัตราสิ้นเปลือง', flex: 1, maxWidth: 120, minWidth: 70 },
     { field: 'mile', headerName: 'ระยะทาง (Km.)', flex: 1, maxWidth: 120, minWidth: 70 },

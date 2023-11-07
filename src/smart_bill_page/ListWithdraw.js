@@ -239,7 +239,7 @@ export default function AddressForm() {
       <React.Fragment>
         <CssBaseline />
         <NavBar />
-        <Container component="main" maxWidth="lg" sx={{ mb: 4 }}>
+        <Container component="main" maxWidth="lg" fixed sx={{ mb: 4 }}>
           <Box sx={{ py: 5 }}>
             <DataGrid
               rows={rowHeader}
