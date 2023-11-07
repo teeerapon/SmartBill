@@ -21,6 +21,7 @@ const handleLogout = () => {
     .then(() => {
       localStorage.removeItem("token");
       localStorage.removeItem("data");
+      localStorage.removeItem("permission_MenuID");
       window.location.href = '/Sign-In'
     });
 };

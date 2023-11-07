@@ -3,9 +3,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -14,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import swal from 'sweetalert';
 import config from './config'
-import { useLocation } from 'react-router-dom';
+import Axios from "axios";
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
@@ -23,6 +20,17 @@ const defaultTheme = createTheme();
 // เพื่อใช้ทดสอบ
 async function loginUser(credentials) {
   return fetch(config.http + '/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+    },
+    body: JSON.stringify(credentials)
+  })
+    .then(data => data.json())
+}
+
+async function permission(credentials) {
+  return fetch(config.http + '/permission_branch', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json; charset=utf-8'
@@ -54,6 +62,11 @@ export default function SignInSide() {
       UserCode,
       Password
     });
+    const body = { Permission_TypeID: 1, userID: response['data'][0].userid }
+    await Axios.post(config.http + '/select_Permission_Menu_NAC', body, config.headers)
+      .then(response => {
+        localStorage.setItem('permission_MenuID', JSON.stringify(response.data.data.map((res) => res.Permission_MenuID)));
+      });
     if (UserCode == null || Password == null) {
       swal("แจ้งเตือน", 'กรุณากรอกข้อมูลเพื่อล็อคอินเข้าสู่ระบบ', "error");
     } else {

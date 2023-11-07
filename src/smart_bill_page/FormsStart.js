@@ -490,6 +490,10 @@ export default function FormsStart() {
                                 list[0]['car_color'] = response.data[0].car_color
                                 list[0]['car_remarks'] = response.data[0].car_remarks
                                 setCarInfo(list)
+
+                                const mileStartList = [...smartBill_Operation]
+                                mileStartList[0]['sb_operationid_startmile'] = response.data[0].mileRate
+                                setSmartBill_Operation(mileStartList)
                               }
                             })
                         }

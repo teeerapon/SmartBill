@@ -1,29 +1,17 @@
 import * as React from 'react';
-import Typography from '@mui/material/Typography';
 import { NumericFormat } from 'react-number-format';
 import PropTypes from 'prop-types';
 import CssBaseline from '@mui/material/CssBaseline';
-import AppBar from '@mui/material/AppBar';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
 import { DataGrid, GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton } from '@mui/x-data-grid';
 import Axios from "axios";
 import config from '../config'
-import swal from 'sweetalert';
-import Autocomplete from '@mui/material/Autocomplete';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import NoteAddIcon from '@mui/icons-material/NoteAdd';
-import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
-import ListIcon from '@mui/icons-material/List';
-import Grid from '@mui/material/Grid';
-import DeleteIcon from '@mui/icons-material/Delete';
 import ArticleIcon from '@mui/icons-material/Article';
 import Stack from '@mui/material/Stack';
-import PaidIcon from '@mui/icons-material/Paid';
 import NavBar from './NavBar'
 import { styled } from '@mui/system';
+import IconButton from '@mui/material/IconButton';
 
 const StyledGridOverlay = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -154,11 +142,16 @@ export default function AddressForm() {
 
   const [rowHeader, setRowHeader] = React.useState();
   const data = JSON.parse(localStorage.getItem('data'));
+  const permission = JSON.parse(localStorage.getItem('permission_MenuID'));
 
   const SelectHeaders = async () => {
     await Axios.get(config.http + '/SmartBill_SelectHeaders', config.headers)
       .then((res) => {
-        setRowHeader(res.data.filter((res) => res.usercode === data.UserCode))
+        if (permission.filter((res) => res === 18)[0]) {
+          setRowHeader(res.data)
+        } else {
+          setRowHeader(res.data.filter((res) => res.usercode === data.UserCode))
+        }
       })
   }
 
