@@ -147,8 +147,10 @@ export default function AddressForm() {
   const SelectHeaders = async () => {
     await Axios.get(config.http + '/SmartBill_SelectHeaders', config.headers)
       .then((res) => {
-        if (permission.filter((res) => res === 18)[0]) {
+        if (permission.filter((res) => res === 19)[0]) {
           setRowHeader(res.data)
+        } else if (permission.filter((res) => res === 18)[0]) {
+          setRowHeader(res.data.filter((res) => parseInt(res.car_categaryid) === 3))
         } else {
           setRowHeader(res.data.filter((res) => res.usercode === data.UserCode))
         }
