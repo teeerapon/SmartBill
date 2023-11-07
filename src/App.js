@@ -23,10 +23,12 @@ function App() {
   const seconds = ((d.getSeconds()) + 100).toString().slice(-2);
   const datenow = `${year + month + date + hours + mins + seconds}`
   const token = localStorage.getItem('token');
+  const permission = JSON.parse(localStorage.getItem('permission_MenuID'));
 
-  if (!token || !date_login || ((datenow - date_login) > 120000)) {
+  if (!token || !date_login || ((datenow - date_login) > 120000) || !permission) {
     localStorage.removeItem("token");
     localStorage.removeItem("data");
+    localStorage.removeItem("permission");
     return <Signin />
   }
   else {
