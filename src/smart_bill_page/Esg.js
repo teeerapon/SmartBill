@@ -86,6 +86,14 @@ export default function Esg() {
       })
   }
 
+  const ClearDate = async () => {
+    setDateTimeESG({ startDate: null, endDate: null });
+    await Axios.post(config.http + '/SmartBill_ESGQuery', { startDate: null, endDate: null }, config.headers)
+      .then((res) => {
+        setRowHeader(res.data[0])
+      })
+  }
+
   React.useEffect(() => {
     SelectHeaders();
   }, [])
@@ -96,15 +104,51 @@ export default function Esg() {
     { field: 'car_tier', headerName: 'รุ่น', flex: 1, minWidth: 170 },
     { field: 'car_color', headerName: 'สี', flex: 1, maxWidth: 150, minWidth: 100 },
     { field: 'rateoil', headerName: 'อัตราสิ้นเปลือง', flex: 1, maxWidth: 120, minWidth: 70 },
-    { field: 'mile', headerName: 'ระยะทาง (Km.)', flex: 1, maxWidth: 120, minWidth: 70 },
-    { field: 'oil', headerName: 'ใช้น้ำมัน (L.)', flex: 1, maxWidth: 120, minWidth: 70 },
+    {
+      field: 'mile',
+      headerName: 'ระยะทาง (Km.)',
+      flex: 1,
+      maxWidth: 120,
+      minWidth: 70,
+      renderCell: (params) => {
+        return (
+          params.row.mile > 0 ?
+            <React.Fragment>
+              <b>{params.row.mile.toLocaleString("en-US")}</b>
+            </React.Fragment>
+            :
+            <React.Fragment>
+              {params.row.mile}
+            </React.Fragment>
+        );
+      }
+    },
+    {
+      field: 'oil',
+      headerName: 'ใช้น้ำมัน (L.)',
+      flex: 1,
+      maxWidth: 120,
+      minWidth: 70,
+      renderCell: (params) => {
+        return (
+          params.row.mile > 0 ?
+            <React.Fragment>
+              <b>{params.row.oil.toLocaleString("en-US")}</b>
+            </React.Fragment>
+            :
+            <React.Fragment>
+              {params.row.oil}
+            </React.Fragment>
+        );
+      }
+    },
   ];
 
   if (rowHeader) {
     return (
       <React.Fragment>
         <CssBaseline />
-        <NavBar/>
+        <NavBar />
         <Container component="main" maxWidth="lg" sx={{ mb: 4 }}>
           <Grid container spacing={3} sx={{ py: 1 }}>
             <Grid item xs={4} sm={3}>
@@ -137,9 +181,14 @@ export default function Esg() {
                 />
               </LocalizationProvider>
             </Grid>
-            <Grid item xs={4} sm={2}>
+            <Grid item>
               <Button onClick={SearchDate} variant='contained'>
                 Search
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button onClick={ClearDate} variant='contained' color="warning">
+                Clear
               </Button>
             </Grid>
           </Grid>
