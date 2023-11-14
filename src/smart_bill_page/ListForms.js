@@ -164,12 +164,10 @@ export default function AddressForm() {
   const columns = [
     { field: 'sb_code', headerName: 'เลขที่ดำเนินการ', flex: 1, minWidth: 100 },
     { field: 'usercode', headerName: 'ผู้ทำรายการ', flex: 1, minWidth: 80 },
+    { field: 'sb_name', headerName: 'Title', minWidth: 260, flex: 1 },
     { field: 'createdate', headerName: 'วันที่ทำรายการ', flex: 1, minWidth: 150 },
     { field: 'car_infocode', headerName: 'บะเทียนรถ', flex: 1 },
-    { field: 'car_band', headerName: 'ยี่ห้อ', flex: 1 },
-    { field: 'car_tier', headerName: 'ชื่อรุ่น', flex: 1 },
-    { field: 'car_categary_name', headerName: 'หมวดหมู่' },
-    { field: 'reamarks', headerName: 'สถานที่จอดหลังใช้' },
+    { field: 'reamarks', headerName: 'สถานที่จอดหลังใช้', flex: 1 },
     { field: 'sb_status_name', headerName: 'สถานะ', flex: 1, minWidth: 120 },
     {
       field: 'action',
