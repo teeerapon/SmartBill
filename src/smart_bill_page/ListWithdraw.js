@@ -193,8 +193,11 @@ export default function AddressForm() {
     const sbw_SelectAllForms = { sbw_code: '' }
     await Axios.post(config.http + '/SmartBill_Withdraw_SelectAllForms', sbw_SelectAllForms, config.headers)
       .then((response) => {
-        if (response.data[0]) {
-          setRowHeader(response.data[0].filter((res) => response.usercode === data.UserCode));
+        const permission = JSON.parse(localStorage.getItem('permission_MenuID'));
+        if (response.data[0] && permission.filter((res) => res === 19)[0]) {
+          setRowHeader(response.data[0]);
+        } else {
+          setRowHeader(response.data[0].filter((res) => response.ownercode === data.UserCode));
         }
       });
   }
