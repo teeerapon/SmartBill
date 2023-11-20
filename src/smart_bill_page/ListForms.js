@@ -205,6 +205,11 @@ export default function AddressForm() {
               columns={columns}
               getRowId={(res) => res.sb_id}
               getRowHeight={() => 'auto'}
+                            initialState={{
+                pagination: {
+                  paginationModel: { page: 0, pageSize: 10 },
+                },
+              }}
               sx={{
                 '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': {
                   py: '0.25rem',
