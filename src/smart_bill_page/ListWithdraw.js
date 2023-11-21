@@ -197,7 +197,7 @@ export default function AddressForm() {
         if (response.data[0] && permission.filter((res) => res === 19)[0]) {
           setRowHeader(response.data[0]);
         } else {
-          setRowHeader(response.data[0].filter((res) => response.ownercode === data.UserCode));
+          setRowHeader(response.data[0].filter((res) => res.ownercode === data.UserCode));
         }
       });
   }

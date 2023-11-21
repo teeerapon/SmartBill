@@ -3147,12 +3147,12 @@ export default function AddressForm() {
                   </Grid>
                   <Grid item xs={12}>
                     <Button
-                      disabled={
-                        (payHotelCase === 0 || payHotelCase === "0") ||
-                          smartBill_Withdraw[0].lock_status === true ||
-                          smartBill_CostHotel[index]['sbc_hotelProvince'] === ''
-                          ? true : false
-                      }
+                      // disabled={
+                      //   (payHotelCase === 0 || payHotelCase === "0") ||
+                      //     smartBill_Withdraw[0].lock_status === true ||
+                      //     smartBill_CostHotel[index]['sbc_hotelProvince'] === ''
+                      //     ? true : false
+                      // }
                       key={index}
                       onClick={(e) => handleServiceAddCostHotelGroup(e, index)}
                       variant="outlined"
@@ -3168,7 +3168,7 @@ export default function AddressForm() {
                           id="free-solo-demo"
                           freeSolo
                           key={indexGroup}
-                          disabled={(payHotelCase === 0 || payHotelCase === "0") || smartBill_CostHotel[index]['sbc_hotelProvince'] === '' ? true : false}
+                          // disabled={(payHotelCase === 0 || payHotelCase === "0") || smartBill_CostHotel[index]['sbc_hotelProvince'] === '' ? true : false}
                           name="usercode"
                           value={resGroup.usercode}
                           options={users.map((option) => option.UserCode)}
