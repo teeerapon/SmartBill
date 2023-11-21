@@ -87,8 +87,8 @@ export default function FormsStart() {
   const [smartBill_Header, setSmartBill_Header] = React.useState([{
     usercode: data.UserCode,
     sb_name: '',
-    sb_fristName: '',
-    sb_lastName: '',
+    sb_fristName: data.fristName ? data.fristName : '',
+    sb_lastName: data.lastName ? data.lastName : '',
     clean_status: 0,
     group_status: 0,
     reamarks: '',
@@ -291,10 +291,14 @@ export default function FormsStart() {
                       if (reason === 'clear') {
                         const list = [...smartBill_Header]
                         list[0]['usercode'] = ''
+                        list[0]['sb_fristName'] = ''
+                        list[0]['sb_lastName'] = ''
                         setSmartBill_Header(list)
                       } else {
                         const list = [...smartBill_Header]
                         list[0]['usercode'] = newValue
+                        list[0]['sb_fristName'] = users.filter((text) => text.UserCode === newValue)[0].fristName
+                        list[0]['sb_lastName'] = users.filter((text) => text.UserCode === newValue)[0].lastName
                         setSmartBill_Header(list)
                       }
                     }}
