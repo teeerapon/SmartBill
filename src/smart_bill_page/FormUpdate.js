@@ -12,7 +12,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
-import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -21,18 +20,17 @@ import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import { NumericFormat } from 'react-number-format';
 import PropTypes from 'prop-types';
-import PostAddIcon from '@mui/icons-material/PostAdd';
 import Divider from '@mui/material/Divider';
 import CssBaseline from '@mui/material/CssBaseline';
-import AppBar from '@mui/material/AppBar';
 import Container from '@mui/material/Container';
-import Toolbar from '@mui/material/Toolbar';
 import Paper from '@mui/material/Paper';
 import Axios from "axios";
 import config from '../config'
 import swal from 'sweetalert';
 import Autocomplete from '@mui/material/Autocomplete';
 import dayjs from 'dayjs';
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import NavBar from './NavBar'
 import ImageListItemBar from '@mui/material/ImageListItemBar';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -81,6 +79,11 @@ const VisuallyHiddenInput = styled('input')`
 `;
 
 export default function AddressForm() {
+
+  // ใช้สำหรับสร้างเวลาปัจจุบัน
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+
   const [typeCar, setTypeCar] = React.useState('');
   const [typeGroup, setTypeGroup] = React.useState(0);
   const [carInfoDataCompanny, setCarInfoDataCompanny] = React.useState([]);
@@ -212,10 +215,10 @@ export default function AddressForm() {
 
         setSmartBill_Operation(res.data[1].map((res_operationid) => {
           return {
-            sb_operationid_startdate: dayjs(res_operationid.sb_operationid_startdate),
+            sb_operationid_startdate: dayjs(res_operationid.sb_operationid_startdate).utc().local(),
             sb_operationid_startmile: res_operationid.sb_operationid_startmile,
             sb_operationid_startoil: res_operationid.sb_operationid_startoil,
-            sb_operationid_enddate: dayjs(res_operationid.sb_operationid_enddate),
+            sb_operationid_enddate: dayjs(res_operationid.sb_operationid_enddate).utc().local(),
             sb_operationid_endoil: res_operationid.sb_operationid_endoil,
             sb_operationid_endmile: res_operationid.sb_operationid_endmile,
             sb_paystatus: res_operationid.sb_paystatus === true ? 1 : 0,
@@ -226,8 +229,8 @@ export default function AddressForm() {
         setSmartBill_Associate(res.data[2].map((res_allowance) => {
           return {
             allowance_usercode: res_allowance.allowance_usercode,
-            sb_associate_startdate: dayjs(res_allowance.sb_associate_startdate),
-            sb_associate_enddate: dayjs(res_allowance.sb_associate_enddate),
+            sb_associate_startdate: dayjs(res_allowance.sb_associate_startdate).utc().local(),
+            sb_associate_enddate: dayjs(res_allowance.sb_associate_enddate).utc().local(),
           }
         }))
 

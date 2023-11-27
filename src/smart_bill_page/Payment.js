@@ -38,6 +38,8 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import dayjs from 'dayjs';
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import NavBar from './NavBar'
 import Divider from '@mui/material/Divider';
 import InputLabel from '@mui/material/InputLabel';
@@ -114,6 +116,10 @@ NumericFormatCustom.propTypes = {
 };
 
 export default function AddressForm() {
+
+  // ใช้สำหรับสร้างเวลาปัจจุบัน
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
 
   const [counter, setCounter] = React.useState(0);
   const [users, setUsers] = React.useState([]);
@@ -637,8 +643,8 @@ export default function AddressForm() {
               id: res.id,
               category_id: res.category_id,
               count: (new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600),
-              startdate: dayjs(res.startdate),
-              enddate: dayjs(res.enddate),
+              startdate: dayjs(res.startdate).utc().local(),
+              enddate: dayjs(res.enddate).utc().local(),
               usercode: res.usercode,
               foodStatus: res.foodStatus === true ? 1 : 0,
               amount: res.foodStatus === true ? res.amount * 2 : res.amount,
@@ -666,8 +672,8 @@ export default function AddressForm() {
               id: res.id,
               category_id: res.category_id,
               count: (new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600),
-              startdate: dayjs(res.startdate),
-              enddate: dayjs(res.enddate),
+              startdate: dayjs(res.startdate).utc().local(),
+              enddate: dayjs(res.enddate).utc().local(),
               usercode: res.usercode,
               foodStatus: res.foodStatus === true ? 1 : 0,
               amount: res.foodStatus === true ? res.amount * 2 : res.amount,
@@ -716,8 +722,8 @@ export default function AddressForm() {
                 id: res.id,
                 category_id: res.category_id,
                 count: (new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600),
-                startdate: dayjs(res.startdate),
-                enddate: dayjs(res.enddate),
+                startdate: dayjs(res.startdate).utc().local(),
+                enddate: dayjs(res.enddate).utc().local(),
                 usercode: res.usercode,
                 foodStatus: res.foodStatus === true ? 1 : 0,
                 amount: res.foodStatus === true ? res.amount * 2 : res.amount,
@@ -837,8 +843,8 @@ export default function AddressForm() {
               id: response.data[0][i].id,
               category_id: response.data[0][i].category_id,
               count: response.data[0][i].count,
-              startdate: dayjs(response.data[0][i].startdate),
-              enddate: dayjs(response.data[0][i].enddate),
+              startdate: dayjs(response.data[0][i].startdate).utc().local(),
+              enddate: dayjs(response.data[0][i].enddate).utc().local(),
               sbc_hotelProvince: response.data[0][i].sbc_hotelProvince,
               sbc_hotelname: response.data[0][i].sbc_hotelname,
               amount: response.data[0][i].amount,
@@ -902,8 +908,8 @@ export default function AddressForm() {
                 id: res.id,
                 category_id: res.category_id,
                 count: res.count,
-                startdate: dayjs(res.startdate),
-                enddate: dayjs(res.enddate),
+                startdate: dayjs(res.startdate).utc().local(),
+                enddate: dayjs(res.enddate).utc().local(),
                 sbc_hotelProvince: res.sbc_hotelProvince,
                 sbc_hotelname: res.sbc_hotelname,
                 amount: res.amount,
@@ -952,8 +958,8 @@ export default function AddressForm() {
                 id: res.id,
                 category_id: res.category_id,
                 count: res.count,
-                startdate: dayjs(res.startdate),
-                enddate: dayjs(res.enddate),
+                startdate: dayjs(res.startdate).utc().local(),
+                enddate: dayjs(res.enddate).utc().local(),
                 sbc_hotelProvince: res.sbc_hotelProvince,
                 sbc_hotelname: res.sbc_hotelname,
                 amount: res.amount,
@@ -2212,8 +2218,8 @@ export default function AddressForm() {
                         } else {
                           const list = [...smartBill_WithdrawDtlSave]
                           list[0]['sb_operationid'] = newInputValue.sb_operationid
-                          list[0]['sbwdtl_operationid_startdate'] = dayjs(newInputValue.sb_operationid_startdate)
-                          list[0]['sbwdtl_operationid_enddate'] = dayjs(newInputValue.sb_operationid_enddate)
+                          list[0]['sbwdtl_operationid_startdate'] = dayjs(newInputValue.sb_operationid_startdate).utc().local()
+                          list[0]['sbwdtl_operationid_enddate'] = dayjs(newInputValue.sb_operationid_enddate).utc().local()
                           list[0]['sbwdtl_operationid_endmile'] = newInputValue.sb_operationid_endmile
                           list[0]['sbwdtl_operationid_startmile'] = newInputValue.sb_operationid_startmile
                           list[0]['remark'] = newInputValue.sb_operationid_location
