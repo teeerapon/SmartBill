@@ -179,7 +179,6 @@ export default function AddressForm() {
 
     await Axios.post(config.http + '/SmartBill_SelectAllForms', { sb_code: sb_code }, config.headers)
       .then(async (res) => {
-        console.log(res.data[0][0].reamarks);
         setSmartBill_Header([{
           usercode: res.data[0][0].usercode,
           sb_name: res.data[0][0].sb_name,
@@ -215,10 +214,10 @@ export default function AddressForm() {
 
         setSmartBill_Operation(res.data[1].map((res_operationid) => {
           return {
-            sb_operationid_startdate: dayjs(res_operationid.sb_operationid_startdate).utc().local(),
+            sb_operationid_startdate: res_operationid.sb_operationid_startdate,
             sb_operationid_startmile: res_operationid.sb_operationid_startmile,
             sb_operationid_startoil: res_operationid.sb_operationid_startoil,
-            sb_operationid_enddate: dayjs(res_operationid.sb_operationid_enddate).utc().local(),
+            sb_operationid_enddate: res_operationid.sb_operationid_enddate,
             sb_operationid_endoil: res_operationid.sb_operationid_endoil,
             sb_operationid_endmile: res_operationid.sb_operationid_endmile,
             sb_paystatus: res_operationid.sb_paystatus === true ? 1 : 0,
@@ -229,8 +228,8 @@ export default function AddressForm() {
         setSmartBill_Associate(res.data[2].map((res_allowance) => {
           return {
             allowance_usercode: res_allowance.allowance_usercode,
-            sb_associate_startdate: dayjs(res_allowance.sb_associate_startdate).utc().local(),
-            sb_associate_enddate: dayjs(res_allowance.sb_associate_enddate).utc().local(),
+            sb_associate_startdate: res_allowance.sb_associate_startdate,
+            sb_associate_enddate: res_allowance.sb_associate_enddate,
           }
         }))
 
@@ -752,10 +751,10 @@ export default function AddressForm() {
                         <Grid item xs={12} sm={6}>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DateTimePicker
-
                               format="YYYY-MM-DD HH:mm"
                               name="sb_operationid_startdate"
                               label={`วันที่ออกเดินทาง (${index + 1})`}
+                              timezone='UTC'
                               key={index}
                               disabled
                               sx={{
@@ -764,10 +763,10 @@ export default function AddressForm() {
                                   WebkitTextFillColor: "#000000",
                                 }
                               }}
-                              value={row.sb_operationid_startdate === '' ? undefined : row.sb_operationid_startdate}
+                              value={row.sb_operationid_startdate ? dayjs(row.sb_operationid_startdate) : undefined}
                               onChange={(newValue) => {
                                 const list = [...smartBill_Operation]
-                                list[index]['sb_operationid_startdate'] = `${newValue.format('YYYY-MM-DD')}T${newValue.format('HH:mm:ss')}`
+                                list[index]['sb_operationid_startdate'] = newValue.format('YYYY-MM-DD HH:mm:ss')
                                 setSmartBill_Operation(list)
                               }}
                               ampm={false}
@@ -839,6 +838,7 @@ export default function AddressForm() {
                               name="sb_operationid_enddate"
                               key={index}
                               label={`วันที่สิ้นสุดเดินทาง (${index + 1})`}
+                              timezone='UTC'
                               disabled
                               sx={{
                                 width: '100%',
@@ -846,10 +846,10 @@ export default function AddressForm() {
                                   WebkitTextFillColor: "#000000",
                                 }
                               }}
-                              value={row.sb_operationid_enddate === '' ? undefined : row.sb_operationid_enddate}
+                              value={row.sb_operationid_enddate ? dayjs(row.sb_operationid_enddate) : undefined}
                               onChange={(newValue) => {
                                 const list = [...smartBill_Operation]
-                                list[index]['sb_operationid_enddate'] = `${newValue.format('YYYY-MM-DD')}T${newValue.format('HH:mm:ss')}`
+                                list[index]['sb_operationid_enddate'] = newValue.format('YYYY-MM-DD HH:mm:ss')
                                 setSmartBill_Operation(list)
                               }}
                               ampm={false}

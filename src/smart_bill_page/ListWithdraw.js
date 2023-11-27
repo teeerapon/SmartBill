@@ -214,6 +214,23 @@ export default function AddressForm() {
     { field: 'car_band', headerName: 'ยี่ห้อ', flex: 1, minWidth: 100 },
     { field: 'car_tier', headerName: 'ชื่อรุ่น', flex: 1, minWidth: 200 },
     {
+      field: 'lock_status',
+      headerName: 'status',
+      flex: 1,
+      minWidth: 80,
+      align: 'center',
+      headerAlign: 'center',
+      renderCell: (params) => {
+        return (
+          <React.Fragment>
+            <Box sx={{ color: params.row.lock_status === true ? 'green' : 'grey' }}>
+              {params.row.lock_status === true ? 'Lock' : 'None'}
+            </Box>
+          </React.Fragment>
+        );
+      }
+    },
+    {
       field: 'action',
       headerName: 'action',
       align: 'center',

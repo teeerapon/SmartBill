@@ -34,6 +34,9 @@ import NavBar from './NavBar'
 import ImageListItemBar from '@mui/material/ImageListItemBar';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import IconButton from '@mui/material/IconButton';
+import dayjs from 'dayjs';
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 
 const NumericFormatCustom = React.forwardRef(function NumericFormatCustom(
@@ -79,6 +82,11 @@ const VisuallyHiddenInput = styled('input')`
 `;
 
 export default function FormsStart() {
+
+  // ใช้สำหรับสร้างเวลาปัจจุบัน
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+
   const [typeCar, setTypeCar] = React.useState('');
   const [carInfoDataCompanny, setCarInfoDataCompanny] = React.useState([]);
   const [carInfoData, setCarInfoData] = React.useState([]);
@@ -227,7 +235,7 @@ export default function FormsStart() {
 
             await Axios.post(config.http + '/SmartBill_files', formData_1, config.headers)
               .then((res) => {
-                window.location.href = '/FormUpdate?' + response.data;
+                //window.location.href = '/FormUpdate?' + response.data;
               })
           }
         })
@@ -674,12 +682,13 @@ export default function FormsStart() {
                               format="YYYY-MM-DD HH:mm"
                               name="sb_operationid_startdate"
                               label={`วันที่ออกเดินทาง (${index + 1})`}
+                              timezone='UTC'
                               key={index}
+                              value={row.sb_operationid_startdate ? dayjs(row.sb_operationid_startdate) : dayjs()}
                               sx={{ width: '100%' }}
-                              value={row.sb_operationid_startdate === '' ? undefined : row.sb_operationid_startdate}
                               onChange={(newValue) => {
                                 const list = [...smartBill_Operation]
-                                list[index]['sb_operationid_startdate'] = `${newValue.format('YYYY-MM-DD')}T${newValue.format('HH:mm:ss')}`
+                                list[index]['sb_operationid_startdate'] = dayjs(newValue).format('YYYY-MM-DD HH:mm:ss')
                                 setSmartBill_Operation(list)
                               }}
                               ampm={false}
@@ -733,13 +742,14 @@ export default function FormsStart() {
                             <DateTimePicker
                               format="YYYY-MM-DD HH:mm"
                               name="sb_operationid_enddate"
+                              timezone='UTC'
                               key={index}
                               label={`วันที่สิ้นสุดเดินทาง (${index + 1})`}
+                              value={row.sb_operationid_enddate ? dayjs(row.sb_operationid_enddate) : undefined}
                               sx={{ width: '100%' }}
-                              value={row.sb_operationid_enddate === '' ? undefined : row.sb_operationid_enddate}
                               onChange={(newValue) => {
                                 const list = [...smartBill_Operation]
-                                list[index]['sb_operationid_enddate'] = `${newValue.format('YYYY-MM-DD')}T${newValue.format('HH:mm:ss')}`
+                                list[index]['sb_operationid_enddate'] = dayjs(newValue).format('YYYY-MM-DD HH:mm:ss')
                                 setSmartBill_Operation(list)
                               }}
                               ampm={false}

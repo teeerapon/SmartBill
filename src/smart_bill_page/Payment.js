@@ -643,8 +643,8 @@ export default function AddressForm() {
               id: res.id,
               category_id: res.category_id,
               count: (new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600),
-              startdate: dayjs(res.startdate).utc().local(),
-              enddate: dayjs(res.enddate).utc().local(),
+              startdate: res.startdate,
+              enddate: res.enddate,
               usercode: res.usercode,
               foodStatus: res.foodStatus === true ? 1 : 0,
               amount: res.foodStatus === true ? res.amount * 2 : res.amount,
@@ -672,8 +672,8 @@ export default function AddressForm() {
               id: res.id,
               category_id: res.category_id,
               count: (new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600),
-              startdate: dayjs(res.startdate).utc().local(),
-              enddate: dayjs(res.enddate).utc().local(),
+              startdate: res.startdate,
+              enddate: res.enddate,
               usercode: res.usercode,
               foodStatus: res.foodStatus === true ? 1 : 0,
               amount: res.foodStatus === true ? res.amount * 2 : res.amount,
@@ -722,8 +722,8 @@ export default function AddressForm() {
                 id: res.id,
                 category_id: res.category_id,
                 count: (new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600),
-                startdate: dayjs(res.startdate).utc().local(),
-                enddate: dayjs(res.enddate).utc().local(),
+                startdate: res.startdate,
+                enddate: res.enddate,
                 usercode: res.usercode,
                 foodStatus: res.foodStatus === true ? 1 : 0,
                 amount: res.foodStatus === true ? res.amount * 2 : res.amount,
@@ -843,8 +843,8 @@ export default function AddressForm() {
               id: response.data[0][i].id,
               category_id: response.data[0][i].category_id,
               count: response.data[0][i].count,
-              startdate: dayjs(response.data[0][i].startdate).utc().local(),
-              enddate: dayjs(response.data[0][i].enddate).utc().local(),
+              startdate: response.data[0][i].startdate,
+              enddate: response.data[0][i].enddate,
               sbc_hotelProvince: response.data[0][i].sbc_hotelProvince,
               sbc_hotelname: response.data[0][i].sbc_hotelname,
               amount: response.data[0][i].amount,
@@ -908,8 +908,8 @@ export default function AddressForm() {
                 id: res.id,
                 category_id: res.category_id,
                 count: res.count,
-                startdate: dayjs(res.startdate).utc().local(),
-                enddate: dayjs(res.enddate).utc().local(),
+                startdate: res.startdate,
+                enddate: res.enddate,
                 sbc_hotelProvince: res.sbc_hotelProvince,
                 sbc_hotelname: res.sbc_hotelname,
                 amount: res.amount,
@@ -958,8 +958,8 @@ export default function AddressForm() {
                 id: res.id,
                 category_id: res.category_id,
                 count: res.count,
-                startdate: dayjs(res.startdate).utc().local(),
-                enddate: dayjs(res.enddate).utc().local(),
+                startdate: res.startdate,
+                enddate: res.enddate,
                 sbc_hotelProvince: res.sbc_hotelProvince,
                 sbc_hotelname: res.sbc_hotelname,
                 amount: res.amount,
@@ -1234,7 +1234,8 @@ export default function AddressForm() {
                       <DateTimePicker
                         format="YYYY-MM-DD HH:mm"
                         disabled
-                        value={dayjs(new Date().toLocaleString().replace(",", "").replace(/:.. /, " "))}
+                        value={dayjs()}
+                        timezone='UTC'
                         ampm={false}
                       />
                     </LocalizationProvider>
@@ -1842,8 +1843,8 @@ export default function AddressForm() {
               <TableBody>
                 {smartBill_WithdrawDtl.map((res, index) => (
                   <TableRow>
-                    <TableCell align="center">{res.sbwdtl_operationid_startdate}</TableCell>
-                    <TableCell align="center">{res.sbwdtl_operationid_enddate}</TableCell>
+                    <TableCell align="center">{dayjs(res.sbwdtl_operationid_startdate).format('YYYY-MM-DD HH:mm')}</TableCell>
+                    <TableCell align="center">{dayjs(res.sbwdtl_operationid_enddate).format('YYYY-MM-DD HH:mm')}</TableCell>
                     <TableCell >{res.remark}</TableCell>
                     <TableCell align="center">{res.sbwdtl_operationid_startmile}</TableCell>
                     <TableCell align="center">{res.sbwdtl_operationid_endmile}</TableCell>
@@ -2218,8 +2219,8 @@ export default function AddressForm() {
                         } else {
                           const list = [...smartBill_WithdrawDtlSave]
                           list[0]['sb_operationid'] = newInputValue.sb_operationid
-                          list[0]['sbwdtl_operationid_startdate'] = dayjs(newInputValue.sb_operationid_startdate).utc().local()
-                          list[0]['sbwdtl_operationid_enddate'] = dayjs(newInputValue.sb_operationid_enddate).utc().local()
+                          list[0]['sbwdtl_operationid_startdate'] = dayjs(newInputValue.sb_operationid_startdate)
+                          list[0]['sbwdtl_operationid_enddate'] = dayjs(newInputValue.sb_operationid_enddate)
                           list[0]['sbwdtl_operationid_endmile'] = newInputValue.sb_operationid_endmile
                           list[0]['sbwdtl_operationid_startmile'] = newInputValue.sb_operationid_startmile
                           list[0]['remark'] = newInputValue.sb_operationid_location
@@ -2237,6 +2238,7 @@ export default function AddressForm() {
                     format="YYYY-MM-DD HH:mm"
                     name="sbwdtl_operationid_startdate"
                     label={`วันที่เริ่มต้น`}
+                    timezone='UTC'
                     sx={{
                       width: '100%',
                       "& .MuiInputBase-input.Mui-disabled": {
@@ -2244,10 +2246,10 @@ export default function AddressForm() {
                       },
                     }}
                     disabled={case_WithdrawDtlSave === 0 ? true : false}
-                    value={smartBill_WithdrawDtlSave[0].sbwdtl_operationid_startdate === '' ? undefined : smartBill_WithdrawDtlSave[0].sbwdtl_operationid_startdate}
+                    value={smartBill_WithdrawDtlSave[0].sbwdtl_operationid_startdate ? dayjs(smartBill_WithdrawDtlSave[0].sbwdtl_operationid_startdate) : undefined}
                     onChange={(newValue) => {
                       const list = [...smartBill_WithdrawDtlSave]
-                      list[0]['sbwdtl_operationid_startdate'] = `${newValue.format('YYYY-MM-DD')}T${newValue.format('HH:mm:ss')}`
+                      list[0]['sbwdtl_operationid_startdate'] = dayjs(newValue).format('YYYY-MM-DD HH:mm:ss')
                       setSmartBill_WithdrawDtlSave(list)
                     }}
                     ampm={false}
@@ -2260,6 +2262,7 @@ export default function AddressForm() {
                     format="YYYY-MM-DD HH:mm"
                     name="sbwdtl_operationid_enddate"
                     label={`วันที่สิ้นสุด`}
+                    timezone='UTC'
                     sx={{
                       width: '100%',
                       "& .MuiInputBase-input.Mui-disabled": {
@@ -2267,10 +2270,10 @@ export default function AddressForm() {
                       },
                     }}
                     disabled={case_WithdrawDtlSave === 0 ? true : false}
-                    value={smartBill_WithdrawDtlSave[0].sbwdtl_operationid_enddate === '' ? undefined : smartBill_WithdrawDtlSave[0].sbwdtl_operationid_enddate}
+                    value={smartBill_WithdrawDtlSave[0].sbwdtl_operationid_enddate ? dayjs(smartBill_WithdrawDtlSave[0].sbwdtl_operationid_enddate) : undefined}
                     onChange={(newValue) => {
                       const list = [...smartBill_WithdrawDtlSave]
-                      list[0]['sbwdtl_operationid_enddate'] = `${newValue.format('YYYY-MM-DD')}T${newValue.format('HH:mm:ss')}`
+                      list[0]['sbwdtl_operationid_enddate'] = dayjs(newValue).format('YYYY-MM-DD HH:mm:ss')
                       setSmartBill_WithdrawDtlSave(list)
                     }}
                     ampm={false}
@@ -2774,13 +2777,14 @@ export default function AddressForm() {
                         format="YYYY-MM-DD HH:mm"
                         name="startdate"
                         label={`วันที่เริ่มต้น`}
+                        timezone='UTC'
                         key={index}
                         sx={{ width: '100%' }}
                         disabled={payAllowanceCase === 0 || payAllowanceCase === "0" ? true : false}
-                        value={res.startdate === '' ? undefined : res.startdate}
+                        value={res.startdate ? dayjs(res.startdate) : undefined}
                         onChange={(newValue) => {
                           const list = [...smartBill_CostAllowance]
-                          list[index]['startdate'] = `${newValue.format('YYYY-MM-DD')}T${newValue.format('HH:mm:ss')}`
+                          list[index]['startdate'] = dayjs(newValue).format('YYYY-MM-DD HH:mm:ss')
                           list[index]['count'] = Math.trunc((new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600))
                           setSmartBill_CostAllowance(list)
                         }}
@@ -2794,13 +2798,14 @@ export default function AddressForm() {
                         format="YYYY-MM-DD HH:mm"
                         name="enddate"
                         label={`วันที่สิ้นสุด`}
+                        timezone='UTC'
                         key={index}
                         sx={{ width: '100%' }}
                         disabled={payAllowanceCase === 0 || payAllowanceCase === "0" ? true : false}
-                        value={res.enddate === '' ? undefined : res.enddate}
+                        value={res.enddate ? dayjs(res.enddate) : undefined}
                         onChange={(newValue) => {
                           const list = [...smartBill_CostAllowance]
-                          list[index]['enddate'] = `${newValue.format('YYYY-MM-DD')}T${newValue.format('HH:mm:ss')}`
+                          list[index]['enddate'] = dayjs(newValue).format('YYYY-MM-DD HH:mm:ss')
                           list[index]['count'] = Math.trunc((new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600))
                           setSmartBill_CostAllowance(list)
                         }}
@@ -3009,12 +3014,13 @@ export default function AddressForm() {
                         name="startdate"
                         label={`(ห้องพัก ${index + 1}) วันที่เข้าพัก`}
                         key={index}
+                        timezone='UTC'
                         sx={{ width: '100%' }}
                         disabled={payHotelCase === 0 || payHotelCase === "0" ? true : false}
-                        value={res.startdate === '' ? undefined : res.startdate}
+                        value={res.startdate ? dayjs(res.startdate) : undefined}
                         onChange={(newValue) => {
                           const list = [...smartBill_CostHotel]
-                          list[index]['startdate'] = `${newValue.format('YYYY-MM-DD')}T${newValue.format('HH:mm:ss')}`
+                          list[index]['startdate'] = dayjs(newValue).format('YYYY-MM-DD HH:mm:ss')
                           list[index]['count'] = Math.trunc((new Date(res.enddate) - new Date(res.startdate)) / (1000 * 60 * 60 * 24))
                           setSmartBill_CostHotel(list)
                         }}
@@ -3028,13 +3034,14 @@ export default function AddressForm() {
                         format="YYYY-MM-DD HH:mm"
                         name="enddate"
                         label={`(ห้องพัก ${index + 1}) วันที่ออก`}
+                        timezone='UTC'
                         key={index}
                         sx={{ width: '100%' }}
                         disabled={payHotelCase === 0 || payHotelCase === "0" ? true : false}
-                        value={res.enddate === '' ? undefined : res.enddate}
+                        value={res.enddate ? dayjs(res.enddate) : undefined}
                         onChange={(newValue) => {
                           const list = [...smartBill_CostHotel]
-                          list[index]['enddate'] = `${newValue.format('YYYY-MM-DD')}T${newValue.format('HH:mm:ss')}`
+                          list[index]['enddate'] = dayjs(newValue).format('YYYY-MM-DD HH:mm:ss')
                           list[index]['count'] = Math.trunc((new Date(res.enddate) - new Date(res.startdate)) / (1000 * 60 * 60 * 24))
                           setSmartBill_CostHotel(list)
                         }}
