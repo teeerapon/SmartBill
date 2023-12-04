@@ -205,7 +205,7 @@ export default function AddressForm() {
               columns={columns}
               getRowId={(res) => res.sb_id}
               getRowHeight={() => 'auto'}
-                            initialState={{
+              initialState={{
                 pagination: {
                   paginationModel: { page: 0, pageSize: 10 },
                 },

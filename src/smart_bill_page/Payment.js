@@ -2731,6 +2731,13 @@ export default function AddressForm() {
               </Grid>
               {smartBill_CostAllowance.map((res, index) => (
                 <React.Fragment>
+                  <Grid item xs={12}>
+                    <Divider sx={{ py: 3 }} textAlign="left">
+                      <Typography className="payment-Forms">
+                        ค่าเบี้ยเลี้ยงรายการที่ {index + 1}
+                      </Typography>
+                    </Divider>
+                  </Grid>
                   <Grid item xs={4}>
                     <Autocomplete
                       id="free-solo-demo"
@@ -2903,11 +2910,6 @@ export default function AddressForm() {
                       DELETE
                     </Button>
                   </Grid>
-                  {index === smartBill_CostAllowance.length - 1 ? null : (
-                    <Grid item xs={12}>
-                      <Divider sx={{ py: 1 }} />
-                    </Grid>
-                  )}
                 </React.Fragment>
               ))}
             </Grid>
@@ -3007,10 +3009,17 @@ export default function AddressForm() {
               </Grid>
               {smartBill_CostHotel.map((res, index) => (
                 <React.Fragment>
+                  <Grid item xs={12}>
+                    <Divider sx={{ py: 3 }} textAlign="left">
+                      <Typography className="payment-Forms">
+                        ค่าที่พักรายการที่ {index + 1}
+                      </Typography>
+                    </Divider>
+                  </Grid>
                   <Grid item xs={3}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DateTimePicker
-                        format="YYYY-MM-DD HH:mm"
+                        format="YYYY-MM-DD"
                         name="startdate"
                         label={`(ห้องพัก ${index + 1}) วันที่เข้าพัก`}
                         key={index}
@@ -3020,7 +3029,7 @@ export default function AddressForm() {
                         value={res.startdate ? dayjs(res.startdate) : undefined}
                         onChange={(newValue) => {
                           const list = [...smartBill_CostHotel]
-                          list[index]['startdate'] = dayjs(newValue).format('YYYY-MM-DD HH:mm:ss')
+                          list[index]['startdate'] = dayjs(newValue).format('YYYY-MM-DD 00:00:00')
                           list[index]['count'] = Math.trunc((new Date(res.enddate) - new Date(res.startdate)) / (1000 * 60 * 60 * 24))
                           setSmartBill_CostHotel(list)
                         }}
@@ -3031,7 +3040,7 @@ export default function AddressForm() {
                   <Grid item xs={3}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DateTimePicker
-                        format="YYYY-MM-DD HH:mm"
+                        format="YYYY-MM-DD"
                         name="enddate"
                         label={`(ห้องพัก ${index + 1}) วันที่ออก`}
                         timezone='UTC'
@@ -3041,7 +3050,7 @@ export default function AddressForm() {
                         value={res.enddate ? dayjs(res.enddate) : undefined}
                         onChange={(newValue) => {
                           const list = [...smartBill_CostHotel]
-                          list[index]['enddate'] = dayjs(newValue).format('YYYY-MM-DD HH:mm:ss')
+                          list[index]['enddate'] = dayjs(newValue).format('YYYY-MM-DD 00:00:00')
                           list[index]['count'] = Math.trunc((new Date(res.enddate) - new Date(res.startdate)) / (1000 * 60 * 60 * 24))
                           setSmartBill_CostHotel(list)
                         }}
@@ -3277,11 +3286,6 @@ export default function AddressForm() {
                       </Grid>
                     </React.Fragment>
                   ))}
-                  {index === smartBill_CostHotel.length - 1 ? null : (
-                    <Grid item xs={12}>
-                      <Divider sx={{ py: 1 }} />
-                    </Grid>
-                  )}
                 </React.Fragment>
               ))}
             </Grid>
