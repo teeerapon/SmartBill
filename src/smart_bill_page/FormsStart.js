@@ -237,7 +237,10 @@ export default function FormsStart() {
 
             await Axios.post(config.http + '/SmartBill_files', formData_1, config.headers)
               .then((res) => {
-                //window.location.href = '/FormUpdate?' + response.data;
+                swal("แจ้งเตือน", 'บันทึกรายการแล้ว', "success")
+                  .then((res) => {
+                    window.location.href = '/FormUpdate?' + response.data;
+                  })
               })
           }
         })
