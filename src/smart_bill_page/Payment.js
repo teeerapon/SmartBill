@@ -1850,7 +1850,7 @@ export default function AddressForm() {
                     <TableCell align="center">{res.sbwdtl_operationid_endmile}</TableCell>
                     <TableCell align="center">{res.sum_mile.toLocaleString("en-US")}</TableCell>
                     <TableCell align="center">{res.price_rateoil.toLocaleString("en-US")}</TableCell>
-                    <TableCell align="center">{res.oilBath.toLocaleString("en-US")}</TableCell>
+                    <TableCell align="center">{res.sb_paystatus === false ? 0 : res.oilBath.toLocaleString("en-US")}</TableCell>
                     <TableCell align="center">
                       <Button
                         variant="text"
@@ -1865,7 +1865,7 @@ export default function AddressForm() {
                           }
                         }}
                       >
-                        {(res.amouthTrueOil === '0' || res.amouthTrueOil === 0) ? '0' : res.amouthTrueOil.toLocaleString("en-US")}
+                        {(res.amouthTrueOil === '0' || res.amouthTrueOil === 0 || res.sb_paystatus === false) ? '0' : res.amouthTrueOil.toLocaleString("en-US")}
                       </Button>
                     </TableCell>
                     <TableCell align="center">
@@ -1882,7 +1882,7 @@ export default function AddressForm() {
                           }
                         }}
                       >
-                        {(res.amouthAllowance === '0' || res.amouthAllowance === 0) ? '0' : res.amouthAllowance.toLocaleString("en-US")}
+                        {(res.amouthAllowance === '0' || res.amouthAllowance === 0 || res.sb_paystatus === false) ? '0' : res.amouthAllowance.toLocaleString("en-US")}
                       </Button>
                     </TableCell>
                     <TableCell align="center">
@@ -1899,7 +1899,7 @@ export default function AddressForm() {
                           }
                         }}
                       >
-                        {(res.amouthHotel === '0' || res.amouthHotel === 0) ? '0' : res.amouthHotel.toLocaleString("en-US")}
+                        {(res.amouthHotel === '0' || res.amouthHotel === 0 || res.sb_paystatus === false) ? '0' : res.amouthHotel.toLocaleString("en-US")}
                       </Button>
                     </TableCell>
                     <TableCell>
@@ -1916,7 +1916,7 @@ export default function AddressForm() {
                           }
                         }}
                       >
-                        {(res.amouthRush === '0' || res.amouthRush === 0) ? '0' : res.amouthRush.toLocaleString("en-US")}
+                        {(res.amouthRush === '0' || res.amouthRush === 0 || res.sb_paystatus === false) ? '0' : res.amouthRush.toLocaleString("en-US")}
                       </Button>
                     </TableCell>
                     <TableCell>
@@ -1933,10 +1933,10 @@ export default function AddressForm() {
                           }
                         }}
                       >
-                        {(res.amouthother === '0' || res.amouthother === 0) ? '0' : res.amouthother.toLocaleString("en-US")}
+                        {(res.amouthother === '0' || res.amouthother === 0 || res.sb_paystatus === false) ? '0' : res.amouthother.toLocaleString("en-US")}
                       </Button>
                     </TableCell>
-                    <TableCell align="center">{res.amouthAll.toLocaleString("en-US")}</TableCell>
+                    <TableCell align="center">{res.sb_paystatus === false ? 0 : res.amouthAll.toLocaleString("en-US")}</TableCell>
                     <TableCell>
                       <Button
                         key={index}
@@ -1958,8 +1958,8 @@ export default function AddressForm() {
                   <TableCell align="center" colSpan={1}>
                     <b>
                       {smartBill_WithdrawDtl[0].sbwdtl_id ? smartBill_WithdrawDtl.map(function (elt) {
-                        return (/^\d+\.\d+$/.test(elt.oilBath) || /^\d+$/.test(elt.oilBath)) ?
-                          parseFloat(elt.oilBath) : parseFloat(elt.oilBath);
+                        return (/^\d+\.\d+$/.test(elt.sb_paystatus === false ? 0 : elt.oilBath) || /^\d+$/.test(elt.sb_paystatus === false ? 0 : elt.oilBath)) ?
+                          parseFloat(elt.sb_paystatus === false ? 0 : elt.oilBath) : parseFloat(elt.sb_paystatus === false ? 0 : elt.oilBath);
                       }).reduce(function (a, b) { // sum all resulting numbers
                         return a + b
                       }).toLocaleString("en-US") : ''}
@@ -1968,8 +1968,8 @@ export default function AddressForm() {
                   <TableCell align="center" colSpan={1}>
                     <b>
                       {smartBill_WithdrawDtl[0].sbwdtl_id ? smartBill_WithdrawDtl.map(function (elt) {
-                        return (/^\d+\.\d+$/.test(elt.amouthTrueOil) || /^\d+$/.test(elt.amouthTrueOil)) ?
-                          parseFloat(elt.amouthTrueOil) : parseFloat(elt.amouthTrueOil);
+                        return (/^\d+\.\d+$/.test(elt.sb_paystatus === false ? 0 : elt.amouthTrueOil) || /^\d+$/.test(elt.sb_paystatus === false ? 0 : elt.amouthTrueOil)) ?
+                          parseFloat(elt.sb_paystatus === false ? 0 : elt.amouthTrueOil) : parseFloat(elt.sb_paystatus === false ? 0 : elt.amouthTrueOil);
                       }).reduce(function (a, b) { // sum all resulting numbers
                         return a + b
                       }).toLocaleString("en-US") : 0}
@@ -1978,8 +1978,8 @@ export default function AddressForm() {
                   <TableCell align="center" colSpan={1}>
                     <b>
                       {smartBill_WithdrawDtl[0].sbwdtl_id ? smartBill_WithdrawDtl.map(function (elt) {
-                        return (/^\d+\.\d+$/.test(elt.amouthAllowance) || /^\d+$/.test(elt.amouthAllowance)) ?
-                          parseFloat(elt.amouthAllowance) : parseFloat(elt.amouthAllowance);
+                        return (/^\d+\.\d+$/.test(elt.sb_paystatus === false ? 0 : elt.amouthAllowance) || /^\d+$/.test(elt.sb_paystatus === false ? 0 : elt.amouthAllowance)) ?
+                          parseFloat(elt.sb_paystatus === false ? 0 : elt.amouthAllowance) : parseFloat(elt.sb_paystatus === false ? 0 : elt.amouthAllowance);
                       }).reduce(function (a, b) { // sum all resulting numbers
                         return a + b
                       }).toLocaleString("en-US") : 0}
@@ -1988,8 +1988,8 @@ export default function AddressForm() {
                   <TableCell align="center" colSpan={1}>
                     <b>
                       {smartBill_WithdrawDtl[0].sbwdtl_id ? smartBill_WithdrawDtl.map(function (elt) {
-                        return (/^\d+\.\d+$/.test(elt.amouthHotel) || /^\d+$/.test(elt.amouthHotel)) ?
-                          parseFloat(elt.amouthHotel) : parseFloat(elt.amouthHotel);
+                        return (/^\d+\.\d+$/.test(elt.sb_paystatus === false ? 0 : elt.amouthHotel) || /^\d+$/.test(elt.sb_paystatus === false ? 0 : elt.amouthHotel)) ?
+                          parseFloat(elt.sb_paystatus === false ? 0 : elt.amouthHotel) : parseFloat(elt.sb_paystatus === false ? 0 : elt.sb_paystatus === false ? 0 : elt.amouthHotel);
                       }).reduce(function (a, b) { // sum all resulting numbers
                         return a + b
                       }).toLocaleString("en-US") : 0}
@@ -1998,8 +1998,8 @@ export default function AddressForm() {
                   <TableCell align="center" colSpan={1}>
                     <b>
                       {smartBill_WithdrawDtl[0].sbwdtl_id ? smartBill_WithdrawDtl.map(function (elt) {
-                        return (/^\d+\.\d+$/.test(elt.amouthRush) || /^\d+$/.test(elt.amouthRush)) ?
-                          parseFloat(elt.amouthRush) : parseFloat(elt.amouthRush);
+                        return (/^\d+\.\d+$/.test(elt.sb_paystatus === false ? 0 : elt.amouthRush) || /^\d+$/.test(elt.sb_paystatus === false ? 0 : elt.amouthRush)) ?
+                          parseFloat(elt.sb_paystatus === false ? 0 : elt.amouthRush) : parseFloat(elt.sb_paystatus === false ? 0 : elt.amouthRush);
                       }).reduce(function (a, b) { // sum all resulting numbers
                         return a + b
                       }).toLocaleString("en-US") : 0}
@@ -2008,8 +2008,8 @@ export default function AddressForm() {
                   <TableCell align="center" colSpan={1}>
                     <b>
                       {smartBill_WithdrawDtl[0].sbwdtl_id ? smartBill_WithdrawDtl.map(function (elt) {
-                        return (/^\d+\.\d+$/.test(elt.amouthother) || /^\d+$/.test(elt.amouthother)) ?
-                          parseFloat(elt.amouthother) : parseFloat(elt.amouthother);
+                        return (/^\d+\.\d+$/.test(elt.sb_paystatus === false ? 0 : elt.amouthother) || /^\d+$/.test(elt.sb_paystatus === false ? 0 : elt.amouthother)) ?
+                          parseFloat(elt.sb_paystatus === false ? 0 : elt.amouthother) : parseFloat(elt.sb_paystatus === false ? 0 : elt.amouthother);
                       }).reduce(function (a, b) { // sum all resulting numbers
                         return a + b
                       }).toLocaleString("en-US") : 0}
@@ -2018,8 +2018,8 @@ export default function AddressForm() {
                   <TableCell align="center" colSpan={1}>
                     <b>
                       {smartBill_WithdrawDtl[0].sbwdtl_id ? smartBill_WithdrawDtl.map(function (elt) {
-                        return (/^\d+\.\d+$/.test(elt.amouthAll) || /^\d+$/.test(elt.amouthAll)) ?
-                          parseFloat(elt.amouthAll) : parseFloat(elt.amouthAll);
+                        return (/^\d+\.\d+$/.test(elt.sb_paystatus === false ? 0 : elt.amouthAll) || /^\d+$/.test(elt.sb_paystatus === false ? 0 : elt.amouthAll)) ?
+                          parseFloat(elt.sb_paystatus === false ? 0 : elt.amouthAll) : parseFloat(elt.sb_paystatus === false ? 0 : elt.amouthAll);
                       }).reduce(function (a, b) { // sum all resulting numbers
                         return a + b
                       }).toLocaleString("en-US") : 0}
