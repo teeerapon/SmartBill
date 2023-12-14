@@ -84,6 +84,7 @@ export default function AddressForm() {
   dayjs.extend(utc);
   dayjs.extend(timezone);
 
+  const dataUser = JSON.parse(localStorage.getItem('data'));
   const [typeCar, setTypeCar] = React.useState('');
   const [typeGroup, setTypeGroup] = React.useState(0);
   const [carInfoDataCompanny, setCarInfoDataCompanny] = React.useState([]);
@@ -162,12 +163,22 @@ export default function AddressForm() {
 
       await Axios.post(config.http + '/SmartBill_files', formData_1, config.headers)
         .then(() => {
-          swal("แจ้งเตือน", 'เปลี่ยนแปลงข้อมูลแล้ว' + ' แล้ว', "success", { buttons: false, timer: 2000 })
+          swal("แจ้งเตือน", 'เปลี่ยนแปลงข้อมูลแล้ว', "success", { buttons: false, timer: 2000 })
             .then(() => {
               window.location.href = '/FormUpdate?' + sb_code;
             });
         })
     }
+  }
+
+  const handleSubmitAccept = async () => {
+    await Axios.post(config.http + '/SmartBill_AcceptHeader', { sb_code: sb_code }, config.headers)
+      .then(() => {
+        swal("แจ้งเตือน", 'เปลี่ยนแปลงข้อมูลแล้ว', "success", { buttons: false, timer: 2000 })
+          .then(() => {
+            window.location.href = '/FormUpdate?' + sb_code;
+          });
+      })
   }
 
   const gettingUsers = async () => {
@@ -1149,13 +1160,15 @@ export default function AddressForm() {
               >
                 Update
               </Button>
-              {/* <Button
+              <Button
                 variant="contained"
-                onClick={handleSubmit}
+                color="success"
+                disabled={dataUser.DepCode === '101GAD' ? false : true}
+                onClick={handleSubmitAccept}
                 sx={{ mt: 3, ml: 1 }}
               >
-                Next
-              </Button> */}
+                Accept
+              </Button>
             </Box>
           </React.Fragment>
         </Paper>
