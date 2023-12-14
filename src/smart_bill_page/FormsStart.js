@@ -689,7 +689,7 @@ export default function FormsStart() {
                               label={`วันที่ออกเดินทาง (${index + 1})`}
                               timezone='UTC'
                               key={index}
-                              value={row.sb_operationid_startdate ? dayjs(row.sb_operationid_startdate) : dayjs()}
+                              value={row.sb_operationid_startdate ? dayjs(row.sb_operationid_startdate) : undefined}
                               sx={{ width: '100%' }}
                               onChange={(newValue) => {
                                 const list = [...smartBill_Operation]
