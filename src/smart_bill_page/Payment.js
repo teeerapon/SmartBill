@@ -1846,8 +1846,8 @@ export default function AddressForm() {
                     <TableCell align="center">{dayjs(res.sbwdtl_operationid_startdate).format('YYYY-MM-DD HH:mm')}</TableCell>
                     <TableCell align="center">{dayjs(res.sbwdtl_operationid_enddate).format('YYYY-MM-DD HH:mm')}</TableCell>
                     <TableCell >{res.remark}</TableCell>
-                    <TableCell align="center">{res.sbwdtl_operationid_startmile}</TableCell>
-                    <TableCell align="center">{res.sbwdtl_operationid_endmile}</TableCell>
+                    <TableCell align="center">{res.sbwdtl_operationid_startmile.toLocaleString("en-US")}</TableCell>
+                    <TableCell align="center">{res.sbwdtl_operationid_endmile.toLocaleString("en-US")}</TableCell>
                     <TableCell align="center">{res.sum_mile.toLocaleString("en-US")}</TableCell>
                     <TableCell align="center">{res.price_rateoil.toLocaleString("en-US")}</TableCell>
                     <TableCell align="center">{res.sb_paystatus === false ? 0 : res.oilBath.toLocaleString("en-US")}</TableCell>

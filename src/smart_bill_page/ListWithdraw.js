@@ -21,6 +21,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import CloseIcon from '@mui/icons-material/Close';
 import Grid from '@mui/material/Grid';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 
 const StyledGridOverlay = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -261,6 +263,74 @@ export default function AddressForm() {
         <NavBar />
         <Container component="main" maxWidth="lg" fixed sx={{ mb: 4 }}>
           <Box sx={{ py: 5 }}>
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignItems="flex-start"
+              spacing={1}
+            >
+              <Grid item xs>
+                <Autocomplete
+                  disablePortal
+                  id="combo-box-demo"
+                  size='small'
+                  sx={{ py: 1 }}
+                  onChange={(e, newInputValue, reason) => {
+                    if (reason === 'clear') {
+                      SelectHeaders();
+                    } else {
+                      setRowHeader(rowHeader.filter((res, index) => res.sbw_code === newInputValue))
+                    }
+                  }}
+                  options={
+                    rowHeader ? rowHeader.map((res) => res.sbw_code).filter(x => !!x)
+                      .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
+                  }
+                  renderInput={(params) => <TextField label="เลขที่ดำเนินการ" {...params} />}
+                />
+              </Grid>
+              <Grid item xs>
+                <Autocomplete
+                  disablePortal
+                  id="combo-box-demo"
+                  size='small'
+                  sx={{ py: 1 }}
+                  onChange={(e, newInputValue, reason) => {
+                    if (reason === 'clear') {
+                      SelectHeaders();
+                    } else {
+                      setRowHeader(rowHeader.filter((res, index) => res.ownercode === newInputValue))
+                    }
+                  }}
+                  options={
+                    rowHeader ? rowHeader.map((res) => res.ownercode).filter(x => !!x)
+                      .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
+                  }
+                  renderInput={(params) => <TextField label="ผู้ทำรายการ" {...params} />}
+                />
+              </Grid>
+              <Grid item xs>
+                <Autocomplete
+                  disablePortal
+                  id="combo-box-demo"
+                  size='small'
+                  sx={{ py: 1 }}
+                  onChange={(e, newInputValue, reason) => {
+                    if (reason === 'clear') {
+                      SelectHeaders();
+                    } else {
+                      setRowHeader(rowHeader.filter((res, index) => res.car_infocode === newInputValue))
+                    }
+                  }}
+                  options={
+                    rowHeader ? rowHeader.map((res) => res.car_infocode).filter(x => !!x)
+                      .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
+                  }
+                  renderInput={(params) => <TextField label="ทะเบียนรถ" {...params} />}
+                />
+              </Grid>
+            </Grid>
             <DataGrid
               rows={rowHeader}
               columns={columns}
