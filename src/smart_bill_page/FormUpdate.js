@@ -789,7 +789,7 @@ export default function AddressForm() {
                                 WebkitTextFillColor: "#000000",
                               },
                             }}
-                            value={index === 0 ? row.sb_operationid_startmile : smartBill_Operation[index - 1].sb_operationid_endmile}
+                            value={row.sb_operationid_startmile}
                             onChange={(e) => {
                               const list = [...smartBill_Operation]
                               if (index === 0) {
