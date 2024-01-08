@@ -227,6 +227,7 @@ export default function AddressForm() {
             >
               <Grid item xs>
                 <Autocomplete
+autoHighlight
                   disablePortal
                   id="combo-box-demo"
                   size='small'
@@ -247,6 +248,7 @@ export default function AddressForm() {
               </Grid>
               <Grid item xs>
                 <Autocomplete
+autoHighlight
                   disablePortal
                   id="combo-box-demo"
                   size='small'
@@ -267,6 +269,7 @@ export default function AddressForm() {
               </Grid>
               <Grid item xs>
                 <Autocomplete
+autoHighlight
                   disablePortal
                   id="combo-box-demo"
                   size='small'
@@ -287,6 +290,7 @@ export default function AddressForm() {
               </Grid>
               <Grid item xs>
                 <Autocomplete
+autoHighlight
                   disablePortal
                   id="combo-box-demo"
                   size='small'

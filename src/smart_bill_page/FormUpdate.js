@@ -303,6 +303,7 @@ export default function AddressForm() {
                 </Grid>
                 <Grid item xs={12} sm={2}>
                   <Autocomplete
+autoHighlight
                     id="free-solo-demo"
                     freeSolo
                     name="usercode"
@@ -434,6 +435,7 @@ export default function AddressForm() {
                 {typeCar === 1 || typeCar === "1" ? (
                   <Grid item xs={6} sm={6}>
                     <Autocomplete
+autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       disabled
@@ -492,6 +494,7 @@ export default function AddressForm() {
                 ) : typeCar === 0 || typeCar === "0" ? (
                   <Grid item xs={6} sm={6}>
                     <Autocomplete
+autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       disabled
@@ -973,6 +976,7 @@ export default function AddressForm() {
                         </Grid>
                         <Grid item xs={12} sm={4}>
                           <Autocomplete
+autoHighlight
                             disabled
                             sx={{
                               "& .MuiInputBase-input.Mui-disabled": {

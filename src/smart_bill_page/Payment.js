@@ -1202,6 +1202,7 @@ export default function AddressForm() {
                 <TableRow>
                   <TableCell align="left" colSpan={3}>
                     <Autocomplete
+autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       name="ownercode"
@@ -1280,6 +1281,7 @@ export default function AddressForm() {
                       (
                         <Grid item xs={6} sm={6}>
                           <Autocomplete
+autoHighlight
                             id="free-solo-demo"
                             freeSolo
                             options={(carInfoDataCompanny ? carInfoDataCompanny : carInfoData).map((option) => option.car_infocode)}
@@ -1639,6 +1641,7 @@ export default function AddressForm() {
                 <TableRow>
                   <TableCell align="center" colSpan={3}>
                     <Autocomplete
+autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       disabled
@@ -1731,6 +1734,7 @@ export default function AddressForm() {
                       (
                         <Grid item xs={6} sm={6}>
                           <Autocomplete
+autoHighlight
                             id="free-solo-demo"
                             freeSolo
                             disabled
@@ -2199,6 +2203,7 @@ export default function AddressForm() {
                 <React.Fragment>
                   <Grid item xs={12}>
                     <Autocomplete
+autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       options={sb_operationid}
@@ -2494,6 +2499,7 @@ export default function AddressForm() {
                 <React.Fragment>
                   <Grid item xs={7}>
                     <Autocomplete
+autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       name="costOther"
@@ -2740,6 +2746,7 @@ export default function AddressForm() {
                   </Grid>
                   <Grid item xs={4}>
                     <Autocomplete
+autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       key={index}
@@ -3060,6 +3067,7 @@ export default function AddressForm() {
                   </Grid>
                   <Grid item xs={3}>
                     <Autocomplete
+autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       name="sbc_hotelProvince"
@@ -3187,6 +3195,7 @@ export default function AddressForm() {
                     <React.Fragment>
                       <Grid item xs={5}>
                         <Autocomplete
+autoHighlight
                           id="free-solo-demo"
                           freeSolo
                           key={indexGroup}

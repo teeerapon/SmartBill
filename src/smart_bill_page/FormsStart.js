@@ -295,6 +295,7 @@ export default function FormsStart() {
                 </Grid>
                 <Grid item xs={12} sm={2}>
                   <Autocomplete
+                    autoHighlight
                     id="free-solo-demo"
                     freeSolo
                     name="usercode"
@@ -417,6 +418,7 @@ export default function FormsStart() {
                 {typeCar === 1 || typeCar === "1" ? (
                   <Grid item xs={6} sm={6}>
                     <Autocomplete
+                      autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       options={carInfoDataCompanny.map((option) => option.car_infocode)}
@@ -472,6 +474,7 @@ export default function FormsStart() {
                 ) : typeCar === 0 || typeCar === "0" ? (
                   <Grid item xs={6} sm={6}>
                     <Autocomplete
+                      autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       options={carInfoData.map((option) => option.car_infocode)}
@@ -855,6 +858,7 @@ export default function FormsStart() {
                         </Grid>
                         <Grid item xs={12} sm={4}>
                           <Autocomplete
+autoHighlight
                             id="free-solo-demo"
                             freeSolo
                             key={index}
