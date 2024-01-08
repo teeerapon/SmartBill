@@ -195,6 +195,10 @@ export default function AddressForm() {
     const sbw_SelectAllForms = { sbw_code: '' }
     await Axios.post(config.http + '/SmartBill_Withdraw_SelectAllForms', sbw_SelectAllForms, config.headers)
       .then((response) => {
+        response.data[0] = localStorage.getItem('sbw_code') ? response.data[0].filter((res) => res.sbw_code === localStorage.getItem('sbw_code')) : response.data[0]
+        response.data[0] = localStorage.getItem('ownercode') ? response.data[0].filter((res) => res.ownercode === localStorage.getItem('ownercode')) : response.data[0]
+        response.data[0] = localStorage.getItem('car_infocode') ? response.data[0].filter((res) => res.car_infocode === localStorage.getItem('car_infocode')) : response.data[0]
+
         const permission = JSON.parse(localStorage.getItem('permission_MenuID'));
         if (response.data[0] && permission.filter((res) => res === 19)[0]) {
           setRowHeader(response.data[0]);
@@ -272,15 +276,18 @@ export default function AddressForm() {
             >
               <Grid item xs>
                 <Autocomplete
-autoHighlight
+                  autoHighlight
                   disablePortal
                   id="combo-box-demo"
                   size='small'
+                  value={localStorage.getItem('sbw_code') ?? ''}
                   sx={{ py: 1 }}
                   onChange={(e, newInputValue, reason) => {
                     if (reason === 'clear') {
+                      localStorage.setItem('sbw_code', '');
                       SelectHeaders();
                     } else {
+                      localStorage.setItem('sbw_code', newInputValue);
                       setRowHeader(rowHeader.filter((res, index) => res.sbw_code === newInputValue))
                     }
                   }}
@@ -293,15 +300,18 @@ autoHighlight
               </Grid>
               <Grid item xs>
                 <Autocomplete
-autoHighlight
+                  autoHighlight
                   disablePortal
                   id="combo-box-demo"
                   size='small'
                   sx={{ py: 1 }}
+                  value={localStorage.getItem('ownercode') ?? ''}
                   onChange={(e, newInputValue, reason) => {
                     if (reason === 'clear') {
+                      localStorage.setItem('ownercode', '');
                       SelectHeaders();
                     } else {
+                      localStorage.setItem('ownercode', newInputValue);
                       setRowHeader(rowHeader.filter((res, index) => res.ownercode === newInputValue))
                     }
                   }}
@@ -314,15 +324,18 @@ autoHighlight
               </Grid>
               <Grid item xs>
                 <Autocomplete
-autoHighlight
+                  autoHighlight
                   disablePortal
                   id="combo-box-demo"
                   size='small'
                   sx={{ py: 1 }}
+                  value={localStorage.getItem('car_infocode') ?? ''}
                   onChange={(e, newInputValue, reason) => {
                     if (reason === 'clear') {
+                      localStorage.setItem('car_infocode', '');
                       SelectHeaders();
                     } else {
+                      localStorage.setItem('car_infocode', newInputValue);
                       setRowHeader(rowHeader.filter((res, index) => res.car_infocode === newInputValue))
                     }
                   }}
