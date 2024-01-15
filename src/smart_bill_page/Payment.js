@@ -1040,6 +1040,14 @@ export default function AddressForm() {
                   list[0]['car_remarks'] = res.data[0].car_remarks
                   list[0]['car_payname'] = res.data[0].car_payname
                   setCarInfo(list)
+
+                  if (res.data[0].car_infostatus_companny === true) {
+                    setCondition(0)
+                  } else if (res.data[0].car_infostatus_companny === false) {
+                    setCondition(1)
+                  } else {
+                    setCondition(2)
+                  }
                 }
               })
           } else {
@@ -1059,6 +1067,14 @@ export default function AddressForm() {
                   list[0]['car_remarks'] = res.data[0].car_remarks
                   list[0]['car_payname'] = res.data[0].car_payname
                   setCarInfo(list)
+
+                  if (res.data[0].car_infostatus_companny === true) {
+                    setCondition(0)
+                  } else if (res.data[0].car_infostatus_companny === false) {
+                    setCondition(1)
+                  } else {
+                    setCondition(2)
+                  }
                 }
               })
             setSmartBill_Withdraw(response.data[0]);
