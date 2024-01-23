@@ -894,9 +894,17 @@ export default function AddressForm() {
       res.enddate === '' ||
       res.sbc_hotelProvince === '' ||
       res.sbc_hotelname === '' ||
-      res.amount === ''
+      res.amount === '' ||
+      !res.smartBill_CostHotelGroup.filter((resGroup) => resGroup.usercode)[0]
     ))[0]) {
-      swal("แจ้งเตือน", 'กรุณากรอกข้อมูลค่าที่พักให้ครบถ้วน', "error")
+      const caseText = smartBill_CostHotel.filter((res) => (
+        res.startdate === '' ||
+        res.enddate === '' ||
+        res.sbc_hotelProvince === '' ||
+        res.sbc_hotelname === '' ||
+        res.amount === ''
+      ))[0]
+      swal("แจ้งเตือน", caseText ? 'กรุณากรอกข้อมูลค่าที่พักให้ครบถ้วน' : 'กรุณากรอกข้อมูลผู้เข้าพัก', "error")
     } else {
       await Axios.post(config.http + '/SmartBill_WithdrawDtl_SaveChangesCategory', smartBill_CostHotel, config.headers)
         .then(async (response) => {
@@ -1218,7 +1226,7 @@ export default function AddressForm() {
                 <TableRow>
                   <TableCell align="left" colSpan={3}>
                     <Autocomplete
-autoHighlight
+                      autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       name="ownercode"
@@ -1297,7 +1305,7 @@ autoHighlight
                       (
                         <Grid item xs={6} sm={6}>
                           <Autocomplete
-autoHighlight
+                            autoHighlight
                             id="free-solo-demo"
                             freeSolo
                             options={(carInfoDataCompanny ? carInfoDataCompanny : carInfoData).map((option) => option.car_infocode)}
@@ -1657,7 +1665,7 @@ autoHighlight
                 <TableRow>
                   <TableCell align="center" colSpan={3}>
                     <Autocomplete
-autoHighlight
+                      autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       disabled
@@ -1750,7 +1758,7 @@ autoHighlight
                       (
                         <Grid item xs={6} sm={6}>
                           <Autocomplete
-autoHighlight
+                            autoHighlight
                             id="free-solo-demo"
                             freeSolo
                             disabled
@@ -2219,7 +2227,7 @@ autoHighlight
                 <React.Fragment>
                   <Grid item xs={12}>
                     <Autocomplete
-autoHighlight
+                      autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       options={sb_operationid}
@@ -2515,7 +2523,7 @@ autoHighlight
                 <React.Fragment>
                   <Grid item xs={7}>
                     <Autocomplete
-autoHighlight
+                      autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       name="costOther"
@@ -2762,7 +2770,7 @@ autoHighlight
                   </Grid>
                   <Grid item xs={4}>
                     <Autocomplete
-autoHighlight
+                      autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       key={index}
@@ -3083,7 +3091,7 @@ autoHighlight
                   </Grid>
                   <Grid item xs={3}>
                     <Autocomplete
-autoHighlight
+                      autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       name="sbc_hotelProvince"
@@ -3211,7 +3219,7 @@ autoHighlight
                     <React.Fragment>
                       <Grid item xs={5}>
                         <Autocomplete
-autoHighlight
+                          autoHighlight
                           id="free-solo-demo"
                           freeSolo
                           key={indexGroup}
