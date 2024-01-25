@@ -49,6 +49,7 @@ import Select from '@mui/material/Select';
 import InputAdornment from '@mui/material/InputAdornment';
 import THBText from 'thai-baht-text' // for ES6
 
+
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
@@ -180,8 +181,8 @@ export default function AddressForm() {
   const [smartBill_WithdrawDtl, setSmartBill_WithdrawDtl] = React.useState([{
     sbwdtl_id: '',
     sbw_code: '',
-    sbwdtl_operationid_startdate: '',
-    sbwdtl_operationid_enddate: '',
+    sbwdtl_operationid_startdate: dayjs().tz('Asia/Bangkok'),
+    sbwdtl_operationid_enddate: dayjs().tz('Asia/Bangkok'),
     sbwdtl_operationid_location: '',
     sbwdtl_operationid_endmile: '',
     sbwdtl_operationid_startmile: '',
@@ -231,8 +232,8 @@ export default function AddressForm() {
     ownercode: smartBill_Withdraw[0].ownercode,
     car_infocode: carInfo[0].car_infocode,
     remark: '',
-    sbwdtl_operationid_startdate: '',
-    sbwdtl_operationid_enddate: '',
+    sbwdtl_operationid_startdate: dayjs().tz('Asia/Bangkok'),
+    sbwdtl_operationid_enddate: dayjs().tz('Asia/Bangkok'),
     sbwdtl_operationid_endmile: '',
     sbwdtl_operationid_startmile: ''
   }]);
@@ -272,8 +273,8 @@ export default function AddressForm() {
             ownercode: smartBill_Withdraw[0].ownercode,
             car_infocode: carInfo[0].car_infocode,
             remark: '',
-            sbwdtl_operationid_startdate: '',
-            sbwdtl_operationid_enddate: '',
+            sbwdtl_operationid_startdate: dayjs().tz('Asia/Bangkok'),
+            sbwdtl_operationid_enddate: dayjs().tz('Asia/Bangkok'),
             sbwdtl_operationid_endmile: '',
             sbwdtl_operationid_startmile: ''
           }])
@@ -291,8 +292,8 @@ export default function AddressForm() {
       ownercode: smartBill_Withdraw[0].ownercode,
       car_infocode: '',
       remark: '',
-      sbwdtl_operationid_startdate: '',
-      sbwdtl_operationid_enddate: '',
+      sbwdtl_operationid_startdate: dayjs().tz('Asia/Bangkok'),
+      sbwdtl_operationid_enddate: dayjs().tz('Asia/Bangkok'),
       sbwdtl_operationid_endmile: '',
       sbwdtl_operationid_startmile: ''
     }])
@@ -609,8 +610,8 @@ export default function AddressForm() {
     id: '',
     category_id: 4,
     count: '',
-    startdate: '',
-    enddate: '',
+    startdate: dayjs().tz('Asia/Bangkok'),
+    enddate: dayjs().tz('Asia/Bangkok'),
     usercode: '',
     foodStatus: 0,
     amount: '',
@@ -623,8 +624,8 @@ export default function AddressForm() {
       id: '',
       category_id: 4,
       count: '',
-      startdate: '',
-      enddate: '',
+      startdate: dayjs().tz('Asia/Bangkok'),
+      enddate: dayjs().tz('Asia/Bangkok'),
       usercode: '',
       foodStatus: 0,
       amount: '',
@@ -643,8 +644,8 @@ export default function AddressForm() {
               id: res.id,
               category_id: res.category_id,
               count: (new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600),
-              startdate: res.startdate,
-              enddate: res.enddate,
+              startdate: dayjs(res.startdate).add(7, "hour"),
+              enddate: dayjs(res.enddate).add(7, "hour"),
               usercode: res.usercode,
               foodStatus: res.foodStatus === true ? 1 : 0,
               amount: res.foodStatus === true ? res.amount * 2 : res.amount,
@@ -672,8 +673,8 @@ export default function AddressForm() {
               id: res.id,
               category_id: res.category_id,
               count: (new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600),
-              startdate: res.startdate,
-              enddate: res.enddate,
+              startdate: dayjs(res.startdate).add(7, "hour"),
+              enddate: dayjs(res.enddate).add(7, "hour"),
               usercode: res.usercode,
               foodStatus: res.foodStatus === true ? 1 : 0,
               amount: res.foodStatus === true ? res.amount * 2 : res.amount,
@@ -688,8 +689,8 @@ export default function AddressForm() {
             id: '',
             category_id: 4,
             count: '',
-            startdate: '',
-            enddate: '',
+            startdate: dayjs().tz('Asia/Bangkok'),
+            enddate: dayjs().tz('Asia/Bangkok'),
             usercode: '',
             foodStatus: 0,
             amount: '',
@@ -722,8 +723,8 @@ export default function AddressForm() {
                 id: res.id,
                 category_id: res.category_id,
                 count: (new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600),
-                startdate: res.startdate,
-                enddate: res.enddate,
+                startdate: dayjs(res.startdate).add(7, "hour"),
+                enddate: dayjs(res.enddate).add(7, "hour"),
                 usercode: res.usercode,
                 foodStatus: res.foodStatus === true ? 1 : 0,
                 amount: res.foodStatus === true ? res.amount * 2 : res.amount,
@@ -748,8 +749,8 @@ export default function AddressForm() {
     id: '',
     category_id: 3,
     count: '',
-    startdate: '',
-    enddate: '',
+    startdate: dayjs().tz('Asia/Bangkok'),
+    enddate: dayjs().tz('Asia/Bangkok'),
     sbc_hotelProvince: '',
     sbc_hotelname: '',
     amount: '',
@@ -809,8 +810,8 @@ export default function AddressForm() {
       id: '',
       category_id: 3,
       count: '',
-      startdate: '',
-      enddate: '',
+      startdate: dayjs().tz('Asia/Bangkok'),
+      enddate: dayjs().tz('Asia/Bangkok'),
       sbc_hotelProvince: '',
       sbc_hotelname: '',
       amount: '',
@@ -843,8 +844,8 @@ export default function AddressForm() {
               id: response.data[0][i].id,
               category_id: response.data[0][i].category_id,
               count: response.data[0][i].count,
-              startdate: response.data[0][i].startdate,
-              enddate: response.data[0][i].enddate,
+              startdate: dayjs(response.data[0][i].startdate).add(7,"hour"),
+              enddate: dayjs(response.data[0][i].enddate).add(7,"hour"),
               sbc_hotelProvince: response.data[0][i].sbc_hotelProvince,
               sbc_hotelname: response.data[0][i].sbc_hotelname,
               amount: response.data[0][i].amount,
@@ -856,8 +857,8 @@ export default function AddressForm() {
 
           for (let i = 0; i < response.data[0].length; i++) {
             dataDateDiffOnec.push({
-              dateInitialHotel: response.data[0][i].startdate,
-              dateFinalHotel: response.data[0][i].enddate,
+              dateInitialHotel: dayjs(response.data[0][i].startdate).add(7,"hour"),
+              dateFinalHotel: dayjs(response.data[0][i].enddate).add(7,"hour"),
             });
           }
           setSmartBill_CostHotel(dataOnec);
@@ -870,8 +871,8 @@ export default function AddressForm() {
             id: '',
             category_id: (e.target.value).split(',')[1],
             count: '',
-            startdate: '',
-            enddate: '',
+            startdate: dayjs().tz('Asia/Bangkok'),
+            enddate: dayjs().tz('Asia/Bangkok'),
             sbc_hotelProvince: '',
             sbc_hotelname: '',
             amount: '',
@@ -916,8 +917,8 @@ export default function AddressForm() {
                 id: res.id,
                 category_id: res.category_id,
                 count: res.count,
-                startdate: res.startdate,
-                enddate: res.enddate,
+                startdate: dayjs(res.startdate).add(7, "hour"),
+                enddate: dayjs(res.enddate).add(7, "hour"),
                 sbc_hotelProvince: res.sbc_hotelProvince,
                 sbc_hotelname: res.sbc_hotelname,
                 amount: res.amount,
@@ -966,8 +967,8 @@ export default function AddressForm() {
                 id: res.id,
                 category_id: res.category_id,
                 count: res.count,
-                startdate: res.startdate,
-                enddate: res.enddate,
+                startdate: dayjs(res.startdate).add(7, "hour"),
+                enddate: dayjs(res.enddate).add(7, "hour"),
                 sbc_hotelProvince: res.sbc_hotelProvince,
                 sbc_hotelname: res.sbc_hotelname,
                 amount: res.amount,
@@ -1260,7 +1261,7 @@ export default function AddressForm() {
                         format="YYYY-MM-DD HH:mm"
                         disabled
                         value={dayjs()}
-                        timezone='UTC'
+                        //timezone='UTC'
                         ampm={false}
                       />
                     </LocalizationProvider>
@@ -1871,110 +1872,124 @@ export default function AddressForm() {
               <TableBody>
                 {smartBill_WithdrawDtl.map((res, index) => (
                   <TableRow>
-                    <TableCell align="center">{dayjs(res.sbwdtl_operationid_startdate).format('YYYY-MM-DD HH:mm')}</TableCell>
-                    <TableCell align="center">{dayjs(res.sbwdtl_operationid_enddate).format('YYYY-MM-DD HH:mm')}</TableCell>
-                    <TableCell >{res.remark}</TableCell>
-                    <TableCell align="center">{res.sbwdtl_operationid_startmile.toLocaleString("en-US")}</TableCell>
-                    <TableCell align="center">{res.sbwdtl_operationid_endmile.toLocaleString("en-US")}</TableCell>
-                    <TableCell align="center">{res.sum_mile.toLocaleString("en-US")}</TableCell>
-                    <TableCell align="center">{res.price_rateoil.toLocaleString("en-US")}</TableCell>
-                    <TableCell align="center">{res.sb_paystatus === false ? 0 : res.oilBath.toLocaleString("en-US")}</TableCell>
-                    <TableCell align="center">
-                      <Button
-                        variant="text"
-                        value={`${res.sbwdtl_id},1`}
-                        onClick={(e) => handleClickOpenDialogPayTrue(e, index)}
-                        sx={{
-                          fontFamily: 'monospace',
-                          color: 'red',
-                          fontWeight: 700,
-                          "&:disabled": {
-                            color: 'red'
-                          }
-                        }}
-                      >
-                        {(res.amouthTrueOil === '0' || res.amouthTrueOil === 0 || res.sb_paystatus === false) ? '0' : res.amouthTrueOil.toLocaleString("en-US")}
-                      </Button>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Button
-                        variant="text"
-                        value={`${res.sbwdtl_id},4`}
-                        onClick={(e) => handleClickOpenDialogAllowance(e, index)}
-                        sx={{
-                          fontFamily: 'monospace',
-                          color: 'red',
-                          fontWeight: 700,
-                          "&:disabled": {
-                            color: 'red'
-                          }
-                        }}
-                      >
-                        {(res.amouthAllowance === '0' || res.amouthAllowance === 0 || res.sb_paystatus === false) ? '0' : res.amouthAllowance.toLocaleString("en-US")}
-                      </Button>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Button
-                        variant="text"
-                        value={`${res.sbwdtl_id},3`}
-                        onClick={(e) => handleClickOpenDialogCostHotel(e, index)}
-                        sx={{
-                          fontFamily: 'monospace',
-                          color: 'red',
-                          fontWeight: 700,
-                          "&:disabled": {
-                            color: 'red'
-                          }
-                        }}
-                      >
-                        {(res.amouthHotel === '0' || res.amouthHotel === 0 || res.sb_paystatus === false) ? '0' : res.amouthHotel.toLocaleString("en-US")}
-                      </Button>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="text"
-                        value={`${res.sbwdtl_id},2`}
-                        onClick={(e) => handleClickOpenDialogPayRush(e, index)}
-                        sx={{
-                          fontFamily: 'monospace',
-                          color: 'red',
-                          fontWeight: 700,
-                          "&:disabled": {
-                            color: 'red'
-                          }
-                        }}
-                      >
-                        {(res.amouthRush === '0' || res.amouthRush === 0 || res.sb_paystatus === false) ? '0' : res.amouthRush.toLocaleString("en-US")}
-                      </Button>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="text"
-                        value={`${res.sbwdtl_id},null`}
-                        onClick={(e) => handleClickOpenDialogPayOther(e, index)}
-                        sx={{
-                          fontFamily: 'monospace',
-                          color: 'red',
-                          fontWeight: 700,
-                          "&:disabled": {
-                            color: 'red'
-                          }
-                        }}
-                      >
-                        {(res.amouthother === '0' || res.amouthother === 0 || res.sb_paystatus === false) ? '0' : res.amouthother.toLocaleString("en-US")}
-                      </Button>
-                    </TableCell>
-                    <TableCell align="center">{res.sb_paystatus === false ? 0 : res.amouthAll.toLocaleString("en-US")}</TableCell>
-                    <TableCell>
-                      <Button
-                        key={index}
-                        variant="text"
-                        color="error"
-                        onClick={(e) => removeSmartBill_wddtl(e, index)}
-                      >
-                        <DeleteIcon />
-                      </Button>
-                    </TableCell>
+                    {res.sbwdtl_id === '' ?
+                      <>
+                        <TableCell
+                          align="center"
+                          colSpan={15}
+                          sx={{ fontFamily: 'monospace', color: 'red', fontWeight: 700, "&:disabled": { color: 'red' } }}
+                        >
+                          * กรุณาเพิ่มรายการที่ต้องการเบิก
+                        </TableCell>
+                      </>
+                      :
+                      <>
+                        <TableCell align="center">{dayjs(res.sbwdtl_operationid_startdate).add(7, 'hour').format('YYYY-MM-DD HH:mm')}</TableCell>
+                        <TableCell align="center">{dayjs(res.sbwdtl_operationid_enddate).add(7, 'hour').format('YYYY-MM-DD HH:mm')}</TableCell>
+                        <TableCell >{res.remark}</TableCell>
+                        <TableCell align="center">{res.sbwdtl_operationid_startmile.toLocaleString("en-US")}</TableCell>
+                        <TableCell align="center">{res.sbwdtl_operationid_endmile.toLocaleString("en-US")}</TableCell>
+                        <TableCell align="center">{res.sum_mile.toLocaleString("en-US")}</TableCell>
+                        <TableCell align="center">{res.price_rateoil.toLocaleString("en-US")}</TableCell>
+                        <TableCell align="center">{res.sb_paystatus === false ? 0 : res.oilBath.toLocaleString("en-US")}</TableCell>
+                        <TableCell align="center">
+                          <Button
+                            variant="text"
+                            value={`${res.sbwdtl_id},1`}
+                            onClick={(e) => handleClickOpenDialogPayTrue(e, index)}
+                            sx={{
+                              fontFamily: 'monospace',
+                              color: 'red',
+                              fontWeight: 700,
+                              "&:disabled": {
+                                color: 'red'
+                              }
+                            }}
+                          >
+                            {(res.amouthTrueOil === '0' || res.amouthTrueOil === 0 || res.sb_paystatus === false) ? '0' : res.amouthTrueOil.toLocaleString("en-US")}
+                          </Button>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Button
+                            variant="text"
+                            value={`${res.sbwdtl_id},4`}
+                            onClick={(e) => handleClickOpenDialogAllowance(e, index)}
+                            sx={{
+                              fontFamily: 'monospace',
+                              color: 'red',
+                              fontWeight: 700,
+                              "&:disabled": {
+                                color: 'red'
+                              }
+                            }}
+                          >
+                            {(res.amouthAllowance === '0' || res.amouthAllowance === 0 || res.sb_paystatus === false) ? '0' : res.amouthAllowance.toLocaleString("en-US")}
+                          </Button>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Button
+                            variant="text"
+                            value={`${res.sbwdtl_id},3`}
+                            onClick={(e) => handleClickOpenDialogCostHotel(e, index)}
+                            sx={{
+                              fontFamily: 'monospace',
+                              color: 'red',
+                              fontWeight: 700,
+                              "&:disabled": {
+                                color: 'red'
+                              }
+                            }}
+                          >
+                            {(res.amouthHotel === '0' || res.amouthHotel === 0 || res.sb_paystatus === false) ? '0' : res.amouthHotel.toLocaleString("en-US")}
+                          </Button>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="text"
+                            value={`${res.sbwdtl_id},2`}
+                            onClick={(e) => handleClickOpenDialogPayRush(e, index)}
+                            sx={{
+                              fontFamily: 'monospace',
+                              color: 'red',
+                              fontWeight: 700,
+                              "&:disabled": {
+                                color: 'red'
+                              }
+                            }}
+                          >
+                            {(res.amouthRush === '0' || res.amouthRush === 0 || res.sb_paystatus === false) ? '0' : res.amouthRush.toLocaleString("en-US")}
+                          </Button>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="text"
+                            value={`${res.sbwdtl_id},null`}
+                            onClick={(e) => handleClickOpenDialogPayOther(e, index)}
+                            sx={{
+                              fontFamily: 'monospace',
+                              color: 'red',
+                              fontWeight: 700,
+                              "&:disabled": {
+                                color: 'red'
+                              }
+                            }}
+                          >
+                            {(res.amouthother === '0' || res.amouthother === 0 || res.sb_paystatus === false) ? '0' : res.amouthother.toLocaleString("en-US")}
+                          </Button>
+                        </TableCell>
+                        <TableCell align="center">{res.sb_paystatus === false ? 0 : res.amouthAll.toLocaleString("en-US")}</TableCell>
+                        <TableCell>
+                          <Button
+                            key={index}
+                            variant="text"
+                            color="error"
+                            onClick={(e) => removeSmartBill_wddtl(e, index)}
+                          >
+                            <DeleteIcon />
+                          </Button>
+                        </TableCell>
+                      </>
+                    }
                   </TableRow>
                 ))}
               </TableBody>
@@ -2248,8 +2263,8 @@ export default function AddressForm() {
                         } else {
                           const list = [...smartBill_WithdrawDtlSave]
                           list[0]['sb_operationid'] = newInputValue.sb_operationid
-                          list[0]['sbwdtl_operationid_startdate'] = dayjs(newInputValue.sb_operationid_startdate)
-                          list[0]['sbwdtl_operationid_enddate'] = dayjs(newInputValue.sb_operationid_enddate)
+                          list[0]['sbwdtl_operationid_startdate'] = dayjs(newInputValue.sb_operationid_startdate).add(7, "hour")
+                          list[0]['sbwdtl_operationid_enddate'] = dayjs(newInputValue.sb_operationid_enddate).add(7, "hour")
                           list[0]['sbwdtl_operationid_endmile'] = newInputValue.sb_operationid_endmile
                           list[0]['sbwdtl_operationid_startmile'] = newInputValue.sb_operationid_startmile
                           list[0]['remark'] = newInputValue.sb_operationid_location
@@ -2267,18 +2282,17 @@ export default function AddressForm() {
                     format="YYYY-MM-DD HH:mm"
                     name="sbwdtl_operationid_startdate"
                     label={`วันที่เริ่มต้น`}
-                    timezone='UTC'
+                    //timezone='UTC'
                     sx={{
                       width: '100%',
                       "& .MuiInputBase-input.Mui-disabled": {
                         WebkitTextFillColor: "#000000",
                       },
                     }}
-                    disabled={case_WithdrawDtlSave === 0 ? true : false}
-                    value={smartBill_WithdrawDtlSave[0].sbwdtl_operationid_startdate ? dayjs(smartBill_WithdrawDtlSave[0].sbwdtl_operationid_startdate) : undefined}
+                    value={smartBill_WithdrawDtlSave[0].sb_operationid ? smartBill_WithdrawDtlSave[0].sbwdtl_operationid_startdate : null}
                     onChange={(newValue) => {
                       const list = [...smartBill_WithdrawDtlSave]
-                      list[0]['sbwdtl_operationid_startdate'] = dayjs(newValue).format('YYYY-MM-DD HH:mm:ss')
+                      list[0]['sbwdtl_operationid_startdate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
                       setSmartBill_WithdrawDtlSave(list)
                     }}
                     ampm={false}
@@ -2291,18 +2305,17 @@ export default function AddressForm() {
                     format="YYYY-MM-DD HH:mm"
                     name="sbwdtl_operationid_enddate"
                     label={`วันที่สิ้นสุด`}
-                    timezone='UTC'
+                    //timezone='UTC'
                     sx={{
                       width: '100%',
                       "& .MuiInputBase-input.Mui-disabled": {
                         WebkitTextFillColor: "#000000",
                       },
                     }}
-                    disabled={case_WithdrawDtlSave === 0 ? true : false}
-                    value={smartBill_WithdrawDtlSave[0].sbwdtl_operationid_enddate ? dayjs(smartBill_WithdrawDtlSave[0].sbwdtl_operationid_enddate) : undefined}
+                    value={smartBill_WithdrawDtlSave[0].sb_operationid ? smartBill_WithdrawDtlSave[0].sbwdtl_operationid_enddate : null}
                     onChange={(newValue) => {
                       const list = [...smartBill_WithdrawDtlSave]
-                      list[0]['sbwdtl_operationid_enddate'] = dayjs(newValue).format('YYYY-MM-DD HH:mm:ss')
+                      list[0]['sbwdtl_operationid_enddate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
                       setSmartBill_WithdrawDtlSave(list)
                     }}
                     ampm={false}
@@ -2815,14 +2828,14 @@ export default function AddressForm() {
                         format="YYYY-MM-DD HH:mm"
                         name="startdate"
                         label={`วันที่เริ่มต้น`}
-                        timezone='UTC'
+                        //timezone='UTC'
                         key={index}
                         sx={{ width: '100%' }}
                         disabled={payAllowanceCase === 0 || payAllowanceCase === "0" ? true : false}
-                        value={res.startdate ? dayjs(res.startdate) : undefined}
+                        value={res.startdate}
                         onChange={(newValue) => {
                           const list = [...smartBill_CostAllowance]
-                          list[index]['startdate'] = dayjs(newValue).format('YYYY-MM-DD HH:mm:ss')
+                          list[index]['startdate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
                           list[index]['count'] = Math.trunc((new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600))
                           setSmartBill_CostAllowance(list)
                         }}
@@ -2836,14 +2849,14 @@ export default function AddressForm() {
                         format="YYYY-MM-DD HH:mm"
                         name="enddate"
                         label={`วันที่สิ้นสุด`}
-                        timezone='UTC'
+                        //timezone='UTC'
                         key={index}
                         sx={{ width: '100%' }}
                         disabled={payAllowanceCase === 0 || payAllowanceCase === "0" ? true : false}
-                        value={res.enddate ? dayjs(res.enddate) : undefined}
+                        value={res.enddate}
                         onChange={(newValue) => {
                           const list = [...smartBill_CostAllowance]
-                          list[index]['enddate'] = dayjs(newValue).format('YYYY-MM-DD HH:mm:ss')
+                          list[index]['enddate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
                           list[index]['count'] = Math.trunc((new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600))
                           setSmartBill_CostAllowance(list)
                         }}
@@ -3054,7 +3067,7 @@ export default function AddressForm() {
                         name="startdate"
                         label={`(ห้องพัก ${index + 1}) วันที่เข้าพัก`}
                         key={index}
-                        timezone='UTC'
+                        //timezone='UTC'
                         sx={{ width: '100%' }}
                         disabled={payHotelCase === 0 || payHotelCase === "0" ? true : false}
                         value={res.startdate ? dayjs(res.startdate) : undefined}
@@ -3074,7 +3087,7 @@ export default function AddressForm() {
                         format="YYYY-MM-DD"
                         name="enddate"
                         label={`(ห้องพัก ${index + 1}) วันที่ออก`}
-                        timezone='UTC'
+                        //timezone='UTC'
                         key={index}
                         sx={{ width: '100%' }}
                         disabled={payHotelCase === 0 || payHotelCase === "0" ? true : false}
