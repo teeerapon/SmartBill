@@ -233,14 +233,14 @@ export default function AddressForm() {
 
   const handleSubmitAccept = async () => {
     const body = { sb_code: sb_code, usercode: dataUser.UserCode }
-    console.log(body);
     await Axios.post(config.http + '/SmartBill_AcceptHeader', body, config.headers)
       .then((res) => {
-        console.log(res);
-        swal("แจ้งเตือน", 'เปลี่ยนแปลงข้อมูลแล้ว', "success", { buttons: false, timer: 2000 })
-          .then((res) => {
-            // window.location.href = '/FormUpdate?' + sb_code;
-          });
+        if (res.status === 200) {
+          swal("แจ้งเตือน", 'เปลี่ยนแปลงข้อมูลแล้ว', "success", { buttons: false, timer: 2000 })
+            .then((res) => {
+              window.location.href = '/FormUpdate?' + sb_code;
+            });
+        };
       })
   }
 
