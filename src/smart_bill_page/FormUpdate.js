@@ -1102,7 +1102,7 @@ export default function AddressForm() {
               <Button
                 variant="contained"
                 color="success"
-                disabled={dataUser.DepCode === '101GAD' ? false : true}
+                disabled={dataUser.DepCode === '101GAD' || dataUser.DepCode === '101ITO'  ? false : true}
                 onClick={handleSubmitAccept}
                 sx={{ mt: 3, ml: 1 }}
               >
