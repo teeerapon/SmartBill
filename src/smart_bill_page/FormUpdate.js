@@ -102,6 +102,7 @@ export default function AddressForm() {
     clean_status: 0,
     group_status: 0,
     reamarks: '',
+    sb_status_name: '',
   }])
 
   const [carInfo, setCarInfo] = React.useState([{
@@ -231,7 +232,7 @@ export default function AddressForm() {
   }
 
   const handleSubmitAccept = async () => {
-    await Axios.post(config.http + '/SmartBill_AcceptHeader', { sb_code: sb_code }, config.headers)
+    await Axios.post(config.http + '/SmartBill_AcceptHeader', { sb_code: sb_code, usercode: dataUser.UserCode }, config.headers)
       .then(() => {
         swal("แจ้งเตือน", 'เปลี่ยนแปลงข้อมูลแล้ว', "success", { buttons: false, timer: 2000 })
           .then(() => {
@@ -257,6 +258,7 @@ export default function AddressForm() {
           clean_status: res.data[0][0].clean_status === true ? 1 : 0,
           group_status: res.data[0][0].group_status === true ? 1 : 0,
           reamarks: res.data[0][0].reamarks,
+          sb_status_name: res.data[0][0].sb_status_name,
         }])
 
         setTypeGroup(res.data[0][0].group_status === true ? 1 : 0)
@@ -344,7 +346,16 @@ export default function AddressForm() {
       <NavBar />
       <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
         <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
-          <Typography sx={{ py: 5 }} component="h1" variant="h4" align="center" className="Header-Forms">
+          <Typography
+            sx={{ py: 1 }}
+            component="h1"
+            variant="caption"
+            align="right"
+            color={smartBill_Header[0].sb_status_name === 'รอ Admin ตรวจสอบ' ? 'red' : 'green'}
+          >
+            ({smartBill_Header[0].sb_status_name})
+          </Typography>
+          <Typography sx={{ py: 4 }} component="h1" variant="h4" align="center" className="Header-Forms">
             Smart-Car Form ({sb_code})
           </Typography>
           <React.Fragment>
@@ -1102,7 +1113,7 @@ export default function AddressForm() {
               <Button
                 variant="contained"
                 color="success"
-                disabled={dataUser.DepCode === '101GAD' || dataUser.DepCode === '101ITO'  ? false : true}
+                disabled={dataUser.DepCode === '101GAD' || dataUser.DepCode === '101ITO' ? false : true}
                 onClick={handleSubmitAccept}
                 sx={{ mt: 3, ml: 1 }}
               >
