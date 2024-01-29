@@ -103,6 +103,7 @@ export default function AddressForm() {
     group_status: 0,
     reamarks: '',
     sb_status_name: '',
+    usercheck_code: '',
   }])
 
   const [carInfo, setCarInfo] = React.useState([{
@@ -262,6 +263,7 @@ export default function AddressForm() {
           group_status: res.data[0][0].group_status === true ? 1 : 0,
           reamarks: res.data[0][0].reamarks,
           sb_status_name: res.data[0][0].sb_status_name,
+          usercheck_code: res.data[0][0].usercheck_code
         }])
 
         setTypeGroup(res.data[0][0].group_status === true ? 1 : 0)
@@ -356,7 +358,7 @@ export default function AddressForm() {
             align="right"
             color={smartBill_Header[0].sb_status_name === 'รอ Admin ตรวจสอบ' ? 'red' : 'green'}
           >
-            ({smartBill_Header[0].sb_status_name})
+            ({smartBill_Header[0].sb_status_name} {smartBill_Header[0].usercheck_code ? ', ผู้ตรวจ:' + smartBill_Header[0].usercheck_code : ''})
           </Typography>
           <Typography sx={{ py: 4 }} component="h1" variant="h4" align="center" className="Header-Forms">
             Smart-Car Form ({sb_code})
