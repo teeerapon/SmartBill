@@ -555,8 +555,6 @@ export default function AddressForm() {
   const handleClickOpenDialogPayTrue = async (e) => {
     if (smartBill_Withdraw[0].car_paytype === false) {
       swal("แจ้งเตือน", 'รถคันนี้เบิกตามไมลล์เท่านั้น', "error")
-    } else if (carInfo[0].car_infocode === '') {
-      swal("แจ้งเตือน", 'ไม่สามารถเบิกได้ เนื่องจากเป็นการเดินทางโดยไม่มีพาหนะ', "error")
     } else {
       const body = {
         sbwdtl_id: (e.target.value).split(',')[0],
@@ -1049,7 +1047,6 @@ export default function AddressForm() {
                   list[0]['car_remarks'] = res.data[0].car_remarks
                   list[0]['car_payname'] = res.data[0].car_payname
                   setCarInfo(list)
-
                   if (res.data[0].car_infostatus_companny === true) {
                     setCondition(0)
                   } else if (res.data[0].car_infostatus_companny === false) {
@@ -1302,7 +1299,7 @@ export default function AddressForm() {
                     )}
                   </TableCell>
                   <TableCell align="left" colSpan={3}>
-                    {(typePay === 0 || typePay === '0') || (condition === 2 || condition === '2') ? null :
+                    {(typePay === 0 || typePay === '0') || ((condition === 2 || condition === '2') && (typePay === 1 || typePay === '1')) ? null :
                       (
                         <Grid item xs={6} sm={6}>
                           <Autocomplete
@@ -1755,7 +1752,7 @@ export default function AddressForm() {
                     )}
                   </TableCell>
                   <TableCell align="left" colSpan={4}>
-                    {(typePay === 0 || typePay === '0') || (condition === 2 || condition === '2') ? null :
+                    {(typePay === 0 || typePay === '0') || ((condition === 2 || condition === '2') && (typePay === 1 || typePay === '1')) ? null :
                       (
                         <Grid item xs={6} sm={6}>
                           <Autocomplete
