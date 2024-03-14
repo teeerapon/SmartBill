@@ -553,7 +553,7 @@ export default function AddressForm() {
   });
 
   const handleClickOpenDialogPayTrue = async (e) => {
-    if (smartBill_Withdraw[0].car_paytype === false) {
+    if (smartBill_Withdraw[0].car_paytype === false && typePay == 0) {
       swal("แจ้งเตือน", 'รถคันนี้เบิกตามไมลล์เท่านั้น', "error")
     } else {
       const body = {
@@ -842,8 +842,8 @@ export default function AddressForm() {
               id: response.data[0][i].id,
               category_id: response.data[0][i].category_id,
               count: response.data[0][i].count,
-              startdate: dayjs(response.data[0][i].startdate).add(7,"hour"),
-              enddate: dayjs(response.data[0][i].enddate).add(7,"hour"),
+              startdate: dayjs(response.data[0][i].startdate).add(7, "hour"),
+              enddate: dayjs(response.data[0][i].enddate).add(7, "hour"),
               sbc_hotelProvince: response.data[0][i].sbc_hotelProvince,
               sbc_hotelname: response.data[0][i].sbc_hotelname,
               amount: response.data[0][i].amount,
@@ -855,8 +855,8 @@ export default function AddressForm() {
 
           for (let i = 0; i < response.data[0].length; i++) {
             dataDateDiffOnec.push({
-              dateInitialHotel: dayjs(response.data[0][i].startdate).add(7,"hour"),
-              dateFinalHotel: dayjs(response.data[0][i].enddate).add(7,"hour"),
+              dateInitialHotel: dayjs(response.data[0][i].startdate).add(7, "hour"),
+              dateFinalHotel: dayjs(response.data[0][i].enddate).add(7, "hour"),
             });
           }
           setSmartBill_CostHotel(dataOnec);
@@ -1029,33 +1029,38 @@ export default function AddressForm() {
       await Axios.post(config.http + '/SmartBill_Withdraw_SelectAllForms', sbw_SelectAllForms, config.headers)
         .then(async (response) => {
           if (response.data[0].length > 0 && response.data[1].length > 0) {
+            if (response.data[0].car_infocode) {
+              const body = { car_infocode: response.data[0][0].car_infocode }
+              await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
+                .then((res) => {
+                  if (response.data[0][0].car_infocode) {
+                    setTypePay(1)
+                    const list = [...carInfo]
+                    list[0]['car_infocode'] = res.data[0].car_infocode
+                    list[0]['car_infostatus_companny'] = res.data[0].car_infostatus_companny
+                    list[0]['car_categaryid'] = res.data[0].car_categaryid
+                    list[0]['car_typeid'] = res.data[0].car_typeid
+                    list[0]['car_band'] = res.data[0].car_band
+                    list[0]['car_tier'] = res.data[0].car_tier
+                    list[0]['car_color'] = res.data[0].car_color
+                    list[0]['car_remarks'] = res.data[0].car_remarks
+                    list[0]['car_payname'] = res.data[0].car_payname
+                    setCarInfo(list)
+                    if (res.data[0].car_infostatus_companny === true) {
+                      setCondition(0)
+                    } else if (res.data[0].car_infostatus_companny === false) {
+                      setCondition(1)
+                    } else {
+                      setCondition(2)
+                    }
+                  }
+                })
+            } else {
+              setTypePay(1)
+              setCondition(2)
+            }
             setSmartBill_Withdraw(response.data[0]);
             setSmartBill_WithdrawDtl(response.data[1])
-            const body = { car_infocode: response.data[0][0].car_infocode }
-            await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
-              .then((res) => {
-                if (response.data[0][0].car_infocode) {
-                  setTypePay(1)
-                  const list = [...carInfo]
-                  list[0]['car_infocode'] = res.data[0].car_infocode
-                  list[0]['car_infostatus_companny'] = res.data[0].car_infostatus_companny
-                  list[0]['car_categaryid'] = res.data[0].car_categaryid
-                  list[0]['car_typeid'] = res.data[0].car_typeid
-                  list[0]['car_band'] = res.data[0].car_band
-                  list[0]['car_tier'] = res.data[0].car_tier
-                  list[0]['car_color'] = res.data[0].car_color
-                  list[0]['car_remarks'] = res.data[0].car_remarks
-                  list[0]['car_payname'] = res.data[0].car_payname
-                  setCarInfo(list)
-                  if (res.data[0].car_infostatus_companny === true) {
-                    setCondition(0)
-                  } else if (res.data[0].car_infostatus_companny === false) {
-                    setCondition(1)
-                  } else {
-                    setCondition(2)
-                  }
-                }
-              })
           } else {
             const body = { car_infocode: response.data[0][0].car_infocode }
             await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
@@ -1372,7 +1377,7 @@ export default function AddressForm() {
                     รุ่น: {carInfo[0]['car_tier']}
                   </TableCell>
                   <TableCell align="center" colSpan={2}>
-                    {carInfo[0]['car_payname']}
+                    {!carInfo[0]['car_payname'] && condition == 2 ? 'เบิกตามจริง' : carInfo[0]['car_payname']}
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -1746,7 +1751,7 @@ export default function AddressForm() {
                         >
                           <MenuItem value={0}>พาหนะของบริษัท</MenuItem>
                           <MenuItem value={1}>พาหนะส่วนตัว</MenuItem>
-                          {/* <MenuItem value={2}>พาหนะสาธารณะ</MenuItem> */}
+                          <MenuItem value={2}>พาหนะสาธารณะ</MenuItem>
                         </Select>
                       </FormControl>
                     )}
@@ -1832,7 +1837,7 @@ export default function AddressForm() {
                     รุ่น: {carInfo[0]['car_tier']}
                   </TableCell>
                   <TableCell align="center" colSpan={2}>
-                    {carInfo[0]['car_payname']}
+                    {!carInfo[0]['car_payname'] && condition == 2 ? 'เบิกตามจริง' : carInfo[0]['car_payname']}
                   </TableCell>
                 </TableRow>
                 <TableRow>
