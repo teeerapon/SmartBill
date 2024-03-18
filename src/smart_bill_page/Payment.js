@@ -1029,11 +1029,11 @@ export default function AddressForm() {
       await Axios.post(config.http + '/SmartBill_Withdraw_SelectAllForms', sbw_SelectAllForms, config.headers)
         .then(async (response) => {
           if (response.data[0].length > 0 && response.data[1].length > 0) {
-            if (response.data[0].car_infocode) {
+            if (response.data[0][0].car_infocode) {
               const body = { car_infocode: response.data[0][0].car_infocode }
               await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
                 .then((res) => {
-                  if (response.data[0][0].car_infocode) {
+                  if (res.data[0].car_infocode) {
                     setTypePay(1)
                     const list = [...carInfo]
                     list[0]['car_infocode'] = res.data[0].car_infocode
@@ -1065,7 +1065,7 @@ export default function AddressForm() {
             const body = { car_infocode: response.data[0][0].car_infocode }
             await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
               .then((res) => {
-                if (response.data[0][0].car_infocode) {
+                if (res.data[0].car_infocode) {
                   setTypePay(1)
                   const list = [...carInfo]
                   list[0]['car_infocode'] = res.data[0].car_infocode
