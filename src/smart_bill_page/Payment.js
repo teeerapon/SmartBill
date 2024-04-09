@@ -1029,8 +1029,8 @@ export default function AddressForm() {
       await Axios.post(config.http + '/SmartBill_Withdraw_SelectAllForms', sbw_SelectAllForms, config.headers)
         .then(async (response) => {
           if (response.data[0].length > 0 && response.data[1].length > 0) {
-            if (response.data[0][0].car_infocode) {
-              const body = { car_infocode: response.data[0][0].car_infocode }
+            if (response.data[0].car_infocode) {
+              const body = { car_infocode: response.data[0].car_infocode }
               await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
                 .then((res) => {
                   if (res.data[0].car_infocode) {
@@ -1056,16 +1056,16 @@ export default function AddressForm() {
                   }
                 })
             } else {
-              setTypePay(1)
+              setTypePay(0)
               setCondition(2)
             }
             setSmartBill_Withdraw(response.data[0]);
             setSmartBill_WithdrawDtl(response.data[1])
           } else {
-            const body = { car_infocode: response.data[0][0].car_infocode }
+            const body = { car_infocode: response.data[0].car_infocode }
             await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
               .then((res) => {
-                if (res.data[0].car_infocode) {
+                if (response.data[0].car_infocode) {
                   setTypePay(1)
                   const list = [...carInfo]
                   list[0]['car_infocode'] = res.data[0].car_infocode
@@ -1078,7 +1078,6 @@ export default function AddressForm() {
                   list[0]['car_remarks'] = res.data[0].car_remarks
                   list[0]['car_payname'] = res.data[0].car_payname
                   setCarInfo(list)
-
                   if (res.data[0].car_infostatus_companny === true) {
                     setCondition(0)
                   } else if (res.data[0].car_infostatus_companny === false) {
@@ -1086,6 +1085,9 @@ export default function AddressForm() {
                   } else {
                     setCondition(2)
                   }
+                } else {
+                  setTypePay(0)
+                  setCondition(2)
                 }
               })
             setSmartBill_Withdraw(response.data[0]);
@@ -1377,7 +1379,7 @@ export default function AddressForm() {
                     รุ่น: {carInfo[0]['car_tier']}
                   </TableCell>
                   <TableCell align="center" colSpan={2}>
-                    {!carInfo[0]['car_payname'] && condition == 2 ? 'เบิกตามจริง' : carInfo[0]['car_payname']}
+                    {typePay == 0 ? "" : (!carInfo[0]['car_payname'] && condition == 2 ? 'เบิกตามจริง' : carInfo[0]['car_payname'])}
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -1837,7 +1839,7 @@ export default function AddressForm() {
                     รุ่น: {carInfo[0]['car_tier']}
                   </TableCell>
                   <TableCell align="center" colSpan={2}>
-                    {!carInfo[0]['car_payname'] && condition == 2 ? 'เบิกตามจริง' : carInfo[0]['car_payname']}
+                    {typePay == 0 ? "" : (!carInfo[0]['car_payname'] && condition == 2 ? 'เบิกตามจริง' : carInfo[0]['car_payname'])}
                   </TableCell>
                 </TableRow>
                 <TableRow>
