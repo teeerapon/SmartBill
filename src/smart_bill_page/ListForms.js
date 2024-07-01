@@ -173,10 +173,10 @@ export default function AddressForm() {
   const columns = [
     { field: 'sb_code', headerName: 'เลขที่ดำเนินการ', flex: 1, minWidth: 100 },
     { field: 'usercode', headerName: 'ผู้ทำรายการ', flex: 1, minWidth: 80 },
-    { field: 'sb_name', headerName: 'Title', minWidth: 260, flex: 1 },
     { field: 'createdate', headerName: 'วันที่ทำรายการ', flex: 1, minWidth: 150 },
     { field: 'car_infocode', headerName: 'บะเทียนรถ', flex: 1 },
     { field: 'reamarks', headerName: 'สถานที่จอดหลังใช้', flex: 1 },
+    { field: 'car_categary_name', headerName: 'ประเภทรถ', minWidth: 200, flex: 1 },
     {
       field: 'sb_status_name',
       headerName: 'สถานะ',
@@ -284,30 +284,6 @@ export default function AddressForm() {
                   disablePortal
                   id="combo-box-demo"
                   size='small'
-                  value={localStorage.getItem('sb_name') ?? ''}
-                  sx={{ py: 1 }}
-                  onChange={(e, newInputValue, reason) => {
-                    if (reason === 'clear') {
-                      localStorage.setItem('sb_name', '');
-                      SelectHeaders();
-                    } else {
-                      localStorage.setItem('sb_name', newInputValue);
-                      setRowHeader(rowHeader.filter((res, index) => res.sb_name === newInputValue))
-                    }
-                  }}
-                  options={
-                    rowHeader ? rowHeader.map((res) => res.sb_name).filter(x => !!x)
-                      .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
-                  }
-                  renderInput={(params) => <TextField label="ชื่อหัวข้อ" {...params} />}
-                />
-              </Grid>
-              <Grid item xs>
-                <Autocomplete
-                  autoHighlight
-                  disablePortal
-                  id="combo-box-demo"
-                  size='small'
                   value={localStorage.getItem('car_infocode') ?? ''}
                   sx={{ py: 1 }}
                   onChange={(e, newInputValue, reason) => {
@@ -324,6 +300,30 @@ export default function AddressForm() {
                       .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
                   }
                   renderInput={(params) => <TextField label="ทะเบียนรถ" {...params} />}
+                />
+              </Grid>
+              <Grid item xs>
+                <Autocomplete
+                  autoHighlight
+                  disablePortal
+                  id="combo-box-demo"
+                  size='small'
+                  value={localStorage.getItem('car_categary_name') ?? ''}
+                  sx={{ py: 1 }}
+                  onChange={(e, newInputValue, reason) => {
+                    if (reason === 'clear') {
+                      localStorage.setItem('car_categary_name', '');
+                      SelectHeaders();
+                    } else {
+                      localStorage.setItem('car_categary_name', newInputValue);
+                      setRowHeader(rowHeader.filter((res, index) => res.car_categary_name === newInputValue))
+                    }
+                  }}
+                  options={
+                    rowHeader ? rowHeader.map((res) => res.car_categary_name).filter(x => !!x)
+                      .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
+                  }
+                  renderInput={(params) => <TextField label="ประเภทรถ" {...params} />}
                 />
               </Grid>
               <Grid item xs>
