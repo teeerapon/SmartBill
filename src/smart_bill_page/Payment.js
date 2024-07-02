@@ -211,9 +211,6 @@ export default function AddressForm() {
           gettingData();
         }
       })
-    // const list = [...smartBill_WithdrawDtl];
-    // list.splice(index, 1);
-    // setSmartBill_WithdrawDtl(list);
   }
 
   const [smartBill_WithdrawSave, setSmartBill_WithdrawSave] = React.useState([{
@@ -245,6 +242,7 @@ export default function AddressForm() {
         if (res.status === 200) {
           setSb_operationid(res.data[0])
           setOpenSmartBill_WithdrawDtlSave(true);
+          gettingData();
         } else {
           setSb_operationid(null)
           setOpenSmartBill_WithdrawDtlSave(true);
@@ -297,6 +295,7 @@ export default function AddressForm() {
       sbwdtl_operationid_endmile: '',
       sbwdtl_operationid_startmile: ''
     }])
+    gettingData();
   }
 
   const handleChangeTypePay = async (event) => {
@@ -320,7 +319,6 @@ export default function AddressForm() {
           list[0]['car_remarks'] = event.target.value === 0 ? '' : list[0]['car_remarks']
           list[0]['car_payname'] = event.target.value === 0 ? '' : list[0]['car_payname']
           setCarInfo(list)
-
           setCarInfoDataCompanny(response.data.filter((res) => res.car_infostatus_companny === true)); // 1 รถบริษัท
           setCondition(0);
         })
@@ -344,7 +342,6 @@ export default function AddressForm() {
           list[0]['car_remarks'] = event.target.value === 0 ? '' : list[0]['car_remarks']
           list[0]['car_payname'] = event.target.value === 0 ? '' : list[0]['car_payname']
           setCarInfo(list)
-
           setCarInfoDataCompanny(response.data.filter((res) => res.car_infostatus_companny === true)); // 1 รถบริษัท
           setCarInfoData(null)
           setCondition(event.target.value);
@@ -365,7 +362,6 @@ export default function AddressForm() {
           list[0]['car_remarks'] = event.target.value === 0 ? '' : list[0]['car_remarks']
           list[0]['car_payname'] = event.target.value === 0 ? '' : list[0]['car_payname']
           setCarInfo(list)
-
           setCarInfoData(response.data.filter((res) => res.car_infostatus_companny === false)); //  0 รถส่วนตัว
           setCarInfoDataCompanny(null)
           setCondition(event.target.value);
@@ -500,12 +496,12 @@ export default function AddressForm() {
       .then((response) => {
         if (response.data && response.data[0].length > 0) {
           const dataOnec = []
-          for (let i = 0; i < response.data[0].length; i++) {
+          for (const element of response.data[0]) {
             dataOnec.push({
-              sbwdtl_id: response.data[0][i].sbwdtl_id,
-              cost_id: response.data[0][i].cost_id,
-              category_name: response.data[0][i].category_name,
-              amount: response.data[0][i].amount,
+              sbwdtl_id: element.sbwdtl_id,
+              cost_id: element.cost_id,
+              category_name: element.category_name,
+              amount: element.amount,
             })
           }
           setOpenDialogPayOther(true);
@@ -997,7 +993,7 @@ export default function AddressForm() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const gettingData = React.useCallback(async () => {
-    
+
     const headers = {
       'Authorization': 'application/json; charset=utf-8',
       'Accept': 'application/json'
