@@ -385,6 +385,7 @@ export default function AddressForm() {
         car_payname: '',
       }])
     }
+    gettingData();
   };
 
   // ค่าผ่านทาง
@@ -1306,14 +1307,14 @@ export default function AddressForm() {
                     )}
                   </TableCell>
                   <TableCell align="left" colSpan={3}>
-                    {(typePay === 0 || typePay === '0') || ((condition === 2 || condition === '2') && (typePay === 1 || typePay === '1')) ? null :
+                    {(typePay == 0) || (condition == 2 && typePay == 1) ? null :
                       (
                         <Grid item xs={6} sm={6}>
                           <Autocomplete
                             autoHighlight
                             id="free-solo-demo"
                             freeSolo
-                            options={(carInfoDataCompanny ? carInfoDataCompanny : carInfoData).map((option) => option.car_infocode)}
+                            options={(typePay == 0 ? carInfoDataCompanny : carInfoData).map((option) => option.car_infocode)}
                             onInputChange={(event, newInputValue, reason) => {
                               const list = [...carInfo]
                               list[0]['car_infocode'] = newInputValue
