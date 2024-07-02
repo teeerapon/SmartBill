@@ -997,44 +997,78 @@ export default function AddressForm() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const gettingData = React.useCallback(async () => {
+    
     const headers = {
       'Authorization': 'application/json; charset=utf-8',
       'Accept': 'application/json'
     };
 
-    // แสดง users ทั้งหมด
-    await Axios.get(config.http + '/getsUserForAssetsControl', { headers })
-      .then((res) => {
-        setUsers(res.data.data)
-      })
+    if (!smartBill_Withdraw[0].sbw_code && !smartBill_WithdrawDtl[0].sbw_code) {
+      // แสดง users ทั้งหมด
+      await Axios.get(config.http + '/getsUserForAssetsControl', { headers })
+        .then((res) => {
+          setUsers(res.data.data)
+        })
 
-    const bodyCarInfoSearch = { car_infocode: null }
-    await Axios.post(config.http + '/SmartBill_CarInfoSearch', bodyCarInfoSearch, config.headers)
-      .then((response) => {
-        setCarInfoData(response.data);
-        setCarInfoDataCompanny(response.data.filter((res) => res.car_infostatus_companny === true));
-      });
+      const bodyCarInfoSearch = { car_infocode: null }
+      await Axios.post(config.http + '/SmartBill_CarInfoSearch', bodyCarInfoSearch, config.headers)
+        .then((response) => {
+          setCarInfoData(response.data);
+          setCarInfoDataCompanny(response.data.filter((res) => res.car_infostatus_companny === true));
+        });
 
-    await Axios.get(config.http + '/SmartBill_Withdraw_SelectCostOther', config.headers)
-      .then((response) => {
-        setCostOther(response.data[0]);
-      });
+      await Axios.get(config.http + '/SmartBill_Withdraw_SelectCostOther', config.headers)
+        .then((response) => {
+          setCostOther(response.data[0]);
+        });
 
-    await Axios.get(config.http + '/Provinces_List', config.headers)
-      .then((response) => {
-        setProvince(response.data.map((res) => res.name_th));
-      });
+      await Axios.get(config.http + '/Provinces_List', config.headers)
+        .then((response) => {
+          setProvince(response.data.map((res) => res.name_th));
+        });
 
-    if (sbw_code) {
-      const sbw_SelectAllForms = { sbw_code: sbw_code }
-      await Axios.post(config.http + '/SmartBill_Withdraw_SelectAllForms', sbw_SelectAllForms, config.headers)
-        .then(async (response) => {
-          if (response.data[0].length > 0 && response.data[1].length > 0) {
-            if (response.data[0][0].car_infocode) {
+      if (sbw_code) {
+        const sbw_SelectAllForms = { sbw_code: sbw_code }
+        await Axios.post(config.http + '/SmartBill_Withdraw_SelectAllForms', sbw_SelectAllForms, config.headers)
+          .then(async (response) => {
+            if (response.data[0].length > 0 && response.data[1].length > 0) {
+              if (response.data[0][0].car_infocode) {
+                const body = { car_infocode: response.data[0][0].car_infocode }
+                await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
+                  .then((res) => {
+                    if (res.data[0].car_infocode) {
+                      setTypePay(1)
+                      const list = [...carInfo]
+                      list[0]['car_infocode'] = res.data[0].car_infocode
+                      list[0]['car_infostatus_companny'] = res.data[0].car_infostatus_companny
+                      list[0]['car_categaryid'] = res.data[0].car_categaryid
+                      list[0]['car_typeid'] = res.data[0].car_typeid
+                      list[0]['car_band'] = res.data[0].car_band
+                      list[0]['car_tier'] = res.data[0].car_tier
+                      list[0]['car_color'] = res.data[0].car_color
+                      list[0]['car_remarks'] = res.data[0].car_remarks
+                      list[0]['car_payname'] = res.data[0].car_payname
+                      setCarInfo(list)
+                      if (res.data[0].car_infostatus_companny === true) {
+                        setCondition(0)
+                      } else if (res.data[0].car_infostatus_companny === false) {
+                        setCondition(1)
+                      } else {
+                        setCondition(2)
+                      }
+                    }
+                  })
+              } else {
+                setTypePay(0)
+                setCondition(2)
+              }
+              setSmartBill_Withdraw(response.data[0]);
+              setSmartBill_WithdrawDtl(response.data[1])
+            } else {
               const body = { car_infocode: response.data[0][0].car_infocode }
               await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
                 .then((res) => {
-                  if (res.data[0].car_infocode) {
+                  if (response.data[0][0].car_infocode) {
                     setTypePay(1)
                     const list = [...carInfo]
                     list[0]['car_infocode'] = res.data[0].car_infocode
@@ -1054,46 +1088,15 @@ export default function AddressForm() {
                     } else {
                       setCondition(2)
                     }
-                  }
-                })
-            } else {
-              setTypePay(0)
-              setCondition(2)
-            }
-            setSmartBill_Withdraw(response.data[0]);
-            setSmartBill_WithdrawDtl(response.data[1])
-          } else {
-            const body = { car_infocode: response.data[0][0].car_infocode }
-            await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
-              .then((res) => {
-                if (response.data[0][0].car_infocode) {
-                  setTypePay(1)
-                  const list = [...carInfo]
-                  list[0]['car_infocode'] = res.data[0].car_infocode
-                  list[0]['car_infostatus_companny'] = res.data[0].car_infostatus_companny
-                  list[0]['car_categaryid'] = res.data[0].car_categaryid
-                  list[0]['car_typeid'] = res.data[0].car_typeid
-                  list[0]['car_band'] = res.data[0].car_band
-                  list[0]['car_tier'] = res.data[0].car_tier
-                  list[0]['car_color'] = res.data[0].car_color
-                  list[0]['car_remarks'] = res.data[0].car_remarks
-                  list[0]['car_payname'] = res.data[0].car_payname
-                  setCarInfo(list)
-                  if (res.data[0].car_infostatus_companny === true) {
-                    setCondition(0)
-                  } else if (res.data[0].car_infostatus_companny === false) {
-                    setCondition(1)
                   } else {
+                    setTypePay(0)
                     setCondition(2)
                   }
-                } else {
-                  setTypePay(0)
-                  setCondition(2)
-                }
-              })
-            setSmartBill_Withdraw(response.data[0]);
-          }
-        });
+                })
+              setSmartBill_Withdraw(response.data[0]);
+            }
+          });
+      }
     }
   })
 

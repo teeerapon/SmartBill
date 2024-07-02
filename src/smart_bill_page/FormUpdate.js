@@ -251,80 +251,82 @@ export default function AddressForm() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const gettingUsers = React.useCallback(async () => {
-    // แสดง users ทั้งหมด
-    await Axios.get(config.http + '/getsUserForAssetsControl', config.headers)
-      .then((res) => {
-        setUsers(res.data.data)
-      })
+    if (!smartBill_Header[0].usercode && !smartBill_Operation[0].sb_operationid_startmile) {
+      // แสดง users ทั้งหมด
+      await Axios.get(config.http + '/getsUserForAssetsControl', config.headers)
+        .then((res) => {
+          setUsers(res.data.data)
+        })
 
-    await Axios.post(config.http + '/SmartBill_SelectAllForms', { sb_code: sb_code }, config.headers)
-      .then(async (res) => {
-        setSmartBill_Header([{
-          usercode: res.data[0][0].usercode,
-          sb_name: res.data[0][0].sb_name === 'SCT' ? 'SCT' : 'PTEC',
-          sb_fristName: res.data[0][0].sb_fristName,
-          sb_lastName: res.data[0][0].sb_lastName,
-          clean_status: res.data[0][0].clean_status === true ? 1 : 0,
-          group_status: res.data[0][0].group_status === true ? 1 : 0,
-          reamarks: res.data[0][0].reamarks,
-          sb_status_name: res.data[0][0].sb_status_name,
-          usercheck_code: res.data[0][0].usercheck_code
-        }])
+      await Axios.post(config.http + '/SmartBill_SelectAllForms', { sb_code: sb_code }, config.headers)
+        .then(async (res) => {
+          setSmartBill_Header([{
+            usercode: res.data[0][0].usercode,
+            sb_name: res.data[0][0].sb_name === 'SCT' ? 'SCT' : 'PTEC',
+            sb_fristName: res.data[0][0].sb_fristName,
+            sb_lastName: res.data[0][0].sb_lastName,
+            clean_status: res.data[0][0].clean_status === true ? 1 : 0,
+            group_status: res.data[0][0].group_status === true ? 1 : 0,
+            reamarks: res.data[0][0].reamarks,
+            sb_status_name: res.data[0][0].sb_status_name,
+            usercheck_code: res.data[0][0].usercheck_code
+          }])
 
-        setTypeGroup(res.data[0][0].group_status === true ? 1 : 0)
+          setTypeGroup(res.data[0][0].group_status === true ? 1 : 0)
 
-        const body = { car_infocode: null }
-        await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
-          .then((resCarSearch) => {
+          const body = { car_infocode: null }
+          await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
+            .then((resCarSearch) => {
 
-            setCarInfoDataCompanny(resCarSearch.data.filter((res) => res.car_infostatus_companny === true));
-            setCarInfoData(resCarSearch.data.filter((res) => res.car_infostatus_companny === false));
+              setCarInfoDataCompanny(resCarSearch.data.filter((res) => res.car_infostatus_companny === true));
+              setCarInfoData(resCarSearch.data.filter((res) => res.car_infostatus_companny === false));
 
-            setCarInfo([{
-              car_infocode: res.data[0][0].car_infocode,
-              car_infostatus_companny: res.data[0][0].car_infostatus_companny === true ? 1 : 0,
-              car_categaryid: res.data[0][0].car_categaryid,
-              car_typeid: res.data[0][0].car_typeid,
-              car_band: res.data[0][0].car_band,
-              car_tier: res.data[0][0].car_tier,
-              car_color: res.data[0][0].car_color,
-              car_remarks: res.data[0][0].car_remarks,
-            }])
+              setCarInfo([{
+                car_infocode: res.data[0][0].car_infocode,
+                car_infostatus_companny: res.data[0][0].car_infostatus_companny === true ? 1 : 0,
+                car_categaryid: res.data[0][0].car_categaryid,
+                car_typeid: res.data[0][0].car_typeid,
+                car_band: res.data[0][0].car_band,
+                car_tier: res.data[0][0].car_tier,
+                car_color: res.data[0][0].car_color,
+                car_remarks: res.data[0][0].car_remarks,
+              }])
 
-            setTypeCar(res.data[0][0].car_infostatus_companny === true ? 1 : 0);
-          })
+              setTypeCar(res.data[0][0].car_infostatus_companny === true ? 1 : 0);
+            })
 
-        setSmartBill_Operation(res.data[1].map((res_operationid) => {
-          return {
-            sb_operationid_startdate: dayjs(res_operationid.sb_operationid_startdate),
-            sb_operationid_startmile: res_operationid.sb_operationid_startmile,
-            sb_operationid_startoil: res_operationid.sb_operationid_startoil,
-            sb_operationid_enddate: dayjs(res_operationid.sb_operationid_enddate),
-            sb_operationid_endoil: res_operationid.sb_operationid_endoil,
-            sb_operationid_endmile: res_operationid.sb_operationid_endmile,
-            sb_paystatus: res_operationid.sb_paystatus === true ? 1 : 0,
-            sb_operationid_location: res_operationid.sb_operationid_location,
-          }
-        }));
+          setSmartBill_Operation(res.data[1].map((res_operationid) => {
+            return {
+              sb_operationid_startdate: dayjs(res_operationid.sb_operationid_startdate),
+              sb_operationid_startmile: res_operationid.sb_operationid_startmile,
+              sb_operationid_startoil: res_operationid.sb_operationid_startoil,
+              sb_operationid_enddate: dayjs(res_operationid.sb_operationid_enddate),
+              sb_operationid_endoil: res_operationid.sb_operationid_endoil,
+              sb_operationid_endmile: res_operationid.sb_operationid_endmile,
+              sb_paystatus: res_operationid.sb_paystatus === true ? 1 : 0,
+              sb_operationid_location: res_operationid.sb_operationid_location,
+            }
+          }));
 
-        setSmartBill_Associate(res.data[2].map((res_allowance) => {
-          return {
-            allowance_usercode: res_allowance.allowance_usercode,
-            sb_associate_startdate: res_allowance.sb_associate_startdate,
-            sb_associate_enddate: res_allowance.sb_associate_enddate,
-          }
-        }))
+          setSmartBill_Associate(res.data[2].map((res_allowance) => {
+            return {
+              allowance_usercode: res_allowance.allowance_usercode,
+              sb_associate_startdate: res_allowance.sb_associate_startdate,
+              sb_associate_enddate: res_allowance.sb_associate_enddate,
+            }
+          }))
 
-        setDataFilesCount(res.data[3].map((res_DataFilesCount) => {
-          return {
-            file: res_DataFilesCount.url,
-            fileData: null,
-            filename: res_DataFilesCount.NonPO_attatchid,
-          }
-        }))
+          setDataFilesCount(res.data[3].map((res_DataFilesCount) => {
+            return {
+              file: res_DataFilesCount.url,
+              fileData: null,
+              filename: res_DataFilesCount.NonPO_attatchid,
+            }
+          }))
 
 
-      })
+        })
+    }
   })
 
   const handleServiceAddDate = (index) => {
@@ -399,7 +401,7 @@ export default function AddressForm() {
                 </Typography>
               </Grid>
               <Grid item xs={3}>
-                <Box alignItems="center" p={1}sx={{ border: '2px solid grey' }}>
+                <Box alignItems="center" p={1} sx={{ border: '2px solid grey' }}>
                   <Typography variant="caption" display="block" gutterBottom align="center">
                     {sb_code}
                   </Typography>
