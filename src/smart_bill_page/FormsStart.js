@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import * as React from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -39,6 +40,8 @@ import dayjs from 'dayjs';
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import Chip from '@mui/material/Chip';
+import Picture1 from '../image/Picture1.png'
+import Picture2 from '../image/Picture2.png'
 
 
 const NumericFormatCustom = React.forwardRef(function NumericFormatCustom(
@@ -95,7 +98,7 @@ export default function FormsStart() {
   const data = JSON.parse(localStorage.getItem('data'));
   const [smartBill_Header, setSmartBill_Header] = React.useState([{
     usercode: data.UserCode,
-    sb_name: '',
+    sb_name: 'PTEC',
     sb_fristName: data.fristName ? data.fristName : '',
     sb_lastName: data.lastName ? data.lastName : '',
     clean_status: 0,
@@ -115,10 +118,10 @@ export default function FormsStart() {
   }])
 
   const [smartBill_Operation, setSmartBill_Operation] = React.useState([{
-    sb_operationid_startdate: undefined,
+    sb_operationid_startdate: dayjs().tz('Asia/Bangkok'),
     sb_operationid_startmile: '',
     sb_operationid_startoil: '',
-    sb_operationid_enddate: undefined,
+    sb_operationid_enddate: dayjs().tz('Asia/Bangkok'),
     sb_operationid_endoil: '',
     sb_operationid_endmile: '',
     sb_paystatus: '',
@@ -270,12 +273,31 @@ export default function FormsStart() {
       <NavBar />
       <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
         <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
-          <Typography sx={{ py: 5 }} component="h1" variant="h4" align="center" className="Header-Forms">
-            Smart-Car Form
-          </Typography>
+          <Grid container spacing={3} sx={{ pt: 5, pb: 10 }}>
+            <Grid item xs={3}>
+              <Box>
+                <img style={{ height: 40 }} alt="logo" src={smartBill_Header[0].sb_name === 'SCT' ? Picture2 : Picture1} loading="lazy" />
+              </Box>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="h4" align="center" className="Header-Forms">
+                {smartBill_Header[0].sb_name === 'SCT' ? 'SCT SAHAPAN COMPANY LIMITED' : 'PURE THAI ENERGY CO.,LTD.'}
+              </Typography>
+              <Typography variant="body2" align="center" className="Header-Forms">
+                <b>Smart Car Form</b>
+              </Typography>
+            </Grid>
+            <Grid item xs={3}>
+              <Box alignItems="center" height={40} p={1} sx={{ border: '2px solid grey' }}>
+                <Typography variant="caption" display="block" gutterBottom align="center">
+                  None
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
           <React.Fragment>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={2}>
+            <Grid container spacing={3} sx={{ pt: 2 }}>
+              <Grid item xs={6} sm={2}>
                 <Autocomplete
                   autoHighlight
                   id="free-solo-demo"
@@ -307,7 +329,26 @@ export default function FormsStart() {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={5}>
+              <Grid item xs={6} sm={2}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">companny</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={smartBill_Header[0].sb_name}
+                    label="companny"
+                    onChange={(e) => {
+                      const list = [...smartBill_Header]
+                      list[0]['sb_name'] = e.target.value
+                      setSmartBill_Header(list)
+                    }}
+                  >
+                    <MenuItem value="PTEC">PTEC</MenuItem>
+                    <MenuItem value="SCT">SCT</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={4}>
                 <TextField
                   required
                   name="sb_fristName"
@@ -323,7 +364,7 @@ export default function FormsStart() {
                 // variant="standard"
                 />
               </Grid>
-              <Grid item xs={12} sm={5}>
+              <Grid item xs={12} sm={4}>
                 <TextField
                   required
                   id="sb_lastName"
@@ -342,17 +383,15 @@ export default function FormsStart() {
               </Grid>
 
               {/* ฟอร์ม Car-Info */}
-
-              <Grid item xs={6} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">ประเภทการใช้งาน</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={typeCar}
-                    label="ประเภทการใช้งาน"
+              <Grid item xs={6} sm={4}>
+                <FormControl fullWidth sx={{ ml: 1 }}>
+                  <FormLabel id="demo-row-radio-buttons-group-label">ประเภทการใช้งานรถยนต์</FormLabel>
+                  <RadioGroup
+                    row
+                    aria-labelledby="demo-row-radio-buttons-group-label"
+                    name="sb_paystatus"
                     onChange={async (event) => {
-                      if (event.target.value === 1) {
+                      if (event.target.value == 1) {
                         const body = { car_infocode: null }
                         await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
                           .then((response) => {
@@ -390,15 +429,15 @@ export default function FormsStart() {
                           })
                       }
                     }}
-                  // variant="standard"
+                    value={typeCar}
                   >
-                    <MenuItem value={1}>รถบริษัท</MenuItem>
-                    <MenuItem value={0}>รถส่วนตัว</MenuItem>
-                  </Select>
+                    <FormControlLabel value={1} control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="รถบริษัท" />
+                    <FormControlLabel value={0} control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="รถส่วนตัว" />
+                  </RadioGroup>
                 </FormControl>
               </Grid>
-              <Grid item xs={6} sm={6}>
-                {typeCar === 1 || typeCar === "1" ? (
+              <Grid item xs={6} sm={4}>
+                {typeCar == 1 ? (
                   <Autocomplete
                     autoHighlight
                     id="free-solo-demo"
@@ -452,7 +491,7 @@ export default function FormsStart() {
                       />
                     )}
                   />
-                ) : (typeCar == 0) ? (
+                ) : (
                   <Autocomplete
                     autoHighlight
                     id="free-solo-demo"
@@ -506,8 +545,6 @@ export default function FormsStart() {
                       />
                     )}
                   />
-                ) : (
-                  <TextField fullWidth disabled />
                 )}
               </Grid>
               <Grid item xs={6} sm={4}>
@@ -579,11 +616,12 @@ export default function FormsStart() {
                 // variant="standard"
                 />
               </Grid>
-              <Grid item xs={12} sm={8}>
+              <Grid item xs={12} sm={12}>
                 <TextField
                   required
                   name="car_remarks"
                   label="หมายเหตุ"
+                  multiline
                   value={carInfo[0].car_remarks}
                   fullWidth
                   autoComplete="given-name"
@@ -607,10 +645,10 @@ export default function FormsStart() {
                   sx={{ py: 1, pt: 5 }}
                 >
                   <Button variant="outlined" onClick={handleServiceAddDate} startIcon={<PostAddIcon />}>
-                    Add List
+                    เพิ่มรายการ
                   </Button>
                   <Button variant="outlined" color="error" disabled={smartBill_Operation.length === 1 ? true : false} onClick={handleServiceRemoveDate} startIcon={<PostAddIcon />}>
-                    Delete List
+                    ลบรายการ
                   </Button>
                 </Stack>
               </Grid>
@@ -624,7 +662,7 @@ export default function FormsStart() {
                         </Typography>
                       </Divider>
                     </Grid>
-                    <FormControl fullWidth error={!row.sb_paystatus} sx={{ ml: 1 }}>
+                    <FormControl fullWidth sx={{ ml: 1 }}>
                       <FormLabel id="demo-row-radio-buttons-group-label">เบิก/ไม่เบิก *</FormLabel>
                       <RadioGroup
                         row
@@ -652,10 +690,11 @@ export default function FormsStart() {
                       }}
                       name="sb_operationid_location"
                       key={index}
-                      error={!row.sb_operationid_location}
                       label={`บันทึกกิจกรรมการใช้งานครี่งที่ (${index + 1})`}
                       fullWidth
                       multiline
+                      rows={5}
+                      maxRows={5}
                       value={row.sb_operationid_location}
                       onChange={(e) => {
                         const list = [...smartBill_Operation]
@@ -669,14 +708,13 @@ export default function FormsStart() {
                       <Grid item xs={12} sm={6}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DateTimePicker
-                            format="YYYY-MM-DD HH:mm"
+                            format="L HH:mm"
                             name="sb_operationid_startdate"
                             closeOnSelect={true}
-                            views={['year', 'month', 'day', 'hours']}
+                            views={['day', 'hours']}
                             label={`วันที่ออกเดินทางของการใช้งานครั้งที่ (${index + 1})`}
                             //timezone='UTC'
                             key={index}
-                            error={!row.sb_operationid_startdate}
                             value={row.sb_operationid_startdate}
                             slotProps={{
                               textField: () => ({
@@ -691,6 +729,7 @@ export default function FormsStart() {
                             onChange={(newValue) => {
                               const list = [...smartBill_Operation]
                               list[index]['sb_operationid_startdate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
+                              list[index]['sb_operationid_enddate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
                               setSmartBill_Operation(list)
                             }}
                             ampm={false}
@@ -707,7 +746,6 @@ export default function FormsStart() {
                           InputProps={{
                             inputComponent: NumericFormatCustom,
                           }}
-                          error={!row.sb_operationid_startmile}
                           value={row.sb_operationid_startmile}
                           onChange={(e) => {
                             const list = [...smartBill_Operation]
@@ -726,7 +764,6 @@ export default function FormsStart() {
                             name="sb_operationid_startoil"
                             label={`น้ำมันเริ่มต้น (${index + 1})`} สิ้นสุด
                             key={index}
-                            error={!row.sb_operationid_startoil}
                             value={row.sb_operationid_startoil}
                             onChange={(e) => {
                               const list = [...smartBill_Operation]
@@ -744,12 +781,12 @@ export default function FormsStart() {
                       <Grid item xs={12} sm={6}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DateTimePicker
-                            format="YYYY-MM-DD HH:mm"
+                            format="L HH:mm"
                             name="sb_operationid_enddate"
                             //timezone='UTC'
                             key={index}
                             closeOnSelect={true}
-                            views={['year', 'month', 'day', 'hours']}
+                            views={['day', 'hours']}
                             label={`วันที่สิ้นสุดเดินทางของการใช้งานครั้งที่ (${index + 1})`}
                             value={row.sb_operationid_enddate}
                             sx={{ width: '100%' }}
@@ -778,7 +815,6 @@ export default function FormsStart() {
                           key={index}
                           label={`ไมล์สิ้นสุด (${index + 1})`}
                           fullWidth
-                          error={!row.sb_operationid_endmile}
                           InputProps={{
                             inputComponent: NumericFormatCustom,
                           }}
@@ -806,7 +842,6 @@ export default function FormsStart() {
                             name="sb_operationid_endoil"
                             key={index}
                             label={`น้ำมันสิ้นสุด (${index + 1})`}
-                            error={!row.sb_operationid_endoil}
                             value={row.sb_operationid_endoil}
                             onChange={(e) => {
                               const list = [...smartBill_Operation]

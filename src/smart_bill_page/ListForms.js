@@ -16,6 +16,7 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import Chip from '@mui/material/Chip';
 
 const StyledGridOverlay = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -176,19 +177,40 @@ export default function AddressForm() {
     { field: 'createdate', headerName: 'วันที่ทำรายการ', flex: 1, minWidth: 150 },
     { field: 'car_infocode', headerName: 'บะเทียนรถ', flex: 1 },
     { field: 'reamarks', headerName: 'สถานที่จอดหลังใช้', flex: 1 },
-    { field: 'car_categary_name', headerName: 'ประเภทรถ', minWidth: 200, flex: 1 },
+    {
+      field: 'car_categary_name',
+      headerName: 'ประเภทรถ',
+      minWidth: 200,
+      flex: 1,
+      renderCell: (params) => {
+        if (params.row.car_categaryid == 1) {
+          return <Chip sx={{ width: '100%' }} size="small" label={params.row.car_categary_name} variant="filled" color="info" />
+        } else if (params.row.car_categaryid == 2) {
+          return <Chip sx={{ width: '100%' }} size="small" label={params.row.car_categary_name} variant="filled" color="secondary" />
+        } else if (params.row.car_categaryid == 3) {
+          return <Chip sx={{ width: '100%' }} size="small" label={params.row.car_categary_name} variant="filled" color="primary" />
+        } else if (params.row.car_categaryid == 4) {
+          return <Chip sx={{ width: '100%' }} size="small" label={params.row.car_categary_name} variant="filled" color="success" />
+        } else if (params.row.car_categaryid == 5) {
+          return <Chip sx={{ width: '100%' }} size="small" label={params.row.car_categary_name} variant="filled" color="warning" />
+        }
+      }
+    },
     {
       field: 'sb_status_name',
       headerName: 'สถานะ',
       flex: 1,
-      minWidth: 120,
+      align: 'center',
+      headerAlign: 'center',
+      minWidth: 150,
       renderCell: (params) => {
         return (
-          <React.Fragment>
-            <Typography variant="subtitle1" sx={{ color: params.row.sb_status_name === 'รอ Admin ตรวจสอบ' ? 'red' : 'green' }} gutterBottom>
-              {params.row.sb_status_name}
-            </Typography>
-          </React.Fragment>
+          <Chip
+            sx={{ width: '100%' }}
+            label={params.row.sb_status_name}
+            size="small" color={params.row.sb_status_name === 'รอ Admin ตรวจสอบ' ? 'error' : 'success'}
+            variant="outlined"
+          />
         );
       }
     },

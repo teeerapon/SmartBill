@@ -23,6 +23,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Grid from '@mui/material/Grid';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import Chip from '@mui/material/Chip';
 
 const StyledGridOverlay = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -228,11 +229,13 @@ export default function AddressForm() {
       headerAlign: 'center',
       renderCell: (params) => {
         return (
-          <React.Fragment>
-            <Box sx={{ color: params.row.lock_status === true ? 'green' : 'grey' }}>
-              {params.row.lock_status === true ? 'Lock' : 'None'}
-            </Box>
-          </React.Fragment>
+          <Chip
+            sx={{ width: '100%' }}
+            label={params.row.lock_status === true ? 'Lock' : 'None'}
+            size="small"
+            color={params.row.lock_status === true ? 'warning' : 'success'}
+            variant="outlined"
+          />
         );
       }
     },

@@ -39,6 +39,9 @@ import Stack from '@mui/material/Stack';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import Chip from '@mui/material/Chip';
 import FormLabel from '@mui/material/FormLabel';
+import CircularProgress from '@mui/material/CircularProgress';
+import Picture1 from '../image/Picture1.png'
+import Picture2 from '../image/Picture2.png'
 
 const NumericFormatCustom = React.forwardRef(function NumericFormatCustom(
   props,
@@ -246,7 +249,8 @@ export default function AddressForm() {
       })
   }
 
-  const gettingUsers = async () => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const gettingUsers = React.useCallback(async () => {
     // แสดง users ทั้งหมด
     await Axios.get(config.http + '/getsUserForAssetsControl', config.headers)
       .then((res) => {
@@ -257,7 +261,7 @@ export default function AddressForm() {
       .then(async (res) => {
         setSmartBill_Header([{
           usercode: res.data[0][0].usercode,
-          sb_name: res.data[0][0].sb_name,
+          sb_name: res.data[0][0].sb_name === 'SCT' ? 'SCT' : 'PTEC',
           sb_fristName: res.data[0][0].sb_fristName,
           sb_lastName: res.data[0][0].sb_lastName,
           clean_status: res.data[0][0].clean_status === true ? 1 : 0,
@@ -321,7 +325,7 @@ export default function AddressForm() {
 
 
       })
-  }
+  })
 
   const handleServiceAddDate = (index) => {
     setSmartBill_Operation([...smartBill_Operation, {
@@ -344,777 +348,824 @@ export default function AddressForm() {
 
   React.useEffect(() => {
     gettingUsers();
-  }, [])
+  }, [gettingUsers])
 
-  return (
-    <React.Fragment>
-      <CssBaseline />
-      <NavBar />
-      <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
-        <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
+  if (!smartBill_Operation.map((res) => res.sb_operationid_location)[0]) {
+    return (
+      <Box
+        sx={{
+          marginTop: 30,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Stack direction="row" spacing={3}>
+          <CircularProgress disableShrink color="inherit" />
+          <Typography className="Header-Forms" color="inherit" >
+            Loading...
+          </Typography>
+        </Stack>
+      </Box>
+    );
+  } else if (smartBill_Operation.map((res) => res.sb_operationid_location)[0]) {
+    return (
+      <React.Fragment>
+        <CssBaseline />
+        <NavBar />
+        <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
           <Typography
-            sx={{ py: 1 }}
             component="h1"
             variant="caption"
             align="right"
+            sx={{ mt: { xs: 3, md: 6 } }}
             color={smartBill_Header[0].sb_status_name === 'รอ Admin ตรวจสอบ' ? 'red' : 'green'}
           >
             ({smartBill_Header[0].sb_status_name} {smartBill_Header[0].usercheck_code ? ', ผู้ตรวจ:' + smartBill_Header[0].usercheck_code : ''})
           </Typography>
-          <Typography sx={{ py: 4 }} component="h1" variant="h4" align="center" className="Header-Forms">
-            Smart-Car Form ({sb_code})
-          </Typography>
-          <React.Fragment>
-            <Grid
-              container
-              spacing={3}
-              direction="row"
-              alignItems="center"
-              justifyContent="flex-start"
-            >
-              <Grid item xs={12} sm={2}>
-                <Autocomplete
-                  autoHighlight
-                  id="free-solo-demo"
-                  freeSolo
-                  name="usercode"
-                  sx={{
-                    "& .MuiInputBase-input.Mui-disabled": {
-                      WebkitTextFillColor: "#000000",
-                    },
-                  }}
-                  value={smartBill_Header[0].usercode}
-                  options={users.map((option) => option.UserCode)}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label={`ผู้ทำรายการ`}
-                      fullWidth
-                    />
-                  )}
-                />
+          <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 } }}>
+            <Grid container spacing={3} sx={{ pt: 5, pb: 10 }}>
+              <Grid item xs={3}>
+                <Box>
+                  <img style={{ height: 40 }} alt="logo" src={smartBill_Header[0].sb_name === 'SCT' ? Picture2 : Picture1} loading="lazy" />
+                </Box>
               </Grid>
-              <Grid item xs={12} sm={5}>
-                <TextField
-                  sx={{
-                    "& .MuiInputBase-input.Mui-disabled": {
-                      WebkitTextFillColor: "#000000",
-                    },
-                  }}
-                  required
-                  name="sb_fristName"
-                  label="First name (ชื่อจริง)"
-                  fullWidth
-                  value={smartBill_Header[0].sb_fristName}
-                  autoComplete="given-name"
-                  onChange={(event) => {
-                    const list = [...smartBill_Header]
-                    list[0]['sb_fristName'] = event.target.value
-                    setSmartBill_Header(list)
-                  }}
-                // variant="standard"
-                />
+              <Grid item xs={6}>
+                <Typography variant="h4" align="center" className="Header-Forms">
+                  {smartBill_Header[0].sb_name === 'SCT' ? 'SCT SAHAPAN COMPANY LIMITED' : 'PURE THAI ENERGY CO.,LTD.'}
+                </Typography>
+                <Typography variant="body2" align="center">
+                  <b>Smart Car Form</b>
+                </Typography>
               </Grid>
-              <Grid item xs={12} sm={5}>
-                <TextField
-                  required
-                  sx={{
-                    "& .MuiInputBase-input.Mui-disabled": {
-                      WebkitTextFillColor: "#000000",
-                    },
-                  }}
-                  id="sb_lastName"
-                  name="sb_lastName"
-                  label="Last name (นามสกุล)"
-                  fullWidth
-                  value={smartBill_Header[0].sb_lastName}
-                  autoComplete="family-name"
-                  onChange={(event) => {
-                    const list = [...smartBill_Header]
-                    list[0]['sb_lastName'] = event.target.value
-                    setSmartBill_Header(list)
-                  }}
-                // variant="standard"
-                />
+              <Grid item xs={3}>
+                <Box alignItems="center" p={1}sx={{ border: '2px solid grey' }}>
+                  <Typography variant="caption" display="block" gutterBottom align="center">
+                    {sb_code}
+                  </Typography>
+                </Box>
               </Grid>
-
-              {/* ฟอร์ม Car-Info */}
-
-              <Grid item xs={6} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">ประเภทการใช้งาน</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={typeCar}
-                    label="ประเภทการใช้งาน"
+            </Grid>
+            <React.Fragment>
+              <Grid
+                container
+                spacing={3}
+                direction="row"
+                alignItems="center"
+                justifyContent="flex-start"
+                sx={{ pt: 2 }}
+              >
+                <Grid item xs={6} sm={2}>
+                  <Autocomplete
+                    autoHighlight
+                    id="free-solo-demo"
+                    freeSolo
+                    name="usercode"
                     sx={{
                       "& .MuiInputBase-input.Mui-disabled": {
                         WebkitTextFillColor: "#000000",
                       },
                     }}
-                    onChange={async (event) => {
-                      if (event.target.value === 1) {
-                        const body = { car_infocode: null }
-                        await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
-                          .then((response) => {
-                            const list = [...carInfo]
-                            list[0]['car_infostatus_companny'] = event.target.value
-                            list[0]['car_infocode'] = event.target.value === 0 ? '' : list[0]['car_infocode']
-                            list[0]['car_infostatus_companny'] = event.target.value === 0 ? '' : list[0]['car_infostatus_companny']
-                            list[0]['car_categaryid'] = event.target.value === 0 ? '' : list[0]['car_categaryid']
-                            list[0]['car_typeid'] = event.target.value === 0 ? '' : list[0]['car_typeid']
-                            list[0]['car_band'] = event.target.value === 0 ? '' : list[0]['car_band']
-                            list[0]['car_tier'] = event.target.value === 0 ? '' : list[0]['car_tier']
-                            list[0]['car_color'] = event.target.value === 0 ? '' : list[0]['car_color']
-                            list[0]['car_remarks'] = event.target.value === 0 ? '' : list[0]['car_remarks']
-                            setCarInfoDataCompanny(response.data.filter((res) => res.car_infostatus_companny === true)); // 1 รถบริษัท
-                            setCarInfoData([])
-                            setCarInfo(list)
-                            setTypeCar(event.target.value);
-                          })
-                      } else {
-                        const body = { car_infocode: null }
-                        await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
-                          .then((response) => {
-                            const list = [...carInfo]
-                            list[0]['car_infostatus_companny'] = event.target.value
-                            list[0]['car_infocode'] = event.target.value === 0 ? '' : list[0]['car_infocode']
-                            list[0]['car_infostatus_companny'] = event.target.value === 0 ? '' : list[0]['car_infostatus_companny']
-                            list[0]['car_categaryid'] = event.target.value === 0 ? '' : list[0]['car_categaryid']
-                            list[0]['car_typeid'] = event.target.value === 0 ? '' : list[0]['car_typeid']
-                            list[0]['car_band'] = event.target.value === 0 ? '' : list[0]['car_band']
-                            list[0]['car_tier'] = event.target.value === 0 ? '' : list[0]['car_tier']
-                            list[0]['car_color'] = event.target.value === 0 ? '' : list[0]['car_color']
-                            list[0]['car_remarks'] = event.target.value === 0 ? '' : list[0]['car_remarks']
-                            setCarInfoData(response.data.filter((res) => res.car_infostatus_companny === false)); //  0 รถส่วนตัว
-                            setCarInfoDataCompanny([])
-                            setCarInfo(list)
-                            setTypeCar(event.target.value);
-                          })
-                      }
+                    value={smartBill_Header[0].usercode}
+                    options={users.map((option) => option.UserCode)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label={`ผู้ทำรายการ`}
+                        fullWidth
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={6} sm={2}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">companny</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={smartBill_Header[0].sb_name}
+                      label="companny"
+                      onChange={(e) => {
+                        const list = [...smartBill_Header]
+                        list[0]['sb_name'] = e.target.value
+                        setSmartBill_Header(list)
+                      }}
+                    >
+                      <MenuItem value="PTEC">PTEC</MenuItem>
+                      <MenuItem value="SCT">SCT</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    sx={{
+                      "& .MuiInputBase-input.Mui-disabled": {
+                        WebkitTextFillColor: "#000000",
+                      },
+                    }}
+                    required
+                    name="sb_fristName"
+                    label="First name (ชื่อจริง)"
+                    fullWidth
+                    value={smartBill_Header[0].sb_fristName}
+                    autoComplete="given-name"
+                    onChange={(event) => {
+                      const list = [...smartBill_Header]
+                      list[0]['sb_fristName'] = event.target.value
+                      setSmartBill_Header(list)
                     }}
                   // variant="standard"
-                  >
-                    <MenuItem value={1}>รถบริษัท</MenuItem>
-                    <MenuItem value={0}>รถส่วนตัว</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={6} sm={6}>
-                {typeCar === 1 || typeCar === "1" ? (
-                  <Autocomplete
-                    autoHighlight
-                    id="free-solo-demo"
-                    freeSolo
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    required
                     sx={{
                       "& .MuiInputBase-input.Mui-disabled": {
                         WebkitTextFillColor: "#000000",
                       },
                     }}
-                    value={carInfo[0].car_infocode}
-                    options={carInfoDataCompanny.map((option) => option.car_infocode)}
-                    onInputChange={(event, newInputValue, reason) => {
-                      const list = [...carInfo]
-                      list[0]['car_infocode'] = newInputValue
-                      setCarInfo(list)
+                    id="sb_lastName"
+                    name="sb_lastName"
+                    label="Last name (นามสกุล)"
+                    fullWidth
+                    value={smartBill_Header[0].sb_lastName}
+                    autoComplete="family-name"
+                    onChange={(event) => {
+                      const list = [...smartBill_Header]
+                      list[0]['sb_lastName'] = event.target.value
+                      setSmartBill_Header(list)
                     }}
-                    onChange={async (event, newInputValue, reason) => {
-                      if (reason === 'clear') {
-                        const list = [...carInfo]
-                        list[0]['car_infocode'] = ''
-                        list[0]['car_infostatus_companny'] = ''
-                        list[0]['car_categaryid'] = ''
-                        list[0]['car_typeid'] = ''
-                        list[0]['car_band'] = ''
-                        list[0]['car_tier'] = ''
-                        list[0]['car_color'] = ''
-                        list[0]['car_remarks'] = ''
-                        setCarInfo(list)
-                      } else {
-                        const body = { car_infocode: newInputValue }
-                        await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
-                          .then((response) => {
-                            if (response.data[0].car_infocode) {
-                              const list = [...carInfo]
-                              list[0]['car_infocode'] = newInputValue
-                              list[0]['car_infostatus_companny'] = response.data[0].car_infostatus_companny
-                              list[0]['car_categaryid'] = response.data[0].car_categaryid
-                              list[0]['car_typeid'] = response.data[0].car_typeid
-                              list[0]['car_band'] = response.data[0].car_band
-                              list[0]['car_tier'] = response.data[0].car_tier
-                              list[0]['car_color'] = response.data[0].car_color
-                              list[0]['car_remarks'] = response.data[0].car_remarks
-                              setCarInfo(list)
-                            }
-                          })
-                      }
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="ทะเบียนรถ"
-                        fullWidth
-                      />
-                    )}
+                  // variant="standard"
                   />
-                ) : typeCar === 0 || typeCar === "0" ? (
-                  <Autocomplete
-                    autoHighlight
-                    id="free-solo-demo"
-                    freeSolo
-                    sx={{
-                      "& .MuiInputBase-input.Mui-disabled": {
-                        WebkitTextFillColor: "#000000",
-                      },
-                    }}
-                    value={carInfo[0].car_infocode}
-                    options={carInfoData.map((option) => option.car_infocode)}
-                    onInputChange={(event, newInputValue, reason) => {
-                      const list = [...carInfo]
-                      list[0]['car_infocode'] = newInputValue
-                      setCarInfo(list)
-                    }}
-                    onChange={async (event, newInputValue, reason) => {
-                      if (reason === 'clear') {
-                        const list = [...carInfo]
-                        list[0]['car_infocode'] = ''
-                        list[0]['car_infostatus_companny'] = ''
-                        list[0]['car_categaryid'] = ''
-                        list[0]['car_typeid'] = ''
-                        list[0]['car_band'] = ''
-                        list[0]['car_tier'] = ''
-                        list[0]['car_color'] = ''
-                        list[0]['car_remarks'] = ''
-                        setCarInfo(list)
-                      } else {
-                        const body = { car_infocode: newInputValue }
-                        await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
-                          .then((response) => {
-                            if (response.data[0].car_infocode) {
+                </Grid>
+
+                {/* ฟอร์ม Car-Info */}
+
+                <Grid item xs={6} sm={4}>
+                  <FormControl fullWidth sx={{ ml: 1 }}>
+                    <FormLabel id="demo-row-radio-buttons-group-label">ประเภทการใช้งานรถยนต์</FormLabel>
+                    <RadioGroup
+                      row
+                      aria-labelledby="demo-row-radio-buttons-group-label"
+                      name="sb_paystatus"
+                      onChange={async (event) => {
+                        if (event.target.value == 1) {
+                          const body = { car_infocode: null }
+                          await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
+                            .then((response) => {
                               const list = [...carInfo]
-                              list[0]['car_infocode'] = newInputValue
-                              list[0]['car_infostatus_companny'] = response.data[0].car_infostatus_companny
-                              list[0]['car_categaryid'] = response.data[0].car_categaryid
-                              list[0]['car_typeid'] = response.data[0].car_typeid
-                              list[0]['car_band'] = response.data[0].car_band
-                              list[0]['car_tier'] = response.data[0].car_tier
-                              list[0]['car_color'] = response.data[0].car_color
-                              list[0]['car_remarks'] = response.data[0].car_remarks
+                              list[0]['car_infostatus_companny'] = event.target.value
+                              list[0]['car_infocode'] = event.target.value === 0 ? '' : list[0]['car_infocode']
+                              list[0]['car_infostatus_companny'] = event.target.value === 0 ? '' : list[0]['car_infostatus_companny']
+                              list[0]['car_categaryid'] = event.target.value === 0 ? '' : list[0]['car_categaryid']
+                              list[0]['car_typeid'] = event.target.value === 0 ? '' : list[0]['car_typeid']
+                              list[0]['car_band'] = event.target.value === 0 ? '' : list[0]['car_band']
+                              list[0]['car_tier'] = event.target.value === 0 ? '' : list[0]['car_tier']
+                              list[0]['car_color'] = event.target.value === 0 ? '' : list[0]['car_color']
+                              list[0]['car_remarks'] = event.target.value === 0 ? '' : list[0]['car_remarks']
+                              setCarInfoDataCompanny(response.data.filter((res) => res.car_infostatus_companny === true)); // 1 รถบริษัท
                               setCarInfo(list)
-                            }
-                          })
-                      }
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="ทะเบียนรถ"
-                        fullWidth
-                      />
-                    )}
-                  />
-                ) : (
-                  <TextField fullWidth disabled />
-                )}
-              </Grid>
-              <Grid item xs={6} sm={4}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">ประเภทของรถ</InputLabel>
-                  <Select
+                              setTypeCar(event.target.value);
+                            })
+                        } else {
+                          const body = { car_infocode: null }
+                          await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
+                            .then((response) => {
+                              const list = [...carInfo]
+                              list[0]['car_infostatus_companny'] = event.target.value
+                              list[0]['car_infocode'] = event.target.value === 0 ? '' : list[0]['car_infocode']
+                              list[0]['car_infostatus_companny'] = event.target.value === 0 ? '' : list[0]['car_infostatus_companny']
+                              list[0]['car_categaryid'] = event.target.value === 0 ? 5 : list[0]['car_categaryid']
+                              list[0]['car_typeid'] = event.target.value === 0 ? '' : list[0]['car_typeid']
+                              list[0]['car_band'] = event.target.value === 0 ? '' : list[0]['car_band']
+                              list[0]['car_tier'] = event.target.value === 0 ? '' : list[0]['car_tier']
+                              list[0]['car_color'] = event.target.value === 0 ? '' : list[0]['car_color']
+                              list[0]['car_remarks'] = event.target.value === 0 ? '' : list[0]['car_remarks']
+                              setCarInfoData(response.data.filter((res) => res.car_infostatus_companny === false)); //  0 รถส่วนตัว
+                              setCarInfo(list)
+                              setTypeCar(event.target.value);
+                            })
+                        }
+                      }}
+                      value={typeCar}
+                    >
+                      <FormControlLabel value={1} control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="รถบริษัท" />
+                      <FormControlLabel value={0} control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="รถส่วนตัว" />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={6} sm={4}>
+                  {typeCar == 1 ? (
+                    <Autocomplete
+                      autoHighlight
+                      id="free-solo-demo"
+                      freeSolo
+                      sx={{
+                        "& .MuiInputBase-input.Mui-disabled": {
+                          WebkitTextFillColor: "#000000",
+                        },
+                      }}
+                      value={carInfo[0].car_infocode}
+                      options={carInfoDataCompanny.map((option) => option.car_infocode)}
+                      onInputChange={(event, newInputValue, reason) => {
+                        const list = [...carInfo]
+                        list[0]['car_infocode'] = newInputValue
+                        setCarInfo(list)
+                      }}
+                      onChange={async (event, newInputValue, reason) => {
+                        if (reason === 'clear') {
+                          const list = [...carInfo]
+                          list[0]['car_infocode'] = ''
+                          list[0]['car_infostatus_companny'] = ''
+                          list[0]['car_categaryid'] = ''
+                          list[0]['car_typeid'] = ''
+                          list[0]['car_band'] = ''
+                          list[0]['car_tier'] = ''
+                          list[0]['car_color'] = ''
+                          list[0]['car_remarks'] = ''
+                          setCarInfo(list)
+                        } else {
+                          const body = { car_infocode: newInputValue }
+                          await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
+                            .then((response) => {
+                              if (response.data[0].car_infocode) {
+                                const list = [...carInfo]
+                                list[0]['car_infocode'] = newInputValue
+                                list[0]['car_infostatus_companny'] = response.data[0].car_infostatus_companny
+                                list[0]['car_categaryid'] = response.data[0].car_categaryid
+                                list[0]['car_typeid'] = response.data[0].car_typeid
+                                list[0]['car_band'] = response.data[0].car_band
+                                list[0]['car_tier'] = response.data[0].car_tier
+                                list[0]['car_color'] = response.data[0].car_color
+                                list[0]['car_remarks'] = response.data[0].car_remarks
+                                setCarInfo(list)
+                              }
+                            })
+                        }
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="ทะเบียนรถ"
+                          fullWidth
+                        />
+                      )}
+                    />
+                  ) : (
+                    <Autocomplete
+                      autoHighlight
+                      id="free-solo-demo"
+                      freeSolo
+                      sx={{
+                        "& .MuiInputBase-input.Mui-disabled": {
+                          WebkitTextFillColor: "#000000",
+                        },
+                      }}
+                      value={carInfo[0].car_infocode}
+                      options={carInfoData.map((option) => option.car_infocode)}
+                      onInputChange={(event, newInputValue, reason) => {
+                        const list = [...carInfo]
+                        list[0]['car_infocode'] = newInputValue
+                        setCarInfo(list)
+                      }}
+                      onChange={async (event, newInputValue, reason) => {
+                        if (reason === 'clear') {
+                          const list = [...carInfo]
+                          list[0]['car_infocode'] = ''
+                          list[0]['car_infostatus_companny'] = ''
+                          list[0]['car_categaryid'] = ''
+                          list[0]['car_typeid'] = ''
+                          list[0]['car_band'] = ''
+                          list[0]['car_tier'] = ''
+                          list[0]['car_color'] = ''
+                          list[0]['car_remarks'] = ''
+                          setCarInfo(list)
+                        } else {
+                          const body = { car_infocode: newInputValue }
+                          await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
+                            .then((response) => {
+                              if (response.data[0].car_infocode) {
+                                const list = [...carInfo]
+                                list[0]['car_infocode'] = newInputValue
+                                list[0]['car_infostatus_companny'] = response.data[0].car_infostatus_companny
+                                list[0]['car_categaryid'] = response.data[0].car_categaryid
+                                list[0]['car_typeid'] = response.data[0].car_typeid
+                                list[0]['car_band'] = response.data[0].car_band
+                                list[0]['car_tier'] = response.data[0].car_tier
+                                list[0]['car_color'] = response.data[0].car_color
+                                list[0]['car_remarks'] = response.data[0].car_remarks
+                                setCarInfo(list)
+                              }
+                            })
+                        }
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="ทะเบียนรถ"
+                          fullWidth
+                        />
+                      )}
+                    />
+                  )}
+                </Grid>
+                <Grid item xs={6} sm={4}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">ประเภทของรถ</InputLabel>
+                    <Select
+                      disabled
+                      sx={{
+                        "& .MuiInputBase-input.Mui-disabled": {
+                          WebkitTextFillColor: "#000000",
+                        },
+                      }}
+                      labelId="demo-simple-select-label"
+                      name="car_typeid"
+                      label="ประเภทของรถ"
+                      value={carInfo[0].car_typeid}
+                      onChange={(event) => {
+                        const list = [...carInfo]
+                        list[0]['car_typeid'] = event.target.value
+                        setCarInfo(list)
+                      }}
+                    // variant="standard"
+                    >
+                      <MenuItem value={2}>รถมอเตอร์ไซค์</MenuItem>
+                      <MenuItem value={3}>รถยนต์</MenuItem>
+                      <MenuItem value={4}>รถยนต์กระบะ</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={6} sm={4}>
+                  <TextField
+                    required
                     disabled
                     sx={{
                       "& .MuiInputBase-input.Mui-disabled": {
                         WebkitTextFillColor: "#000000",
                       },
                     }}
-                    labelId="demo-simple-select-label"
-                    name="car_typeid"
-                    label="ประเภทของรถ"
-                    value={carInfo[0].car_typeid}
+                    name="car_band"
+                    label="ยี่ห้อของรถ"
+                    value={carInfo[0].car_band}
+                    fullWidth
+                    autoComplete="given-name"
                     onChange={(event) => {
                       const list = [...carInfo]
-                      list[0]['car_typeid'] = event.target.value
+                      list[0]['car_band'] = event.target.value
                       setCarInfo(list)
                     }}
                   // variant="standard"
-                  >
-                    <MenuItem value={2}>รถมอเตอร์ไซค์</MenuItem>
-                    <MenuItem value={3}>รถยนต์</MenuItem>
-                    <MenuItem value={4}>รถยนต์กระบะ</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={6} sm={4}>
-                <TextField
-                  required
-                  disabled
-                  sx={{
-                    "& .MuiInputBase-input.Mui-disabled": {
-                      WebkitTextFillColor: "#000000",
-                    },
-                  }}
-                  name="car_band"
-                  label="ยี่ห้อของรถ"
-                  value={carInfo[0].car_band}
-                  fullWidth
-                  autoComplete="given-name"
-                  onChange={(event) => {
-                    const list = [...carInfo]
-                    list[0]['car_band'] = event.target.value
-                    setCarInfo(list)
-                  }}
-                // variant="standard"
-                />
-              </Grid>
-              <Grid item xs={6} sm={4}>
-                <TextField
-                  required
-                  disabled
-                  sx={{
-                    "& .MuiInputBase-input.Mui-disabled": {
-                      WebkitTextFillColor: "#000000",
-                    },
-                  }}
-                  name="car_tier"
-                  label="รุ่น"
-                  value={carInfo[0].car_tier}
-                  fullWidth
-                  autoComplete="given-name"
-                  onChange={(event) => {
-                    const list = [...carInfo]
-                    list[0]['car_tier'] = event.target.value
-                    setCarInfo(list)
-                  }}
-                // variant="standard"
-                />
-              </Grid>
-              <Grid item xs={6} sm={4}>
-                <TextField
-                  required
-                  disabled
-                  sx={{
-                    "& .MuiInputBase-input.Mui-disabled": {
-                      WebkitTextFillColor: "#000000",
-                    },
-                  }}
-                  name="car_color"
-                  label="สีรถ"
-                  value={carInfo[0].car_color}
-                  fullWidth
-                  autoComplete="given-name"
-                  onChange={(event) => {
-                    const list = [...carInfo]
-                    list[0]['car_color'] = event.target.value
-                    setCarInfo(list)
-                  }}
-                // variant="standard"
-                />
-              </Grid>
-              <Grid item xs={12} sm={8}>
-                <TextField
-                  required
-                  disabled
-                  sx={{
-                    "& .MuiInputBase-input.Mui-disabled": {
-                      WebkitTextFillColor: "#000000",
-                    },
-                  }}
-                  name="car_remarks"
-                  label="หมายเหตุ"
-                  value={carInfo[0].car_remarks}
-                  fullWidth
-                  autoComplete="given-name"
-                  onChange={(event) => {
-                    const list = [...carInfo]
-                    list[0]['car_remarks'] = event.target.value
-                    setCarInfo(list)
-                  }}
-                // variant="standard"
-                />
-              </Grid>
+                  />
+                </Grid>
+                <Grid item xs={6} sm={4}>
+                  <TextField
+                    required
+                    disabled
+                    sx={{
+                      "& .MuiInputBase-input.Mui-disabled": {
+                        WebkitTextFillColor: "#000000",
+                      },
+                    }}
+                    name="car_tier"
+                    label="รุ่น"
+                    value={carInfo[0].car_tier}
+                    fullWidth
+                    autoComplete="given-name"
+                    onChange={(event) => {
+                      const list = [...carInfo]
+                      list[0]['car_tier'] = event.target.value
+                      setCarInfo(list)
+                    }}
+                  // variant="standard"
+                  />
+                </Grid>
+                <Grid item xs={6} sm={4}>
+                  <TextField
+                    required
+                    disabled
+                    sx={{
+                      "& .MuiInputBase-input.Mui-disabled": {
+                        WebkitTextFillColor: "#000000",
+                      },
+                    }}
+                    name="car_color"
+                    label="สีรถ"
+                    value={carInfo[0].car_color}
+                    fullWidth
+                    autoComplete="given-name"
+                    onChange={(event) => {
+                      const list = [...carInfo]
+                      list[0]['car_color'] = event.target.value
+                      setCarInfo(list)
+                    }}
+                  // variant="standard"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12}>
+                  <TextField
+                    required
+                    disabled
+                    sx={{
+                      "& .MuiInputBase-input.Mui-disabled": {
+                        WebkitTextFillColor: "#000000",
+                      },
+                    }}
+                    name="car_remarks"
+                    label="หมายเหตุ"
+                    multiline
+                    value={carInfo[0].car_remarks}
+                    fullWidth
+                    autoComplete="given-name"
+                    onChange={(event) => {
+                      const list = [...carInfo]
+                      list[0]['car_remarks'] = event.target.value
+                      setCarInfo(list)
+                    }}
+                  // variant="standard"
+                  />
+                </Grid>
 
-              {/* ฟอร์ม Car-Info */}
-              <Grid item xs={12}>
-                <Stack
-                  direction="row"
-                  justifyContent="flex-start"
-                  alignItems="flex-start"
-                  spacing={2}
-                  sx={{ py: 1, pt: 5 }}
-                >
-                  <Button variant="outlined" onClick={handleServiceAddDate} startIcon={<PostAddIcon />}>
-                    Add List
-                  </Button>
-                  <Button variant="outlined" color="error" disabled={smartBill_Operation.length === 1 ? true : false} onClick={handleServiceRemoveDate} startIcon={<PostAddIcon />}>
-                    Delete List
-                  </Button>
-                </Stack>
-              </Grid>
-              <Grid item xs={12}>
-                {smartBill_Operation.map((row, index) => (
-                  <React.Fragment>
-                    <Grid item xs={12}>
-                      <Divider textAlign="center" sx={{ pb: 1 }}>
-                        <Typography variant="body2" gutterBottom sx={{ fontWeight: 'bold' }}>
-                          <Chip label={`รายละเอียดการใช้งานครั้งที่ ${index + 1} *`} size="small" color="error" variant="outlined" />
-                        </Typography>
-                      </Divider>
-                    </Grid>
-                    <FormControl fullWidth error={!row.sb_paystatus} sx={{ ml: 1 }}>
-                      <FormLabel id="demo-row-radio-buttons-group-label">เบิก/ไม่เบิก *</FormLabel>
-                      <RadioGroup
-                        row
-                        aria-labelledby="demo-row-radio-buttons-group-label"
-                        name="sb_paystatus"
-                        key={index}
-                        onChange={(e) => {
-                          const list = [...smartBill_Operation]
-                          list[index]['sb_paystatus'] = e.target.value
-                          setSmartBill_Operation(list)
-                        }}
-                        value={row.sb_paystatus}
-                      >
-                        <FormControlLabel value="1" control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="เบิก" />
-                        <FormControlLabel value="0" control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="ไม่เบิก" />
-                      </RadioGroup>
-                    </FormControl>
-                    <TextField
-                      required
-                      sx={{
-                        mt: 1,
-                        "& .MuiInputBase-input.Mui-disabled": {
-                          WebkitTextFillColor: "#000000",
-                        },
-                      }}
-                      error={!row.sb_operationid_location}
-                      name="sb_operationid_location"
-                      key={index}
-                      label={`บันทึกกิจกรรมการใช้งานครี่งที่ (${index + 1})`}
-                      fullWidth
-                      multiline
-                      value={row.sb_operationid_location}
-                      onChange={(e) => {
-                        const list = [...smartBill_Operation]
-                        list[index]['sb_operationid_location'] = e.target.value
-                        setSmartBill_Operation(list)
-                      }}
-                      autoComplete="shipping address-line1"
-                    // variant="standard"
-                    />
-                    <Grid
-                      container
-                      spacing={3}
-                      direction="row"
-                      alignItems="center"
-                      justifyContent="flex-start"
-                      sx={{ py: 2 }}
-                    >
-                      <Grid item xs={12} sm={6}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                          <DateTimePicker
-                            format="YYYY-MM-DD HH:mm"
-                            name="sb_operationid_startdate"
-                            label={`วันที่ออกเดินทางของการใช้งานครั้งที่ (${index + 1})`}
-                            //timezone='UTC'
-                            key={index}
-                            closeOnSelect={true}
-                            views={['year', 'month', 'day', 'hours']}
-                            sx={{
-                              width: '100%',
-                              "& .MuiInputBase-input.Mui-disabled": {
-                                WebkitTextFillColor: "#000000",
-                              }
-                            }}
-                            slotProps={{
-                              textField: () => ({
-                                color: !row.sb_operationid_startdate ? 'error' : null,
-                                focused: !row.sb_operationid_startdate,
-                                actionBar: {
-                                  actions: ['today', 'clear', 'cancel', 'accept'],
-                                },
-                              }),
-                            }}
-                            value={row.sb_operationid_startdate}
-                            onChange={(newValue) => {
-                              const list = [...smartBill_Operation]
-                              list[index]['sb_operationid_startdate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
-                              setSmartBill_Operation(list)
-                            }}
-                            ampm={false}
-                          />
-                        </LocalizationProvider>
+                {/* ฟอร์ม Car-Info */}
+                <Grid item xs={12}>
+                  <Stack
+                    direction="row"
+                    justifyContent="flex-start"
+                    alignItems="flex-start"
+                    spacing={2}
+                    sx={{ py: 1, pt: 5 }}
+                  >
+                    <Button variant="outlined" onClick={handleServiceAddDate} startIcon={<PostAddIcon />}>
+                      เพิ่มรายการ
+                    </Button>
+                    <Button variant="outlined" color="error" disabled={smartBill_Operation.length === 1} onClick={handleServiceRemoveDate} startIcon={<PostAddIcon />}>
+                      ลบรายการ
+                    </Button>
+                  </Stack>
+                </Grid>
+                <Grid item xs={12}>
+                  {smartBill_Operation.map((row, index) => (
+                    <React.Fragment>
+                      <Grid item xs={12}>
+                        <Divider textAlign="center" sx={{ pb: 1 }}>
+                          <Typography variant="body2" gutterBottom sx={{ fontWeight: 'bold' }}>
+                            <Chip label={`รายละเอียดการใช้งานครั้งที่ ${index + 1} *`} size="small" color="error" variant="outlined" />
+                          </Typography>
+                        </Divider>
                       </Grid>
-                      <Grid item xs={6} sm={3}>
-                        <TextField
-                          required
-                          name="sb_operationid_startmile"
+                      <FormControl fullWidth sx={{ ml: 1 }}>
+                        <FormLabel id="demo-row-radio-buttons-group-label">เบิก/ไม่เบิก *</FormLabel>
+                        <RadioGroup
+                          row
+                          aria-labelledby="demo-row-radio-buttons-group-label"
+                          name="sb_paystatus"
                           key={index}
-                          error={!row.sb_operationid_startmile}
-                          label={`ไมล์เริ่มต้น (${index + 1})`}
-                          fullWidth
-                          InputProps={{
-                            inputComponent: NumericFormatCustom,
-                          }}
-                          sx={{
-                            "& .MuiInputBase-input.Mui-disabled": {
-                              WebkitTextFillColor: "#000000",
-                            },
-                          }}
-                          value={row.sb_operationid_startmile}
                           onChange={(e) => {
                             const list = [...smartBill_Operation]
-                            if (index === 0) {
-                              list[index]['sb_operationid_startmile'] = e.target.value
-                            } else {
-                              list[index]['sb_operationid_startmile'] = smartBill_Operation[index - 1].sb_operationid_endmile
-                            }
+                            list[index]['sb_paystatus'] = e.target.value
                             setSmartBill_Operation(list)
                           }}
-                          autoComplete="shipping address-line1"
-                        // variant="standard"
-                        />
-                      </Grid>
-                      <Grid item xs={6} sm={3}>
-                        <FormControl fullWidth>
-                          <InputLabel id="demo-simple-select-label">{`น้ำมันเริ่มต้น (${index + 1})`}</InputLabel>
-                          <Select
+                          value={row.sb_paystatus}
+                        >
+                          <FormControlLabel value="1" control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="เบิก" />
+                          <FormControlLabel value="0" control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="ไม่เบิก" />
+                        </RadioGroup>
+                      </FormControl>
+                      <TextField
+                        required
+                        sx={{
+                          mt: 1,
+                          "& .MuiInputBase-input.Mui-disabled": {
+                            WebkitTextFillColor: "#000000",
+                          },
+                        }}
+                        name="sb_operationid_location"
+                        key={index}
+                        label={`บันทึกกิจกรรมการใช้งานครี่งที่ (${index + 1})`}
+                        fullWidth
+                        multiline
+                        rows={5}
+                        maxRows={5}
+                        value={row.sb_operationid_location}
+                        onChange={(e) => {
+                          const list = [...smartBill_Operation]
+                          list[index]['sb_operationid_location'] = e.target.value
+                          setSmartBill_Operation(list)
+                        }}
+                        autoComplete="shipping address-line1"
+                      // variant="standard"
+                      />
+                      <Grid
+                        container
+                        spacing={3}
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="flex-start"
+                        sx={{ py: 2 }}
+                      >
+                        <Grid item xs={12} sm={6}>
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DateTimePicker
+                              format="L HH:mm"
+                              name="sb_operationid_startdate"
+                              label={`วันที่ออกเดินทางของการใช้งานครั้งที่ (${index + 1})`}
+                              //timezone='UTC'
+                              key={index}
+                              closeOnSelect={true}
+                              views={['day', 'hours']}
+                              sx={{
+                                width: '100%',
+                                "& .MuiInputBase-input.Mui-disabled": {
+                                  WebkitTextFillColor: "#000000",
+                                }
+                              }}
+                              slotProps={{
+                                textField: () => ({
+                                  color: !row.sb_operationid_startdate ? 'error' : null,
+                                  focused: !row.sb_operationid_startdate,
+                                  actionBar: {
+                                    actions: ['today', 'clear', 'cancel', 'accept'],
+                                  },
+                                }),
+                              }}
+                              value={row.sb_operationid_startdate}
+                              onChange={(newValue) => {
+                                const list = [...smartBill_Operation]
+                                list[index]['sb_operationid_startdate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
+                                setSmartBill_Operation(list)
+                              }}
+                              ampm={false}
+                            />
+                          </LocalizationProvider>
+                        </Grid>
+                        <Grid item xs={6} sm={3}>
+                          <TextField
+                            required
+                            name="sb_operationid_startmile"
+                            key={index}
+                            label={`ไมล์เริ่มต้น (${index + 1})`}
+                            fullWidth
+                            InputProps={{
+                              inputComponent: NumericFormatCustom,
+                            }}
                             sx={{
                               "& .MuiInputBase-input.Mui-disabled": {
                                 WebkitTextFillColor: "#000000",
                               },
                             }}
-                            labelId="demo-simple-select-label"
-                            name="sb_operationid_startoil"
-                            label={`น้ำมันเริ่มต้น (${index + 1})`} สิ้นสุด
-                            key={index}
-                            error={!row.sb_operationid_startoil}
-                            value={row.sb_operationid_startoil}
+                            value={row.sb_operationid_startmile}
                             onChange={(e) => {
                               const list = [...smartBill_Operation]
-                              list[index]['sb_operationid_startoil'] = e.target.value
+                              if (index === 0) {
+                                list[index]['sb_operationid_startmile'] = e.target.value
+                              } else {
+                                list[index]['sb_operationid_startmile'] = smartBill_Operation[index - 1].sb_operationid_endmile
+                              }
                               setSmartBill_Operation(list)
                             }}
+                            autoComplete="shipping address-line1"
                           // variant="standard"
-                          >
-                            {oil_persent.map((res) => (
-                              <MenuItem value={res}>{res} %</MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                          <DateTimePicker
-                            format="YYYY-MM-DD HH:mm"
-                            name="sb_operationid_enddate"
-                            key={index}
-                            closeOnSelect={true}
-                            views={['year', 'month', 'day', 'hours']}
-                            slotProps={{
-                              textField: () => ({
-                                color: !row.sb_operationid_enddate ? 'error' : null,
-                                focused: !row.sb_operationid_enddate,
-                                actionBar: {
-                                  actions: ['today', 'clear', 'cancel', 'accept'],
+                          />
+                        </Grid>
+                        <Grid item xs={6} sm={3}>
+                          <FormControl fullWidth>
+                            <InputLabel id="demo-simple-select-label">{`น้ำมันเริ่มต้น (${index + 1})`}</InputLabel>
+                            <Select
+                              sx={{
+                                "& .MuiInputBase-input.Mui-disabled": {
+                                  WebkitTextFillColor: "#000000",
                                 },
-                              }),
-                            }}
-                            label={`วันที่สิ้นสุดเดินทาง (${index + 1})`}
-                            //timezone='UTC'
+                              }}
+                              labelId="demo-simple-select-label"
+                              name="sb_operationid_startoil"
+                              label={`น้ำมันเริ่มต้น (${index + 1})`} สิ้นสุด
+                              key={index}
+                              value={row.sb_operationid_startoil}
+                              onChange={(e) => {
+                                const list = [...smartBill_Operation]
+                                list[index]['sb_operationid_startoil'] = e.target.value
+                                setSmartBill_Operation(list)
+                              }}
+                            // variant="standard"
+                            >
+                              {oil_persent.map((res) => (
+                                <MenuItem value={res}>{res} %</MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DateTimePicker
+                              format="L HH:mm"
+                              name="sb_operationid_enddate"
+                              key={index}
+                              closeOnSelect={true}
+                              views={['day', 'hours']}
+                              slotProps={{
+                                textField: () => ({
+                                  color: !row.sb_operationid_enddate ? 'error' : null,
+                                  focused: !row.sb_operationid_enddate,
+                                  actionBar: {
+                                    actions: ['today', 'clear', 'cancel', 'accept'],
+                                  },
+                                }),
+                              }}
+                              label={`วันที่สิ้นสุดเดินทาง (${index + 1})`}
+                              //timezone='UTC'
+                              sx={{
+                                width: '100%',
+                                "& .MuiInputBase-input.Mui-disabled": {
+                                  WebkitTextFillColor: "#000000",
+                                }
+                              }}
+                              value={row.sb_operationid_enddate}
+                              onChange={(newValue) => {
+                                const list = [...smartBill_Operation]
+                                list[index]['sb_operationid_enddate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
+                                setSmartBill_Operation(list)
+                              }}
+                              ampm={false}
+                            />
+                          </LocalizationProvider>
+                        </Grid>
+                        <Grid item xs={6} sm={3}>
+                          <TextField
+                            required
                             sx={{
-                              width: '100%',
                               "& .MuiInputBase-input.Mui-disabled": {
                                 WebkitTextFillColor: "#000000",
+                              },
+                            }}
+                            name="sb_operationid_endmile"
+                            key={index}
+                            label={`ไมล์สิ้นสุด (${index + 1})`}
+                            fullWidth
+                            InputProps={{
+                              inputComponent: NumericFormatCustom,
+                            }}
+                            value={row.sb_operationid_endmile}
+                            onChange={(e) => {
+                              const list = [...smartBill_Operation]
+                              if (list[index + 1]) {
+                                list[index]['sb_operationid_endmile'] = e.target.value
+                                list[index + 1]['sb_operationid_startmile'] = e.target.value
+                                setSmartBill_Operation(list)
+                              } else {
+                                list[index]['sb_operationid_endmile'] = e.target.value
+                                setSmartBill_Operation(list)
                               }
                             }}
-                            value={row.sb_operationid_enddate}
-                            onChange={(newValue) => {
-                              const list = [...smartBill_Operation]
-                              list[index]['sb_operationid_enddate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
-                              setSmartBill_Operation(list)
-                            }}
-                            ampm={false}
-                          />
-                        </LocalizationProvider>
-                      </Grid>
-                      <Grid item xs={6} sm={3}>
-                        <TextField
-                          required
-                          sx={{
-                            "& .MuiInputBase-input.Mui-disabled": {
-                              WebkitTextFillColor: "#000000",
-                            },
-                          }}
-                          name="sb_operationid_endmile"
-                          key={index}
-                          label={`ไมล์สิ้นสุด (${index + 1})`}
-                          fullWidth
-                          error={!row.sb_operationid_endmile}
-                          InputProps={{
-                            inputComponent: NumericFormatCustom,
-                          }}
-                          value={row.sb_operationid_endmile}
-                          onChange={(e) => {
-                            const list = [...smartBill_Operation]
-                            if (list[index + 1]) {
-                              list[index]['sb_operationid_endmile'] = e.target.value
-                              list[index + 1]['sb_operationid_startmile'] = e.target.value
-                              setSmartBill_Operation(list)
-                            } else {
-                              list[index]['sb_operationid_endmile'] = e.target.value
-                              setSmartBill_Operation(list)
-                            }
-                          }}
-                          autoComplete="shipping address-line1"
-                        // variant="standard"
-                        />
-                      </Grid>
-                      <Grid item xs={6} sm={3}>
-                        <FormControl fullWidth>
-                          <InputLabel id="demo-simple-select-label">{`น้ำมันสิ้นสุด (${index + 1})`}</InputLabel>
-                          <Select
-                            sx={{
-                              "& .MuiInputBase-input.Mui-disabled": {
-                                WebkitTextFillColor: "#000000",
-                              },
-                            }}
-                            labelId="demo-simple-select-label"
-                            name="sb_operationid_endoil"
-                            key={index}
-                            error={!row.sb_operationid_endoil}
-                            label={`น้ำมันสิ้นสุด (${index + 1})`}
-                            value={row.sb_operationid_endoil}
-                            onChange={(e) => {
-                              const list = [...smartBill_Operation]
-                              list[index]['sb_operationid_endoil'] = e.target.value
-                              setSmartBill_Operation(list)
-                            }}
+                            autoComplete="shipping address-line1"
                           // variant="standard"
-                          >
-                            {oil_persent.map((res) => (
-                              <MenuItem value={res}>{res} %</MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
+                          />
+                        </Grid>
+                        <Grid item xs={6} sm={3}>
+                          <FormControl fullWidth>
+                            <InputLabel id="demo-simple-select-label">{`น้ำมันสิ้นสุด (${index + 1})`}</InputLabel>
+                            <Select
+                              sx={{
+                                "& .MuiInputBase-input.Mui-disabled": {
+                                  WebkitTextFillColor: "#000000",
+                                },
+                              }}
+                              labelId="demo-simple-select-label"
+                              name="sb_operationid_endoil"
+                              key={index}
+                              label={`น้ำมันสิ้นสุด (${index + 1})`}
+                              value={row.sb_operationid_endoil}
+                              onChange={(e) => {
+                                const list = [...smartBill_Operation]
+                                list[index]['sb_operationid_endoil'] = e.target.value
+                                setSmartBill_Operation(list)
+                              }}
+                            // variant="standard"
+                            >
+                              {oil_persent.map((res) => (
+                                <MenuItem value={res}>{res} %</MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Grid>
                       </Grid>
-                    </Grid>
-                  </React.Fragment>
-                ))}
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  name="reamarks"
-                  sx={{
-                    "& .MuiInputBase-input.Mui-disabled": {
-                      WebkitTextFillColor: "#000000",
-                    },
-                  }}
-                  label={`ระบุสถานที่จอดรถหลังจากใช้งานแล้ว`}
-                  fullWidth
-                  value={smartBill_Header[0].reamarks}
-                  onChange={(e) => {
-                    const list = [...smartBill_Header]
-                    list[0]['reamarks'] = e.target.value
-                    setSmartBill_Header(list)
-                  }}
-                  autoComplete="shipping address-line1"
-                // variant="standard"
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <FormControl sx={{ pl: 1 }}>
-                  <RadioGroup
-                    row
-                    value={smartBill_Header[0].clean_status}
-                    onChange={(event) => {
+                    </React.Fragment>
+                  ))}
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    name="reamarks"
+                    sx={{
+                      "& .MuiInputBase-input.Mui-disabled": {
+                        WebkitTextFillColor: "#000000",
+                      },
+                    }}
+                    label={`ระบุสถานที่จอดรถหลังจากใช้งานแล้ว`}
+                    fullWidth
+                    value={smartBill_Header[0].reamarks}
+                    onChange={(e) => {
                       const list = [...smartBill_Header]
-                      list[0].clean_status = event.target.value
+                      list[0]['reamarks'] = e.target.value
                       setSmartBill_Header(list)
-                    }}>
-                    <FormControlLabel value={0} control={<Radio />} label="ไม่ได้ล้างรถ" />
-                    <FormControlLabel value={1} control={<Radio />} label="ล้างรถ" />
-                  </RadioGroup>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Button
-                  component="label"
-                  variant="outlined"
-                  size="small"
-                  color="warning"
-                  startIcon={<CloudUploadIcon />}
-                  href="#file-upload"
-                  onChange={handle_files}
-                >
-                  Upload files
-                  <VisuallyHiddenInput type="file" />
-                </Button>
-              </Grid>
-              <Grid item xs={12}>
-                <ImageList cols={6} variant="quilted">
-                  {dataFilesCount ? dataFilesCount.map((item, index) => (
-                    <ImageListItem key={item.img}>
-                      <a target="_blank" href={item.file}>
-                        <img
-                          src={item.file}
-                          srcSet={item.file}
-                          alt={item.filename}
-                          style={{ maxWidth: 150, width: '100%' }}
-                          loading="lazy"
-                        />
-                      </a>
-                      <ImageListItemBar
-                        style={{ width: '100%' }}
-                        actionIcon={
-                          <IconButton
-                            sx={{ color: 'rgba(255, 255, 255, 1)' }}
-                            aria-label={`info about ${item.filename}`}
-                            onClick={async (e) => {
-                              await Axios.post(config.http + '/NonPO_Delete_Attach_By_attachid', { attachid: item.filename }, config.headers)
-                                .then((response) => {
-                                  if (response.status === 200) {
-                                    const list = [...dataFilesCount];
-                                    list.splice(index, 1);
+                    }}
+                    autoComplete="shipping address-line1"
+                  // variant="standard"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <FormControl sx={{ pl: 1 }}>
+                    <RadioGroup
+                      row
+                      value={smartBill_Header[0].clean_status}
+                      onChange={(event) => {
+                        const list = [...smartBill_Header]
+                        list[0].clean_status = event.target.value
+                        setSmartBill_Header(list)
+                      }}>
+                      <FormControlLabel value={0} control={<Radio />} label="ไม่ได้ล้างรถ" />
+                      <FormControlLabel value={1} control={<Radio />} label="ล้างรถ" />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Button
+                    component="label"
+                    variant="outlined"
+                    size="small"
+                    color="warning"
+                    startIcon={<CloudUploadIcon />}
+                    href="#file-upload"
+                    onChange={handle_files}
+                  >
+                    Upload files
+                    <VisuallyHiddenInput type="file" />
+                  </Button>
+                </Grid>
+                <Grid item xs={12}>
+                  <ImageList cols={6} variant="quilted">
+                    {dataFilesCount ? dataFilesCount.map((item, index) => (
+                      <ImageListItem key={item.img}>
+                        <a target="_blank" href={item.file}>
+                          <img
+                            src={item.file}
+                            srcSet={item.file}
+                            alt={item.filename}
+                            style={{ maxWidth: 150, width: '100%' }}
+                            loading="lazy"
+                          />
+                        </a>
+                        <ImageListItemBar
+                          style={{ width: '100%' }}
+                          actionIcon={
+                            <IconButton
+                              sx={{ color: 'rgba(255, 255, 255, 1)' }}
+                              aria-label={`info about ${item.filename}`}
+                              onClick={async (e) => {
+                                await Axios.post(config.http + '/NonPO_Delete_Attach_By_attachid', { attachid: item.filename }, config.headers)
+                                  .then((response) => {
+                                    if (response.status === 200) {
+                                      const list = [...dataFilesCount];
+                                      list.splice(index, 1);
 
-                                    setDataFilesCount(list);
-                                  }
-                                })
-                            }}
-                          >
-                            <DeleteForeverIcon />
-                            DELETE
-                          </IconButton>
-                        }
-                      />
-                    </ImageListItem>
-                  )) : null}
-                </ImageList>
+                                      setDataFilesCount(list);
+                                    }
+                                  })
+                              }}
+                            >
+                              <DeleteForeverIcon />
+                              DELETE
+                            </IconButton>
+                          }
+                        />
+                      </ImageListItem>
+                    )) : null}
+                  </ImageList>
+                </Grid>
               </Grid>
-            </Grid>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Button
-                variant="contained"
-                onClick={handleSubmit}
-                color="warning"
-                sx={{ mt: 3, ml: 1 }}
-              >
-                Update
-              </Button>
-              <Button
-                variant="contained"
-                color="success"
-                disabled={dataUser.DepCode === '101GAD' || dataUser.DepCode === '101ITO' ? false : true}
-                onClick={handleSubmitAccept}
-                sx={{ mt: 3, ml: 1 }}
-              >
-                Accept
-              </Button>
-            </Box>
-          </React.Fragment>
-        </Paper>
-      </Container>
-    </React.Fragment >
-  );
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  variant="contained"
+                  onClick={handleSubmit}
+                  color="warning"
+                  sx={{ mt: 3, ml: 1 }}
+                >
+                  Update
+                </Button>
+                <Button
+                  variant="contained"
+                  color="success"
+                  disabled={dataUser.DepCode === '101GAD' || dataUser.DepCode === '101ITO' ? false : true}
+                  onClick={handleSubmitAccept}
+                  sx={{ mt: 3, ml: 1 }}
+                >
+                  Accept
+                </Button>
+              </Box>
+            </React.Fragment>
+          </Paper>
+        </Container>
+      </React.Fragment >
+    );
+  }
 }

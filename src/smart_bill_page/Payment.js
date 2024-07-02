@@ -995,7 +995,8 @@ export default function AddressForm() {
     setOpensbw(false);
   };
 
-  const gettingData = async () => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const gettingData = React.useCallback(async () => {
     const headers = {
       'Authorization': 'application/json; charset=utf-8',
       'Accept': 'application/json'
@@ -1094,14 +1095,14 @@ export default function AddressForm() {
           }
         });
     }
-  }
+  })
 
   React.useEffect(() => {
     gettingData();
     window.setTimeout(() => {
       setCounter(10);
     }, 2000)
-  }, [])
+  }, [gettingData])
 
   const handleSmartBill_Withdraw_Save = async () => {
     await Axios.post(config.http + '/SmartBill_Withdraw_Save', smartBill_WithdrawSave[0], config.headers)
@@ -1560,23 +1561,21 @@ export default function AddressForm() {
     );
   } else if ((!smartBill_Withdraw && sbw_code && counter < 10) || (sbw_code && counter < 10)) {
     return (
-      <React.Fragment>
-        <Box
-          sx={{
-            marginTop: 30,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Stack direction="row" spacing={3}>
-            <CircularProgress disableShrink color="inherit" />
-            <Typography className="Header-Forms" color="inherit" >
-              Loading...
-            </Typography>
-          </Stack>
-        </Box>
-      </React.Fragment>
+      <Box
+        sx={{
+          marginTop: 30,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Stack direction="row" spacing={3}>
+          <CircularProgress disableShrink color="inherit" />
+          <Typography className="Header-Forms" color="inherit" >
+            Loading...
+          </Typography>
+        </Stack>
+      </Box>
     );
   } else if (smartBill_Withdraw[0]) {
     return (
