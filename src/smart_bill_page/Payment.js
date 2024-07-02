@@ -1003,7 +1003,7 @@ export default function AddressForm() {
       'Accept': 'application/json'
     };
 
-    if (!smartBill_Withdraw[0].sbw_code && !smartBill_WithdrawDtl[0].sbw_code) {
+    if (!smartBill_Withdraw[0].sbw_code) {
       // แสดง users ทั้งหมด
       await Axios.get(config.http + '/getsUserForAssetsControl', { headers })
         .then((res) => {
