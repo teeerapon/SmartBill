@@ -708,7 +708,7 @@ export default function FormsStart() {
                       <Grid item xs={12} sm={6}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DateTimePicker
-                            format="L HH:mm"
+                            format="DD/MM/YYYY HH:mm"
                             name="sb_operationid_startdate"
                             closeOnSelect={true}
                             views={['day', 'hours']}
@@ -781,7 +781,7 @@ export default function FormsStart() {
                       <Grid item xs={12} sm={6}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DateTimePicker
-                            format="L HH:mm"
+                            format="DD/MM/YYYY HH:mm"
                             name="sb_operationid_enddate"
                             //timezone='UTC'
                             key={index}
