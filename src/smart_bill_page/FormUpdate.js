@@ -85,7 +85,7 @@ const VisuallyHiddenInput = styled('input')`
   width: 1px;
 `;
 
-export default function AddressForm() {
+export default function UpdateForms() {
 
   // ใช้สำหรับสร้างเวลาปัจจุบัน
   dayjs.extend(utc);
@@ -219,18 +219,22 @@ export default function AddressForm() {
       }
       await Axios.post(config.http + '/SmartBill_CreateForms', body, config.headers)
         .then(async (response) => {
-          for (const element of dataFilesCount) {
-            let formData_1 = new FormData();
-            formData_1.append('file', element.fileData);
-            formData_1.append('sb_code', sb_code);
-
-            await Axios.post(config.http + '/SmartBill_files', formData_1, config.headers)
+          if (dataFilesCount) {
+            for (const element of dataFilesCount) {
+              let formData_1 = new FormData();
+              formData_1.append('file', element.fileData);
+              formData_1.append('sb_code', sb_code);
+              await Axios.post(config.http + '/SmartBill_files', formData_1, config.headers)
+            }
+            swal("แจ้งเตือน", 'เปลี่ยนแปลงข้อมูลแล้ว', "success", { buttons: false, timer: 2000 })
               .then(() => {
-                swal("แจ้งเตือน", 'เปลี่ยนแปลงข้อมูลแล้ว', "success", { buttons: false, timer: 2000 })
-                  .then(() => {
-                    window.location.href = '/FormUpdate?' + sb_code;
-                  });
-              })
+                window.location.href = '/FormUpdate?' + sb_code;
+              });
+          } else {
+            swal("แจ้งเตือน", 'เปลี่ยนแปลงข้อมูลแล้ว', "success", { buttons: false, timer: 2000 })
+              .then(() => {
+                window.location.href = '/FormUpdate?' + sb_code;
+              });
           }
         })
     }
@@ -250,7 +254,7 @@ export default function AddressForm() {
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const gettingUsers = React.useCallback(async () => {
+  const gettingUsers = async () => {
     if (!smartBill_Header[0].usercode && !smartBill_Operation[0].sb_operationid_startmile) {
       // แสดง users ทั้งหมด
       await Axios.get(config.http + '/getsUserForAssetsControl', config.headers)
@@ -327,7 +331,7 @@ export default function AddressForm() {
 
         })
     }
-  })
+  }
 
   const handleServiceAddDate = (index) => {
     setSmartBill_Operation([...smartBill_Operation, {
@@ -350,7 +354,7 @@ export default function AddressForm() {
 
   React.useEffect(() => {
     gettingUsers();
-  }, [gettingUsers])
+  }, [])
 
   if (!smartBill_Operation.map((res) => res.sb_operationid_location)[0]) {
     return (
@@ -869,7 +873,7 @@ export default function AddressForm() {
                         <Grid item xs={12} sm={6}>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DateTimePicker
-                              format="L HH:mm"
+                              format="DD/MM/YYYY HH:mm"
                               name="sb_operationid_startdate"
                               label={`วันที่ออกเดินทางของการใช้งานครั้งที่ (${index + 1})`}
                               //timezone='UTC'
@@ -960,7 +964,7 @@ export default function AddressForm() {
                         <Grid item xs={12} sm={6}>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DateTimePicker
-                              format="L HH:mm"
+                              format="DD/MM/YYYY HH:mm"
                               name="sb_operationid_enddate"
                               key={index}
                               closeOnSelect={true}
