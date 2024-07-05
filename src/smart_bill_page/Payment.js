@@ -1180,7 +1180,7 @@ export default function AddressForm() {
             <Button
               variant='contained'
               sx={{ my: 2 }}
-              disabled={smartBill_WithdrawSave[0].ownercode === '' ? true : false}
+              disabled={smartBill_WithdrawSave[0].ownercode === ''}
               onClick={handleSmartBill_Withdraw_Save}
             >
               Submit
@@ -1198,7 +1198,7 @@ export default function AddressForm() {
                     >
                       <Grid item xs={4}>
                         <Box>
-                          <img style={{ maxWidth: '50%' }} src={logoPure} loading="lazy" />
+                          <img style={{ maxWidth: '50%' }} alt='logoPure' src={logoPure} loading="lazy" />
                         </Box>
                       </Grid>
                       <Grid item xs={8}>
