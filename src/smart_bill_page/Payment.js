@@ -1101,7 +1101,7 @@ export default function AddressForm() {
   }, [])
 
   const handleSmartBill_Withdraw_Save = async () => {
-    if (!smartBill_WithdrawSave[0].car_infocode && typePay != 0) {
+    if (!smartBill_WithdrawSave[0].car_infocode && (typePay != 0 && condition != 2)) {
       swal("แจ้งเตือน", 'กรุณาระบุเลขทะเบียนรถ', "warning")
     } else {
       await Axios.post(config.http + '/SmartBill_Withdraw_Save', smartBill_WithdrawSave[0], config.headers)
