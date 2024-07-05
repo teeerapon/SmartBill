@@ -297,7 +297,26 @@ export default function FormsStart() {
           </Grid>
           <React.Fragment>
             <Grid container spacing={3} sx={{ pt: 2 }}>
-              <Grid item xs={6} sm={2}>
+              <Grid item xs={12}>
+                <FormControl fullWidth required sx={{ ml: 1 }}>
+                  <FormLabel id="demo-row-radio-buttons-group-label">Companny</FormLabel>
+                  <RadioGroup
+                    row
+                    aria-labelledby="demo-row-radio-buttons-group-label"
+                    name="companny"
+                    value={smartBill_Header[0].sb_name}
+                    onChange={(e) => {
+                      const list = [...smartBill_Header]
+                      list[0]['sb_name'] = e.target.value
+                      setSmartBill_Header(list)
+                    }}
+                  >
+                    <FormControlLabel value="PTEC" control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="PTEC" />
+                    <FormControlLabel value="SCT" control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="SCT" />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={4}>
                 <Autocomplete
                   autoHighlight
                   id="free-solo-demo"
@@ -328,25 +347,6 @@ export default function FormsStart() {
                     />
                   )}
                 />
-              </Grid>
-              <Grid item xs={6} sm={2}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">companny</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={smartBill_Header[0].sb_name}
-                    label="companny"
-                    onChange={(e) => {
-                      const list = [...smartBill_Header]
-                      list[0]['sb_name'] = e.target.value
-                      setSmartBill_Header(list)
-                    }}
-                  >
-                    <MenuItem value="PTEC">PTEC</MenuItem>
-                    <MenuItem value="SCT">SCT</MenuItem>
-                  </Select>
-                </FormControl>
               </Grid>
               <Grid item xs={12} sm={4}>
                 <TextField
@@ -384,7 +384,7 @@ export default function FormsStart() {
 
               {/* ฟอร์ม Car-Info */}
               <Grid item xs={6} sm={4}>
-                <FormControl fullWidth sx={{ ml: 1 }}>
+                <FormControl required fullWidth sx={{ ml: 1 }}>
                   <FormLabel id="demo-row-radio-buttons-group-label">ประเภทการใช้งานรถยนต์</FormLabel>
                   <RadioGroup
                     row
