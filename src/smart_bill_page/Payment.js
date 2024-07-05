@@ -1004,12 +1004,12 @@ export default function AddressForm() {
         setUsers(res.data.data)
       })
 
-      const bodyCarInfoSearch = { car_infocode: null }
-      await Axios.post(config.http + '/SmartBill_CarInfoSearch', bodyCarInfoSearch, config.headers)
-        .then((response) => {
-          setCarInfoData(response.data);
-          setCarInfoDataCompanny(response.data.filter((res) => res.car_infostatus_companny === true));
-        });
+    const bodyCarInfoSearch = { car_infocode: null }
+    await Axios.post(config.http + '/SmartBill_CarInfoSearch', bodyCarInfoSearch, config.headers)
+      .then((response) => {
+        setCarInfoData(response.data);
+        setCarInfoDataCompanny(response.data.filter((res) => res.car_infostatus_companny === true));
+      });
 
     await Axios.get(config.http + '/SmartBill_Withdraw_SelectCostOther', config.headers)
       .then((response) => {
@@ -1157,9 +1157,10 @@ export default function AddressForm() {
     }
     await Axios.post(config.http + '/SmartBill_Withdraw_updateSBW', body, config.headers)
       .then((response) => {
-        if (response.status === 200 && response.data !== 'กรุณายกเลิกใบ PAY ก่อน') {
+        const searchTerm = 'กรุณายกเลิก';
+        if (response.status === 200 && !response.data.toLowerCase().includes(searchTerm.toLowerCase())) {
           window.location.href = '/Payment?' + sbw_code;
-        } else if (response.data === 'กรุณายกเลิกใบ PAY ก่อน') {
+        } else if (response.status === 200 && response.data.toLowerCase().includes(searchTerm.toLowerCase())) {
           swal("แจ้งเตือน", response.data, "error")
         } else {
           swal("แจ้งเตือน", 'error code #DEO0012', "error")
