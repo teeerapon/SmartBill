@@ -215,11 +215,10 @@ export default function AddressForm() {
 
   const columns = [
     { field: 'sbw_code', headerName: 'เลขที่ดำเนินการ', flex: 1, minWidth: 100 },
+    { field: 'typePay', headerName: 'Companny', flex: 1, minWidth: 80 },
     { field: 'ownercode', headerName: 'ผู้ทำรายการ', flex: 1, minWidth: 80 },
     { field: 'createdate', headerName: 'วันที่ทำรายการ', flex: 1, minWidth: 150 },
     { field: 'car_infocode', headerName: 'บะเทียนรถ', flex: 1, minWidth: 120 },
-    { field: 'car_band', headerName: 'ยี่ห้อ', flex: 1, minWidth: 100 },
-    { field: 'car_tier', headerName: 'ชื่อรุ่น', flex: 1, minWidth: 200 },
     {
       field: 'lock_status',
       headerName: 'status',
@@ -230,10 +229,9 @@ export default function AddressForm() {
       renderCell: (params) => {
         return (
           <Chip
-            sx={{ width: '100%' }}
-            label={params.row.lock_status === true ? 'Lock' : 'None'}
+            sx={{ width: '100%', color: params.row.lock_status === true ? '#FAFDF6' : '#C73E1D', border: `1px solid ${params.row.lock_status === true ? '#FAFDF6' : '#C73E1D'}` }}
+            label={params.row.lock_status === true ? 'LOCK' : 'UNLOCK'}
             size="small"
-            color={params.row.lock_status === true ? 'warning' : 'success'}
             variant="outlined"
           />
         );
@@ -248,16 +246,14 @@ export default function AddressForm() {
       minWidth: 120,
       renderCell: (params) => {
         return (
-          <React.Fragment>
-            <Stack direction="row" spacing={1}>
-              <IconButton onClick={() => window.location.href = `/Payment?${params.row.sbw_code}`} size="large">
-                <ArticleIcon fontSize="inherit" color='primary' />
-              </IconButton>
-              <IconButton size="large" onClick={(e) => openDeleteRowDilog(e, params)}>
-                <DeleteIcon fontSize="inherit" color='error' />
-              </IconButton>
-            </Stack>
-          </React.Fragment>
+          <Stack direction="row" spacing={1}>
+            <IconButton onClick={() => window.location.href = `/Payment?${params.row.sbw_code}`} size="large">
+              <ArticleIcon fontSize="inherit" color='primary' />
+            </IconButton>
+            <IconButton size="large" onClick={(e) => openDeleteRowDilog(e, params)}>
+              <DeleteIcon fontSize="inherit" color='error' />
+            </IconButton>
+          </Stack>
         )
       }
     },
@@ -299,6 +295,30 @@ export default function AddressForm() {
                       .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
                   }
                   renderInput={(params) => <TextField label="เลขที่ดำเนินการ" {...params} />}
+                />
+              </Grid>
+              <Grid item xs>
+                <Autocomplete
+                  autoHighlight
+                  disablePortal
+                  id="combo-box-demo"
+                  size='small'
+                  value={localStorage.getItem('typePay') ?? ''}
+                  sx={{ py: 1 }}
+                  onChange={(e, newInputValue, reason) => {
+                    if (reason === 'clear') {
+                      localStorage.setItem('typePay', '');
+                      SelectHeaders();
+                    } else {
+                      localStorage.setItem('typePay', newInputValue);
+                      setRowHeader(rowHeader.filter((res, index) => res.typePay === newInputValue))
+                    }
+                  }}
+                  options={
+                    rowHeader ? rowHeader.map((res) => res.typePay).filter(x => !!x)
+                      .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
+                  }
+                  renderInput={(params) => <TextField label="Companny" {...params} />}
                 />
               </Grid>
               <Grid item xs>

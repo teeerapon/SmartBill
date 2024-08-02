@@ -7,9 +7,12 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { renderDigitalClockTimeView, } from '@mui/x-date-pickers/timeViewRenderers';
+import { usePickerLayout, pickersLayoutClasses, PickersLayoutRoot, PickersLayoutContentWrapper, } from '@mui/x-date-pickers/PickersLayout';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import { styled } from '@mui/material/styles';
@@ -42,6 +45,65 @@ import FormLabel from '@mui/material/FormLabel';
 import CircularProgress from '@mui/material/CircularProgress';
 import Picture1 from '../image/Picture1.png'
 import Picture2 from '../image/Picture2.png'
+
+function ActionList(props) {
+  const { onAccept, onClear, onCancel, onSetToday } = props;
+  const actions = [
+    { text: 'Clear', method: onClear },
+    { text: 'Today', method: onSetToday },
+    { text: 'Cancel', method: onCancel },
+    { text: 'Accept', method: onAccept },
+  ];
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        '& > *': {
+          m: 1,
+        },
+      }}
+    >
+      <ButtonGroup size="small" aria-label="Small button group">
+        {actions.map(({ text, method }) => (
+          <Button key={text} onClick={method} disablePadding>
+            {text}
+          </Button>
+        ))}
+      </ButtonGroup>
+    </Box >
+  );
+}
+
+function CustomLayout(props) {
+  const { tabs, content, actionBar } = usePickerLayout(props);
+
+  return (
+    <PickersLayoutRoot
+      ownerState={props}
+      sx={{
+        overflow: 'auto',
+        [`.${pickersLayoutClasses.actionBar}`]: {
+          gridColumn: 1,
+          gridRow: 2,
+        },
+        [`.${pickersLayoutClasses.toolbar}`]: {
+          gridColumn: 2,
+          gridRow: 1,
+        },
+      }}
+    >
+      <PickersLayoutContentWrapper className={pickersLayoutClasses.contentWrapper}>
+        {tabs}
+        {content}
+        <Divider />
+        {actionBar}
+      </PickersLayoutContentWrapper>
+    </PickersLayoutRoot>
+  );
+}
 
 const NumericFormatCustom = React.forwardRef(function NumericFormatCustom(
   props,
@@ -875,30 +937,21 @@ export default function UpdateForms() {
                             <DateTimePicker
                               format="DD/MM/YYYY HH:mm"
                               name="sb_operationid_startdate"
-                              label={`วันที่ออกเดินทางของการใช้งานครั้งที่ (${index + 1})`}
-                              //timezone='UTC'
-                              key={index}
                               closeOnSelect={true}
                               views={['day', 'hours']}
-                              sx={{
-                                width: '100%',
-                                "& .MuiInputBase-input.Mui-disabled": {
-                                  WebkitTextFillColor: "#000000",
-                                }
-                              }}
-                              slotProps={{
-                                textField: () => ({
-                                  color: !row.sb_operationid_startdate ? 'error' : null,
-                                  focused: !row.sb_operationid_startdate,
-                                  actionBar: {
-                                    actions: ['today', 'clear', 'cancel', 'accept'],
-                                  },
-                                }),
-                              }}
+                              label={`วันที่ออกเดินทางของการใช้งานครั้งที่ (${index + 1})`}
+                              viewRenderers={{ hours: renderDigitalClockTimeView }}
+                              key={index}
                               value={row.sb_operationid_startdate}
+                              slots={{
+                                layout: CustomLayout,
+                                actionBar: ActionList,
+                              }}
+                              sx={{ width: '100%' }}
                               onChange={(newValue) => {
                                 const list = [...smartBill_Operation]
                                 list[index]['sb_operationid_startdate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
+                                list[index]['sb_operationid_enddate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
                                 setSmartBill_Operation(list)
                               }}
                               ampm={false}
@@ -966,27 +1019,17 @@ export default function UpdateForms() {
                             <DateTimePicker
                               format="DD/MM/YYYY HH:mm"
                               name="sb_operationid_enddate"
+                              viewRenderers={{ hours: renderDigitalClockTimeView }}
                               key={index}
                               closeOnSelect={true}
                               views={['day', 'hours']}
-                              slotProps={{
-                                textField: () => ({
-                                  color: !row.sb_operationid_enddate ? 'error' : null,
-                                  focused: !row.sb_operationid_enddate,
-                                  actionBar: {
-                                    actions: ['today', 'clear', 'cancel', 'accept'],
-                                  },
-                                }),
-                              }}
-                              label={`วันที่สิ้นสุดเดินทาง (${index + 1})`}
-                              //timezone='UTC'
-                              sx={{
-                                width: '100%',
-                                "& .MuiInputBase-input.Mui-disabled": {
-                                  WebkitTextFillColor: "#000000",
-                                }
-                              }}
+                              label={`วันที่สิ้นสุดเดินทางของการใช้งานครั้งที่ (${index + 1})`}
                               value={row.sb_operationid_enddate}
+                              sx={{ width: '100%' }}
+                              slots={{
+                                layout: CustomLayout,
+                                actionBar: ActionList,
+                              }}
                               onChange={(newValue) => {
                                 const list = [...smartBill_Operation]
                                 list[index]['sb_operationid_enddate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
@@ -1161,7 +1204,7 @@ export default function UpdateForms() {
                 <Button
                   variant="contained"
                   color="success"
-                  disabled={dataUser.DepCode === '101GAD' || dataUser.DepCode === '101ITO' ? false : true}
+                  disabled={!(dataUser.DepCode === '101GAD' || dataUser.DepCode === '101ITO')}
                   onClick={handleSubmitAccept}
                   sx={{ mt: 3, ml: 1 }}
                 >

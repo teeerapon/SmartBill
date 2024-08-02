@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { NumericFormat } from 'react-number-format';
 import PropTypes from 'prop-types';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,11 +13,12 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import Grid from '@mui/material/Grid';
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from '@mui/icons-material/Clear';
 import ArticleIcon from '@mui/icons-material/Article';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -24,30 +26,98 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/system';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import logoPure from '../image/Picture1.png'
+import { renderDigitalClockTimeView, } from '@mui/x-date-pickers/timeViewRenderers';
+import { usePickerLayout, pickersLayoutClasses, PickersLayoutRoot, PickersLayoutContentWrapper, } from '@mui/x-date-pickers/PickersLayout';
+import Divider from '@mui/material/Divider';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import CircularProgress from '@mui/material/CircularProgress';
 import CloseIcon from '@mui/icons-material/Close';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import dayjs from 'dayjs';
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import NavBar from './NavBar'
-import Divider from '@mui/material/Divider';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import InputAdornment from '@mui/material/InputAdornment';
 import THBText from 'thai-baht-text' // for ES6
+import Switch from '@mui/material/Switch';
+import Chip from '@mui/material/Chip';
+import { RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import Picture1 from '../image/Picture1.png'
+import Picture2 from '../image/Picture2.png'
+
+
+function ActionList(props) {
+  const { onAccept, onClear, onCancel, onSetToday } = props;
+  const actions = [
+    { text: 'Clear', method: onClear },
+    { text: 'Today', method: onSetToday },
+    { text: 'Cancel', method: onCancel },
+    { text: 'Accept', method: onAccept },
+  ];
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        '& > *': {
+          m: 1,
+        },
+      }}
+    >
+      <ButtonGroup size="small" aria-label="Small button group">
+        {actions.map(({ text, method }) => (
+          <Button key={text} onClick={method} disablePadding>
+            {text}
+          </Button>
+        ))}
+      </ButtonGroup>
+    </Box >
+  );
+}
+
+function CustomLayout(props) {
+  const { tabs, content, actionBar } = usePickerLayout(props);
+
+  return (
+    <PickersLayoutRoot
+      ownerState={props}
+      sx={{
+        overflow: 'auto',
+        [`.${pickersLayoutClasses.actionBar}`]: {
+          gridColumn: 1,
+          gridRow: 2,
+        },
+        [`.${pickersLayoutClasses.toolbar}`]: {
+          gridColumn: 2,
+          gridRow: 1,
+        },
+      }}
+    >
+      <PickersLayoutContentWrapper className={pickersLayoutClasses.contentWrapper}>
+        {tabs}
+        {content}
+        <Divider />
+        {actionBar}
+      </PickersLayoutContentWrapper>
+    </PickersLayoutRoot>
+  );
+}
+
+const ListItem = styled('li')(({ theme }) => ({
+  margin: theme.spacing(0.5),
+}));
 
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -59,10 +129,25 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-const grey = {
-  200: '#d0d7de',
-  800: '#32383f',
-  900: '#24292f',
+const purple = {
+  100: '#e5ccf1', // backgroud header
+  200: '#DDA0DD', // backgroud sup header
+  800: '#924794', // font header
+  900: '#832161', // font sup header
+};
+
+const orange = {
+  100: '#DEB841', // backgroud header
+  200: '#DE9E36', // backgroud sup header
+  800: '#EFA00B', // font header
+  900: '#9E2B25', // font sup header
+};
+
+const green = {
+  100: '#AFE3C0', // backgroud header
+  200: '#90C290', // backgroud sup header
+  800: '#688B58', // font header
+  900: '#11270B', // font sup header
 };
 
 const Root = styled('div')(
@@ -70,18 +155,15 @@ const Root = styled('div')(
   table {
     font-family: IBM Plex Sans, sans-serif;
     font-size: 0.875rem;
-    border-collapse: collapse;
     width: 100%;
   }
-
-  td,
-  th {
-    border: 1px solid ${theme.palette.mode === 'dark' ? grey[800] : grey[200]};
+  td,th {
+    border: 1px solid #BFCCD9;
+    min-height: 50px;
     padding: 8px;
   }
-
   th {
-    background-color: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
+    background-color: #FFFFFF;
   }
   `,
 );
@@ -131,7 +213,7 @@ export default function AddressForm() {
   const [openAllowance, setOpenAllowance] = React.useState(false);
   const [openCostHotel, setOpenCostHotel] = React.useState(false);
   const [openSmartBill_WithdrawDtlSave, setOpenSmartBill_WithdrawDtlSave] = React.useState(false);
-  const [costOther, setCostOther] = React.useState()
+  const [costOther, setCostOther] = React.useState([])
   const [province, setProvince] = React.useState()
   const data = JSON.parse(localStorage.getItem('data'));
 
@@ -151,8 +233,6 @@ export default function AddressForm() {
 
   const [carInfoDataCompanny, setCarInfoDataCompanny] = React.useState([]);
   const [carInfoData, setCarInfoData] = React.useState([]);
-  const [typePay, setTypePay] = React.useState(1);
-  const [condition, setCondition] = React.useState(0);
 
 
   //
@@ -176,6 +256,8 @@ export default function AddressForm() {
     car_paytype: '',
     pure_card: '',
     lock_status: false,
+    typePay: "PTEC",
+    condition: 0,
   }]);
 
   const [smartBill_WithdrawDtl, setSmartBill_WithdrawDtl] = React.useState([{
@@ -206,17 +288,31 @@ export default function AddressForm() {
 
   const removeSmartBill_wddtl = async (e, index) => {
     await Axios.post(config.http + '/SmartBill_WithdrawDtl_Delete', smartBill_WithdrawDtl[index], config.headers)
-      .then((res) => {
-        if (res.status === 200) {
+      .then(response => {
+        if (response.status === 200 && smartBill_WithdrawDtl.length === 1) {
+          setSmartBill_WithdrawDtl([{
+            sbwdtl_id: '',
+            sbw_code: '',
+            sbwdtl_operationid_startdate: dayjs().tz('Asia/Bangkok'),
+            sbwdtl_operationid_enddate: dayjs().tz('Asia/Bangkok'),
+            sbwdtl_operationid_location: '',
+            sbwdtl_operationid_endmile: '',
+            sbwdtl_operationid_startmile: '',
+            sum_mile: '',
+            price_rateoil: '',
+            oilBath: '',
+            amouthTrueOil: '',
+            amouthAllowance: '',
+            amouthHotel: '',
+            amouthRush: '',
+            amouthAll: '',
+            amouthother: '',
+          }])
+        } else {
           gettingData();
         }
       })
   }
-
-  const [smartBill_WithdrawSave, setSmartBill_WithdrawSave] = React.useState([{
-    ownercode: data.UserCode,
-    car_infocode: ''
-  }]);
 
   const [case_WithdrawDtlSave, setCase_WithdrawDtlSave] = React.useState(0);
 
@@ -298,35 +394,10 @@ export default function AddressForm() {
     gettingData();
   }
 
-  const handleChangeTypePay = async (event) => {
-    setTypePay(event.target.value);
-    if (event.target.value === 0 || event.target.value === '0') {
-      setCarInfoDataCompanny(null);
-      setCarInfoData(null);
-    } else {
-      const body = { car_infocode: null }
-      await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
-        .then((response) => {
-          const list = [...carInfo]
-          list[0]['car_infostatus_companny'] = event.target.value
-          list[0]['car_infocode'] = event.target.value === 0 ? '' : list[0]['car_infocode']
-          list[0]['car_infostatus_companny'] = event.target.value === 0 ? '' : list[0]['car_infostatus_companny']
-          list[0]['car_categaryid'] = event.target.value === 0 ? '' : list[0]['car_categaryid']
-          list[0]['car_typeid'] = event.target.value === 0 ? '' : list[0]['car_typeid']
-          list[0]['car_band'] = event.target.value === 0 ? '' : list[0]['car_band']
-          list[0]['car_tier'] = event.target.value === 0 ? '' : list[0]['car_tier']
-          list[0]['car_color'] = event.target.value === 0 ? '' : list[0]['car_color']
-          list[0]['car_remarks'] = event.target.value === 0 ? '' : list[0]['car_remarks']
-          list[0]['car_payname'] = event.target.value === 0 ? '' : list[0]['car_payname']
-          setCarInfo(list)
-          setCarInfoDataCompanny(response.data.filter((res) => res.car_infostatus_companny === true)); // 1 รถบริษัท
-          setCondition(0);
-        })
-    }
-  };
-
   const handleChangeCondition = async (event) => {
-    if (event.target.value === 0 || event.target.value === '0') {
+    if (smartBill_WithdrawDtl.map(res => res.sbwdtl_operationid_location !== '')[0]) {
+      swal("แจ้งเตือน", 'ไม่สามารถเปลี่ยนได้ เนื่องจากมีการลงกิจกรรมแล้ว กรุณาทำรายการใหม่', "warning")
+    } else if (event.target.value === 0 || event.target.value === '0') {
       const body = { car_infocode: null }
       await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
         .then((response) => {
@@ -344,7 +415,9 @@ export default function AddressForm() {
           setCarInfo(list)
           setCarInfoDataCompanny(response.data.filter((res) => res.car_infostatus_companny === true)); // 1 รถบริษัท
           setCarInfoData(null)
-          setCondition(event.target.value);
+          const condition = [...smartBill_Withdraw]
+          condition[0].condition = event.target.value
+          setSmartBill_Withdraw(condition)
         })
     } else if (event.target.value === 1 || event.target.value === '1') {
       const body = { car_infocode: null }
@@ -364,13 +437,15 @@ export default function AddressForm() {
           setCarInfo(list)
           setCarInfoData(response.data.filter((res) => res.car_infostatus_companny === false)); //  0 รถส่วนตัว
           setCarInfoDataCompanny(null)
-          setCondition(event.target.value);
+          const condition = [...smartBill_Withdraw]
+          condition[0].condition = event.target.value
+          setSmartBill_Withdraw(condition)
         })
     } else {
-      const listCar = [...smartBill_WithdrawSave]
+      const listCar = [...smartBill_Withdraw]
       listCar[0]['car_infocode'] = ''
-      setSmartBill_WithdrawSave(listCar)
-      setCondition(event.target.value);
+      listCar[0]['condition'] = event.target.value
+      setSmartBill_Withdraw(listCar)
       setCarInfoDataCompanny(null);
       setCarInfoData(null);
       setCarInfo([{
@@ -394,6 +469,7 @@ export default function AddressForm() {
     cost_id: '',
     payTrueDtl_satatus: 1,
     category_id: 1,
+    usercode: data.UserCode,
     amount: '',
   });
 
@@ -410,6 +486,7 @@ export default function AddressForm() {
             sbwdtl_id: response.data[0][0].sbwdtl_id,
             cost_id: response.data[0][0].cost_id,
             payTrueDtl_satatus: 1,
+            usercode: response.data[0][0].usercode,
             category_id: body.category_id,
             amount: response.data[0][0].amount,
           });
@@ -419,6 +496,7 @@ export default function AddressForm() {
             sbwdtl_id: (e.target.value).split(',')[0],
             cost_id: '',
             payTrueDtl_satatus: 1,
+            usercode: data.UserCode,
             category_id: body.category_id,
             amount: '',
           });
@@ -443,7 +521,6 @@ export default function AddressForm() {
 
   //อื่น ๆ
   const [openDialogPayOther, setOpenDialogPayOther] = React.useState(false)
-  const [payOtherCase, setPayOtherCase] = React.useState(1)
 
   const [payOther, setPayOther] = React.useState([{
     sbwdtl_id: '',
@@ -452,14 +529,25 @@ export default function AddressForm() {
     amount: '',
   }]);
 
-  const addPayOther = () => {
-    setPayOther([...payOther, {
-      sbwdtl_id: payOther[0].sbwdtl_id,
-      cost_id: '',
-      category_name: '',
-      amount: '',
-    }])
-  }
+  const handleAddOtherChip = (e, data) => {
+    if (payOther.filter((res) => res.category_name === data.category_name)[0]) {
+      swal('แจ้งเตือน', 'รายการนี้ถูกเพิ่มลงในบิลค่าใช้จ่ายแล้ว', 'warning')
+    } else if (payOther[0].category_name === '') {
+      setPayOther([{
+        sbwdtl_id: payOther[0].sbwdtl_id,
+        cost_id: '',
+        category_name: data.category_name,
+        amount: '',
+      }])
+    } else {
+      setPayOther([...payOther, {
+        sbwdtl_id: payOther[0].sbwdtl_id,
+        cost_id: '',
+        category_name: data.category_name,
+        amount: '',
+      }])
+    }
+  };
 
   const reMovePayOther = async (e, index) => {
     const body = payOther[index]
@@ -519,20 +607,13 @@ export default function AddressForm() {
   };
 
   const handleSavePayOther = async () => {
-    if (
-      payOther.filter((res) => res.category_name === '' || !res.category_name)[0] ||
-      payOther.filter((res) => res.amount === '' || !res.amount)[0]
-    ) {
-      swal("แจ้งเตือน", 'ระบุรายละเอียดในการเบิกให้ครบถ้วน', "error")
-    } else {
-      await Axios.post(config.http + '/SmartBill_WithdrawDtl_SaveChangesCategory', payOther, config.headers)
-        .then((res) => {
-          if (res.status === 200) {
-            setOpenDialogPayOther(false);
-            gettingData();
-          }
-        })
-    }
+    await Axios.post(config.http + '/SmartBill_WithdrawDtl_SaveChangesCategory', payOther, config.headers)
+      .then((res) => {
+        if (res.status === 200) {
+          setOpenDialogPayOther(false);
+          gettingData();
+        }
+      })
   }
 
   const handleCloseDialogPayOther = () => {
@@ -544,12 +625,13 @@ export default function AddressForm() {
     sbwdtl_id: '',
     cost_id: '',
     payTrueDtl_satatus: 1,
+    usercode: data.UserCode,
     category_id: 1,
     amount: '',
   });
 
   const handleClickOpenDialogPayTrue = async (e) => {
-    if (smartBill_Withdraw[0].car_paytype === false && typePay == 0) {
+    if (smartBill_Withdraw[0].car_paytype == 0) {
       swal("แจ้งเตือน", 'รถคันนี้เบิกตามไมลล์เท่านั้น', "error")
     } else {
       const body = {
@@ -563,6 +645,7 @@ export default function AddressForm() {
             setPayTrueDtl({
               sbwdtl_id: response.data[0][0].sbwdtl_id,
               cost_id: response.data[0][0].cost_id,
+              usercode: response.data[0][0].usercode,
               payTrueDtl_satatus: 1,
               category_id: body.category_id,
               amount: response.data[0][0].amount,
@@ -573,6 +656,7 @@ export default function AddressForm() {
               sbwdtl_id: (e.target.value).split(',')[0],
               cost_id: '',
               payTrueDtl_satatus: 1,
+              usercode: data.UserCode,
               category_id: body.category_id,
               amount: '',
             });
@@ -617,9 +701,9 @@ export default function AddressForm() {
       cost_id: smartBill_CostAllowance[0].cost_id,
       id: '',
       category_id: 4,
-      count: '',
-      startdate: dayjs().tz('Asia/Bangkok'),
-      enddate: dayjs().tz('Asia/Bangkok'),
+      count: (dayjs(smartBill_CostAllowance[0].enddate).add(7, 'hour').diff(dayjs(smartBill_CostAllowance[0].startdate).add(7, 'hour'))) / (1000 * 60 * 60),
+      startdate: smartBill_CostAllowance[0].startdate,
+      enddate: smartBill_CostAllowance[0].enddate,
       usercode: '',
       foodStatus: 0,
       amount: '',
@@ -627,25 +711,50 @@ export default function AddressForm() {
   };
 
   const handleServiceRemoveAllowance = async (e, index) => {
-    const body = smartBill_CostAllowance[index]
-    await Axios.post(config.http + '/SmartBill_WithdrawDtl_DeleteCategory', body, config.headers)
+    const body = {
+      sbwdtl_id: smartBill_CostAllowance[index].sbwdtl_id,
+      category_id: smartBill_CostAllowance[index].category_id,
+    }
+    await Axios.post(config.http + '/SmartBill_WithdrawDtl_SelectCategory', body, config.headers)
       .then((response) => {
-        if (response.data && response.data[0].length > 0) {
-          setSmartBill_CostAllowance(response.data[0].map((res) => {
-            return {
-              sbwdtl_id: res.sbwdtl_id,
-              cost_id: res.cost_id,
-              id: res.id,
-              category_id: res.category_id,
-              count: (new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600),
-              startdate: dayjs(res.startdate).add(7, "hour"),
-              enddate: dayjs(res.enddate).add(7, "hour"),
-              usercode: res.usercode,
-              foodStatus: res.foodStatus === true ? 1 : 0,
-              amount: res.foodStatus === true ? res.amount * 2 : res.amount,
-            }
-          }))
-          gettingData();
+        if (response.data[0].length === smartBill_CostAllowance.length) {
+          Axios.post(config.http + '/SmartBill_WithdrawDtl_DeleteCategory', smartBill_CostAllowance[index], config.headers)
+            .then((response) => {
+              if (response.data && response.data[0].length > 0 && smartBill_CostAllowance.length > 1) {
+                setSmartBill_CostAllowance(response.data[0].map((res) => {
+                  return {
+                    sbwdtl_id: res.sbwdtl_id,
+                    cost_id: res.cost_id,
+                    id: res.id,
+                    category_id: res.category_id,
+                    count: (new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600),
+                    startdate: dayjs(res.startdate).add(7, "hour"),
+                    enddate: dayjs(res.enddate).add(7, "hour"),
+                    usercode: res.usercode,
+                    foodStatus: res.foodStatus === true ? 1 : 0,
+                    amount: res.foodStatus === true ? res.amount * 2 : res.amount,
+                  }
+                }))
+                gettingData();
+              } else {
+                setSmartBill_CostAllowance([{
+                  sbwdtl_id: '',
+                  cost_id: '',
+                  id: '',
+                  category_id: 4,
+                  count: '',
+                  startdate: dayjs().tz('Asia/Bangkok'),
+                  enddate: dayjs().tz('Asia/Bangkok'),
+                  usercode: '',
+                  foodStatus: 0,
+                  amount: '',
+                }])
+              }
+            })
+        } else {
+          const list = [...smartBill_CostAllowance];
+          list.splice(index, 1);
+          setSmartBill_CostAllowance(list);
         }
       })
   };
@@ -666,7 +775,7 @@ export default function AddressForm() {
               cost_id: res.cost_id,
               id: res.id,
               category_id: res.category_id,
-              count: (new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600),
+              count: res.count,
               startdate: dayjs(res.startdate).add(7, "hour"),
               enddate: dayjs(res.enddate).add(7, "hour"),
               usercode: res.usercode,
@@ -682,9 +791,9 @@ export default function AddressForm() {
             cost_id: '',
             id: '',
             category_id: 4,
-            count: '',
-            startdate: dayjs().tz('Asia/Bangkok'),
-            enddate: dayjs().tz('Asia/Bangkok'),
+            count: (dayjs(smartBill_WithdrawDtl[index].sbwdtl_operationid_enddate).add(7, 'hour').diff(dayjs(smartBill_WithdrawDtl[index].sbwdtl_operationid_startdate).add(7, 'hour'))) / (1000 * 60 * 60),
+            startdate: dayjs(smartBill_WithdrawDtl[index].sbwdtl_operationid_startdate).add(7, 'hour'),
+            enddate: dayjs(smartBill_WithdrawDtl[index].sbwdtl_operationid_enddate).add(7, 'hour'),
             usercode: '',
             foodStatus: 0,
             amount: '',
@@ -700,38 +809,41 @@ export default function AddressForm() {
   };
 
   const handleSaveAllowance = async () => {
-    if (smartBill_CostAllowance.filter((res) => (
-      res.startdate === '' ||
-      res.enddate === '' ||
-      res.usercode === ''
-    ))[0]) {
-      swal("แจ้งเตือน", 'กรุณากรอกข้อมูลค่าเบี้ยเลี้ยงให้ครบถ้วน', "error")
-    } else {
-      await Axios.post(config.http + '/SmartBill_WithdrawDtl_SaveChangesCategory', smartBill_CostAllowance, config.headers)
-        .then((response) => {
-          if (response.data && response.data[0].length > 0) {
-            setSmartBill_CostAllowance(response.data[0].map((res) => {
-              return {
-                sbwdtl_id: res.sbwdtl_id,
-                cost_id: res.cost_id,
-                id: res.id,
-                category_id: res.category_id,
-                count: (new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600),
-                startdate: dayjs(res.startdate).add(7, "hour"),
-                enddate: dayjs(res.enddate).add(7, "hour"),
-                usercode: res.usercode,
-                foodStatus: res.foodStatus === true ? 1 : 0,
-                amount: res.foodStatus === true ? res.amount * 2 : res.amount,
-              }
-            }))
-            gettingData();
-            setOpenAllowance(false);
-          } else {
-            gettingData();
-            setOpenAllowance(false);
-          }
-        })
-    }
+    await Axios.post(config.http + '/SmartBill_WithdrawDtl_SaveChangesCategory', smartBill_CostAllowance, config.headers)
+      .then((response) => {
+        if (response.data && smartBill_CostAllowance.length > 1) {
+          setSmartBill_CostAllowance(response.data[0].map((res) => {
+            return {
+              sbwdtl_id: res.sbwdtl_id,
+              cost_id: res.cost_id,
+              id: res.id,
+              category_id: res.category_id,
+              count: (new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600),
+              startdate: dayjs(res.startdate).add(7, "hour"),
+              enddate: dayjs(res.enddate).add(7, "hour"),
+              usercode: res.usercode,
+              foodStatus: res.foodStatus === true ? 1 : 0,
+              amount: res.foodStatus === true ? res.amount * 2 : res.amount,
+            }
+          }))
+          setOpenAllowance(false);
+        } else {
+          setSmartBill_CostAllowance([{
+            sbwdtl_id: '',
+            cost_id: '',
+            id: '',
+            category_id: 4,
+            count: '',
+            startdate: dayjs().tz('Asia/Bangkok'),
+            enddate: dayjs().tz('Asia/Bangkok'),
+            usercode: '',
+            foodStatus: 0,
+            amount: '',
+          }])
+          setOpenAllowance(false);
+        }
+        gettingData();
+      })
   }
 
   // ค่าที่พัก //คนร่วมที่พัก
@@ -747,7 +859,8 @@ export default function AddressForm() {
     enddate: dayjs().tz('Asia/Bangkok'),
     sbc_hotelProvince: '',
     sbc_hotelname: '',
-    amount: '',
+    amount: 0,
+    usercode: data.UserCode,
     smartBill_CostHotelGroup: [{
       sbc_hotelid: '',
       sbc_hotelgroupid: '',
@@ -767,30 +880,25 @@ export default function AddressForm() {
     setSmartBill_CostHotel(list)
   };
 
-  const handleServiceRemoveHotelGroup = async (e, indexGroup) => {
-    const sbchIndex = e.target.value.split(',')[0]
-    const sbc_hotelgroupid = e.target.value.split(',')[1]
-
-    if (sbc_hotelgroupid === '' || !sbc_hotelgroupid) {
-      const list = [...smartBill_CostHotel]
-      const listCostHotel = [...smartBill_CostHotel[sbchIndex]['smartBill_CostHotelGroup']]
-      listCostHotel.splice(indexGroup, 1);
-      list[sbchIndex]['smartBill_CostHotelGroup'] = listCostHotel
-      setSmartBill_CostHotel(list);
-    } else {
-      const body = { sbc_hotelgroupid: sbc_hotelgroupid }
-      await Axios.post(config.http + '/SmartBill_WithdrawDtl_DeleteHotelGroup', body, config.headers)
-        .then((res) => {
-          if (res.status === 200) {
-            const list = [...smartBill_CostHotel]
-            const listCostHotel = [...smartBill_CostHotel[sbchIndex]['smartBill_CostHotelGroup']]
-            listCostHotel.splice(indexGroup, 1);
-            list[sbchIndex]['smartBill_CostHotelGroup'] = listCostHotel
-            setSmartBill_CostHotel(list);
-            gettingData();
-          }
-        })
-    }
+  const handleServiceRemoveHotelGroup = async (e, index, indexGroup, resGroup) => {
+    await Axios.post(config.http + '/SmartBill_WithdrawDtl_DeleteHotelGroup', resGroup, config.headers)
+      .then((res) => {
+        const list = [...smartBill_CostHotel]
+        const listCostHotel = [...smartBill_CostHotel[index]['smartBill_CostHotelGroup']]
+        if (listCostHotel.length > 1) {
+          listCostHotel.splice(indexGroup, 1);
+          list[index]['smartBill_CostHotelGroup'] = listCostHotel
+          setSmartBill_CostHotel(list);
+        } else {
+          list[index]['smartBill_CostHotelGroup'] = [{
+            sbc_hotelid: '',
+            sbc_hotelgroupid: '',
+            usercode: '',
+            amount: '',
+          }]
+          setSmartBill_CostHotel(list);
+        }
+      })
   };
 
   const handleCloseDialogCostHotel = () => {
@@ -808,7 +916,8 @@ export default function AddressForm() {
       enddate: dayjs().tz('Asia/Bangkok'),
       sbc_hotelProvince: '',
       sbc_hotelname: '',
-      amount: '',
+      amount: 0,
+      usercode: data.UserCode,
       smartBill_CostHotelGroup: [{
         sbc_hotelid: '',
         sbc_hotelgroupid: '',
@@ -845,7 +954,12 @@ export default function AddressForm() {
               amount: response.data[0][i].amount,
               smartBill_CostHotelGroup:
                 await Axios.post(config.http + '/SmartBill_WithdrawDtl_SelectHotelGroup', { sbc_hotelid: response.data[0][i].id }, config.headers)
-                  .then((resHotelGroup) => (resHotelGroup.data[0]))
+                  .then((resHotelGroup) => (resHotelGroup.data[0]).length > 0 ? (resHotelGroup.data[0]) : [{
+                    sbc_hotelid: '',
+                    sbc_hotelgroupid: '',
+                    usercode: '',
+                    amount: '',
+                  }])
             });
           }
 
@@ -870,6 +984,7 @@ export default function AddressForm() {
             sbc_hotelProvince: '',
             sbc_hotelname: '',
             amount: '',
+            usercode: data.UserCode,
             smartBill_CostHotelGroup: [{
               sbc_hotelid: '',
               sbc_hotelgroupid: '',
@@ -884,49 +999,33 @@ export default function AddressForm() {
   };
 
   const handleSaveCostHotel = async () => {
-    if (smartBill_CostHotel.filter((res) => (
-      res.startdate === '' ||
-      res.enddate === '' ||
-      res.sbc_hotelProvince === '' ||
-      res.sbc_hotelname === '' ||
-      res.amount === '' ||
-      !res.smartBill_CostHotelGroup.filter((resGroup) => resGroup.usercode)[0]
-    ))[0]) {
-      const caseText = smartBill_CostHotel.filter((res) => (
-        res.startdate === '' ||
-        res.enddate === '' ||
-        res.sbc_hotelProvince === '' ||
-        res.sbc_hotelname === '' ||
-        res.amount === ''
-      ))[0]
-      swal("แจ้งเตือน", caseText ? 'กรุณากรอกข้อมูลค่าที่พักให้ครบถ้วน' : 'กรุณากรอกข้อมูลผู้เข้าพัก', "error")
-    } else {
-      await Axios.post(config.http + '/SmartBill_WithdrawDtl_SaveChangesCategory', smartBill_CostHotel, config.headers)
-        .then(async (response) => {
-          if (response.data && response.data[0].length > 0) {
-            const data = response.data[0].map((res, index) => {
-              return {
-                sbwdtl_id: res.sbwdtl_id,
-                cost_id: res.cost_id,
-                id: res.id,
-                category_id: res.category_id,
-                count: res.count,
-                startdate: dayjs(res.startdate).add(7, "hour"),
-                enddate: dayjs(res.enddate).add(7, "hour"),
-                sbc_hotelProvince: res.sbc_hotelProvince,
-                sbc_hotelname: res.sbc_hotelname,
-                amount: res.amount,
-                smartBill_CostHotelGroup: smartBill_CostHotel[index].smartBill_CostHotelGroup.map((resGroup) => {
-                  return {
-                    sbc_hotelid: res.id,
-                    sbc_hotelgroupid: res.sbc_hotelgroupid,
-                    usercode: resGroup.usercode,
-                    amount: resGroup.amount,
-                  }
-                }),
-              }
-            })
-            setSmartBill_CostHotel(data)
+    await Axios.post(config.http + '/SmartBill_WithdrawDtl_SaveChangesCategory', smartBill_CostHotel, config.headers)
+      .then(async (response) => {
+        if (response.data && response.data.length > 0) {
+          const data = response.data[0].map((res, index) => {
+            return {
+              sbwdtl_id: res.sbwdtl_id,
+              cost_id: res.cost_id,
+              id: res.id,
+              category_id: res.category_id,
+              count: res.count,
+              startdate: dayjs(res.startdate).add(7, "hour"),
+              enddate: dayjs(res.enddate).add(7, "hour"),
+              sbc_hotelProvince: res.sbc_hotelProvince,
+              sbc_hotelname: res.sbc_hotelname,
+              amount: res.amount,
+              smartBill_CostHotelGroup: smartBill_CostHotel[index].smartBill_CostHotelGroup.map((resGroup) => {
+                return {
+                  sbc_hotelid: res.id,
+                  sbc_hotelgroupid: res.sbc_hotelgroupid,
+                  usercode: resGroup.usercode,
+                  amount: resGroup.amount,
+                }
+              }),
+            }
+          })
+          setSmartBill_CostHotel(data)
+          if (data) {
             for (let i = 0; i < data.length; i++) {
               await Axios.post(config.http + '/SmartBill_WithdrawDtl_SaveChangesHotelGroup', data[i].smartBill_CostHotelGroup, config.headers)
               if (data.length === i + 1) {
@@ -934,61 +1033,46 @@ export default function AddressForm() {
                 setOpenCostHotel(false);
               }
             }
+          } else {
+            gettingData();
+            setOpenCostHotel(false);
           }
-        })
-    }
+        } else {
+          gettingData();
+          setOpenCostHotel(false);
+        }
+      })
   }
 
   const handleServiceRemoveCostHotel = async (e, index) => {
-    if (smartBill_CostHotel[index].startdate === '' ||
-      smartBill_CostHotel[index].enddate === '' ||
-      smartBill_CostHotel[index].sbc_hotelProvince === '' ||
-      smartBill_CostHotel[index].sbc_hotelname === '' ||
-      smartBill_CostHotel[index].amount === ''
-    ) {
-      const list = [...smartBill_CostHotel];
-      list.splice(index, 1);
-      setSmartBill_CostHotel(list);
-    } else {
-      const body = smartBill_CostHotel[index]
-      await Axios.post(config.http + '/SmartBill_WithdrawDtl_DeleteCategory', body, config.headers)
-        .then((response) => {
-          if (response.data && response.data[0].length > 0) {
-            setSmartBill_CostHotel(response.data[0].map((res, index) => {
-              return {
-                sbwdtl_id: res.sbwdtl_id,
-                cost_id: res.cost_id,
-                id: res.id,
-                category_id: res.category_id,
-                count: res.count,
-                startdate: dayjs(res.startdate).add(7, "hour"),
-                enddate: dayjs(res.enddate).add(7, "hour"),
-                sbc_hotelProvince: res.sbc_hotelProvince,
-                sbc_hotelname: res.sbc_hotelname,
-                amount: res.amount,
-                smartBill_CostHotelGroup: smartBill_CostHotel[index].smartBill_CostHotelGroup.map((resGroup) => {
-                  return {
-                    sbc_hotelid: res.id,
-                    sbc_hotelgroupid: res.sbc_hotelgroupid,
-                    usercode: resGroup.usercode,
-                    amount: resGroup.amount,
-                  }
-                }),
-              }
-            }))
-            gettingData();
-          }
-        })
-    }
-  };
-
-  // Basic
-  const handleClickOpensbw = () => {
-    setOpensbw(true);
-  };
-
-  const handleClosesbw = () => {
-    setOpensbw(false);
+    await Axios.post(config.http + '/SmartBill_WithdrawDtl_DeleteCategory', smartBill_CostHotel[index], config.headers)
+      .then((res) => {
+        if (smartBill_CostHotel.map((res) => res.sbc_hotelProvince === '' || res.sbc_hotelname === '' || res.sbc_hotelname.amount === '')[0] && smartBill_CostHotel.length > 1) {
+          setSmartBill_CostHotel([{
+            sbwdtl_id: '',
+            cost_id: '',
+            id: '',
+            category_id: 3,
+            count: '',
+            startdate: dayjs().tz('Asia/Bangkok'),
+            enddate: dayjs().tz('Asia/Bangkok'),
+            sbc_hotelProvince: '',
+            sbc_hotelname: '',
+            amount: '',
+            usercode: data.UserCode,
+            smartBill_CostHotelGroup: [{
+              sbc_hotelid: '',
+              sbc_hotelgroupid: '',
+              usercode: '',
+              amount: '',
+            }]
+          }]);
+        } else {
+          const list = [...smartBill_CostHotel];
+          list.splice(index, 1);
+          setSmartBill_CostHotel(list);
+        }
+      })
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1013,7 +1097,7 @@ export default function AddressForm() {
 
     await Axios.get(config.http + '/SmartBill_Withdraw_SelectCostOther', config.headers)
       .then((response) => {
-        setCostOther(response.data[0]);
+        setCostOther(response.data[0] ?? []);
       });
 
     await Axios.get(config.http + '/Provinces_List', config.headers)
@@ -1031,7 +1115,6 @@ export default function AddressForm() {
               await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
                 .then((res) => {
                   if (res.data[0].car_infocode) {
-                    setTypePay(1)
                     const list = [...carInfo]
                     list[0]['car_infocode'] = res.data[0].car_infocode
                     list[0]['car_infostatus_companny'] = res.data[0].car_infostatus_companny
@@ -1044,17 +1127,20 @@ export default function AddressForm() {
                     list[0]['car_payname'] = res.data[0].car_payname
                     setCarInfo(list)
                     if (res.data[0].car_infostatus_companny === true) {
-                      setCondition(0)
+                      const condition = [...smartBill_Withdraw]
+                      condition[0].condition = 0
+                      setSmartBill_Withdraw(condition)
                     } else if (res.data[0].car_infostatus_companny === false) {
-                      setCondition(1)
-                    } else {
-                      setCondition(2)
+                      const condition = [...smartBill_Withdraw]
+                      condition[0].condition = 1
+                      setSmartBill_Withdraw(condition)
                     }
                   }
                 })
             } else {
-              setTypePay(0)
-              setCondition(2)
+              const condition = [...smartBill_Withdraw]
+              condition[0].condition = 2
+              setSmartBill_Withdraw(condition)
             }
             setSmartBill_Withdraw(response.data[0]);
             setSmartBill_WithdrawDtl(response.data[1])
@@ -1063,7 +1149,6 @@ export default function AddressForm() {
             await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
               .then((res) => {
                 if (response.data[0][0].car_infocode) {
-                  setTypePay(1)
                   const list = [...carInfo]
                   list[0]['car_infocode'] = res.data[0].car_infocode
                   list[0]['car_infostatus_companny'] = res.data[0].car_infostatus_companny
@@ -1076,15 +1161,18 @@ export default function AddressForm() {
                   list[0]['car_payname'] = res.data[0].car_payname
                   setCarInfo(list)
                   if (res.data[0].car_infostatus_companny === true) {
-                    setCondition(0)
+                    const condition = [...smartBill_Withdraw]
+                    condition[0].condition = 0
+                    setSmartBill_Withdraw(condition)
                   } else if (res.data[0].car_infostatus_companny === false) {
-                    setCondition(1)
-                  } else {
-                    setCondition(2)
+                    const condition = [...smartBill_Withdraw]
+                    condition[0].condition = 1
+                    setSmartBill_Withdraw(condition)
                   }
                 } else {
-                  setTypePay(0)
-                  setCondition(2)
+                  const condition = [...smartBill_Withdraw]
+                  condition[0].condition = 2
+                  setSmartBill_Withdraw(condition)
                 }
               })
             setSmartBill_Withdraw(response.data[0]);
@@ -1101,10 +1189,10 @@ export default function AddressForm() {
   }, [])
 
   const handleSmartBill_Withdraw_Save = async () => {
-    if (!smartBill_WithdrawSave[0].car_infocode && (typePay != 0 && condition != 2)) {
+    if (!smartBill_Withdraw[0].car_infocode && smartBill_Withdraw[0].condition != 2) {
       swal("แจ้งเตือน", 'กรุณาระบุเลขทะเบียนรถ', "warning")
     } else {
-      await Axios.post(config.http + '/SmartBill_Withdraw_Save', smartBill_WithdrawSave[0], config.headers)
+      await Axios.post(config.http + '/SmartBill_Withdraw_Save', smartBill_Withdraw[0], config.headers)
         .then((response) => {
           if (response.data[0][0].code) {
             window.location.href = '/Payment?' + response.data[0][0].code;
@@ -1119,12 +1207,20 @@ export default function AddressForm() {
     const body = {
       sbw_code: sbw_code,
       usercode: smartBill_Withdraw[0].ownercode,
-      pure_card: smartBill_Withdraw[0].pure_card
+      condition: smartBill_Withdraw[0].condition,
+      car_infocode: smartBill_Withdraw[0].car_infocode,
+      pure_card: smartBill_Withdraw[0].pure_card,
+      typePay: smartBill_Withdraw[0].typePay
     }
     await Axios.post(config.http + '/SmartBill_Withdraw_updateSBW', body, config.headers)
       .then((response) => {
         if (response.status === 200) {
-          window.location.href = '/Payment?' + sbw_code;
+          swal("แจ้งเตือน", 'อัปเดทรายการสำเร็จ', "success", {
+            buttons: false,
+            timer: 1500,
+          }).then(() => {
+            window.location.href = '/Payment?' + sbw_code;
+          })
         } else {
           swal("แจ้งเตือน", 'error code #DEO0012', "error")
         }
@@ -1181,10 +1277,10 @@ export default function AddressForm() {
             <Button
               variant='contained'
               sx={{ my: 2 }}
-              disabled={smartBill_WithdrawSave[0].ownercode === ''}
+              disabled={smartBill_Withdraw[0].ownercode === ''}
               onClick={handleSmartBill_Withdraw_Save}
             >
-              Submit
+              สร้างบิล
             </Button>
             <Table>
               <TableHead>
@@ -1199,7 +1295,7 @@ export default function AddressForm() {
                     >
                       <Grid item xs={4}>
                         <Box>
-                          <img style={{ maxWidth: '50%' }} alt='logoPure' src={logoPure} loading="lazy" />
+                          <img style={{ height: 40 }} alt="logo" src={smartBill_Withdraw[0].typePay === "PTEC" ? Picture1 : Picture2} loading="lazy" />
                         </Box>
                       </Grid>
                       <Grid item xs={8}>
@@ -1217,7 +1313,7 @@ export default function AddressForm() {
                           </Grid>
                           <Grid item xs={12}>
                             <Typography className="payment-Forms">
-                              บริษัท เพียวพลังงานไทย จำกัด
+                              {smartBill_Withdraw[0].typePay === "PTEC" ? 'PURE THAI ENERGY CO.,LTD.': 'SCT SAHAPAN COMPANY LIMITED'}
                             </Typography>
                           </Grid>
                         </Grid>
@@ -1231,23 +1327,41 @@ export default function AddressForm() {
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell align="left" colSpan={3}>
+                  <TableCell align="center" colSpan={1}>
+                    <FormControl fullWidth align="center" required sx={{ ml: 1 }}>
+                      <RadioGroup
+                        row
+                        aria-labelledby="demo-row-radio-buttons-group-label"
+                        name="companny"
+                        value={smartBill_Withdraw[0].typePay}
+                        onChange={(e) => {
+                          const list = [...smartBill_Withdraw]
+                          list[0]['typePay'] = e.target.value
+                          setSmartBill_Withdraw(list);
+                        }}
+                      >
+                        <FormControlLabel value="PTEC" control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="PTEC" />
+                        <FormControlLabel value="SCT" control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="SCT" />
+                      </RadioGroup>
+                    </FormControl>
+                  </TableCell>
+                  <TableCell align="left" colSpan={2}>
                     <Autocomplete
                       autoHighlight
                       id="free-solo-demo"
                       freeSolo
                       name="ownercode"
-                      value={smartBill_WithdrawSave[0].ownercode}
+                      value={smartBill_Withdraw[0].ownercode}
                       options={users.map((option) => option.UserCode)}
                       onChange={(event, newValue, reason) => {
                         if (reason === 'clear') {
-                          const list = [...smartBill_WithdrawSave]
+                          const list = [...smartBill_Withdraw]
                           list[0]['ownercode'] = ''
-                          setSmartBill_WithdrawSave(list)
+                          setSmartBill_Withdraw(list)
                         } else {
-                          const list = [...smartBill_WithdrawSave]
+                          const list = [...smartBill_Withdraw]
                           list[0]['ownercode'] = newValue
-                          setSmartBill_WithdrawSave(list)
+                          setSmartBill_Withdraw(list)
                         }
                       }}
                       renderInput={(params) => (
@@ -1274,41 +1388,24 @@ export default function AddressForm() {
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell align="left" colSpan={1}>
-                    <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label">ใช้พาหนะเดินทางหรือไม่</InputLabel>
-                      <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={typePay}
-                        label="ใช้พาหนะเดินทางหรือไม่"
-                        onChange={handleChangeTypePay}
+                  <TableCell align="left" colSpan={3}>
+                    <FormControl fullWidth align="center" required sx={{ ml: 1 }}>
+                      <RadioGroup
+                        row
+                        aria-labelledby="demo-row-radio-buttons-group-label"
+                        name="companny"
+                        value={smartBill_Withdraw[0].condition}
+                        onChange={handleChangeCondition}
                       >
-                        <MenuItem value={0}>ไม่ใช่</MenuItem>
-                        <MenuItem value={1}>ใช่</MenuItem>
-                      </Select>
+                        <FormControlLabel value={0} control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="รถยนต์ของบริษัท" />
+                        <FormControlLabel value={1} control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="รถยนต์ส่วนตัว" />
+                        <FormControlLabel value={2} control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="รถยนต์สาธารณะ" />
+                        <FormControlLabel value={3} control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="อื่น ๆ" />
+                      </RadioGroup>
                     </FormControl>
                   </TableCell>
-                  <TableCell align="left" colSpan={2}>
-                    {typePay === 0 || typePay === '0' ? null : (
-                      <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-label">ประเภทของพาหนะ</InputLabel>
-                        <Select
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          value={condition}
-                          label="ประเภทของพาหนะ"
-                          onChange={handleChangeCondition}
-                        >
-                          <MenuItem value={0}>พาหนะของบริษัท</MenuItem>
-                          <MenuItem value={1}>พาหนะส่วนตัว</MenuItem>
-                          <MenuItem value={2}>พาหนะสาธารณะ</MenuItem>
-                        </Select>
-                      </FormControl>
-                    )}
-                  </TableCell>
                   <TableCell align="left" colSpan={3}>
-                    {(typePay == 0) || (condition == 2 && typePay == 1) ? null :
+                    {smartBill_Withdraw[0].condition > 1 ? <Box component="main" sx={{ height: 51.63 }} /> :
                       (
                         <Grid item xs={6} sm={6}>
                           <Autocomplete
@@ -1335,9 +1432,9 @@ export default function AddressForm() {
                                 list[0]['car_payname'] = ''
                                 setCarInfo(list)
 
-                                const listCar = [...smartBill_WithdrawSave]
+                                const listCar = [...smartBill_Withdraw]
                                 listCar[0]['car_infocode'] = ''
-                                setSmartBill_WithdrawSave(listCar)
+                                setSmartBill_Withdraw(listCar)
 
                               } else {
                                 const body = { car_infocode: newInputValue }
@@ -1356,9 +1453,9 @@ export default function AddressForm() {
                                       list[0]['car_payname'] = response.data[0].car_payname
                                       setCarInfo(list)
 
-                                      const listCar = [...smartBill_WithdrawSave]
+                                      const listCar = [...smartBill_Withdraw]
                                       listCar[0]['car_infocode'] = newInputValue
-                                      setSmartBill_WithdrawSave(listCar)
+                                      setSmartBill_Withdraw(listCar)
                                     }
                                   })
                               }
@@ -1381,15 +1478,14 @@ export default function AddressForm() {
                     รุ่น: {carInfo[0]['car_tier']}
                   </TableCell>
                   <TableCell align="center" colSpan={2}>
-                    {typePay == 0 ? "" : (!carInfo[0]['car_payname'] && condition == 2 ? 'เบิกตามจริง' : carInfo[0]['car_payname'])}
+                    {(!carInfo[0]['car_payname'] && smartBill_Withdraw[0].condition > 1 ? 'เบิกตามจริง' : carInfo[0]['car_payname'])}
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableHead>
                 <TableRow>
-                  <TableCell align="center" sx={{ width: '12.5%' }}>วันที่เริ่มต้น</TableCell>
-                  <TableCell align="center" sx={{ width: '12.5%' }}>วันที่สิ้นสุด</TableCell>
-                  <TableCell align="center" sx={{ width: '10%' }}>บันทึกกิจกรรม</TableCell>
+                  <TableCell align="center" sx={{ width: '15%' }}>ช่วงเวลาที่เดินทาง</TableCell>
+                  <TableCell align="center" sx={{ width: '18%' }}>บันทึกกิจกรรม</TableCell>
                   <TableCell align="center" sx={{ width: '5.9%' }}>เริ่มต้น</TableCell>
                   <TableCell align="center" sx={{ width: '5.9%' }}>สิ้นสุด</TableCell>
                   <TableCell align="center" sx={{ width: '5.9%' }}>ระยะทาง</TableCell>
@@ -1401,6 +1497,7 @@ export default function AddressForm() {
                   <TableCell align="center" sx={{ width: '5.9%' }}>ทางด่วน</TableCell>
                   <TableCell align="center" sx={{ width: '5.9%' }}>อื่น ๆ</TableCell>
                   <TableCell align="center" sx={{ width: '5.9%' }}>รวม</TableCell>
+                  <TableCell sx={{ width: '5.9%' }} />
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -1427,7 +1524,7 @@ export default function AddressForm() {
               <TableHead>
                 <TableRow>
                   <TableCell align="left" colSpan={5}><b>รวม</b></TableCell>
-                  {['', '', '', '0', '0', '0', '0', '0', '0'].map((res) => (
+                  {['', '', '0', '0', '0', '0', '0', '0', ''].map((res) => (
                     <TableCell
                       align="center"
                       sx={{
@@ -1596,7 +1693,7 @@ export default function AddressForm() {
               <Button
                 variant='contained'
                 color="warning"
-                disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
+                disabled={smartBill_Withdraw[0].lock_status !== false}
                 onClick={smartBill_Withdraw_updateSBW}
               >
                 Save Update
@@ -1605,7 +1702,7 @@ export default function AddressForm() {
             <Grid item>
               <Button
                 variant='contained'
-                disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
+                disabled={smartBill_Withdraw[0].lock_status !== false}
                 onClick={smartBill_Withdraw_updateLockSBW}
               >
                 Save Lock
@@ -1636,7 +1733,7 @@ export default function AddressForm() {
                     >
                       <Grid item xs={4}>
                         <Box>
-                          <img style={{ maxWidth: '50%' }} src={logoPure} loading="lazy" />
+                          <img style={{ height: 40 }} alt="logo" src={smartBill_Withdraw[0].typePay === "PTEC" ? Picture1 : Picture2} loading="lazy" />
                         </Box>
                       </Grid>
                       <Grid item xs={8}>
@@ -1654,21 +1751,39 @@ export default function AddressForm() {
                           </Grid>
                           <Grid item xs={12}>
                             <Typography className="payment-Forms">
-                              บริษัท เพียวพลังงานไทย จำกัด
+                              {smartBill_Withdraw[0].typePay === "PTEC" ? 'PURE THAI ENERGY CO.,LTD.': 'SCT SAHAPAN COMPANY LIMITED'}
                             </Typography>
                           </Grid>
                         </Grid>
                       </Grid>
                     </Grid>
                   </TableCell>
-                  <TableCell align="center" colSpan={5}>
+                  <TableCell align="center" colSpan={4}>
                     <Typography className="payment-Forms">
                       {sbw_code}
                     </Typography>
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell align="center" colSpan={3}>
+                  <TableCell align="center" colSpan={1}>
+                    <FormControl fullWidth align="center" required sx={{ ml: 1 }}>
+                      <RadioGroup
+                        row
+                        aria-labelledby="demo-row-radio-buttons-group-label"
+                        name="companny"
+                        value={smartBill_Withdraw[0].typePay}
+                        onChange={(e) => {
+                          const list = [...smartBill_Withdraw]
+                          list[0]['typePay'] = e.target.value
+                          setSmartBill_Withdraw(list);
+                        }}
+                      >
+                        <FormControlLabel value="PTEC" control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="PTEC" />
+                        <FormControlLabel value="SCT" control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="SCT" />
+                      </RadioGroup>
+                    </FormControl>
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
                     <Autocomplete
                       autoHighlight
                       id="free-solo-demo"
@@ -1684,13 +1799,13 @@ export default function AddressForm() {
                       options={users.map((option) => option.UserCode)}
                       onChange={(event, newValue, reason) => {
                         if (reason === 'clear') {
-                          const list = [...smartBill_WithdrawSave]
+                          const list = [...smartBill_Withdraw]
                           list[0]['ownercode'] = ''
-                          setSmartBill_WithdrawSave(list)
+                          setSmartBill_Withdraw(list)
                         } else {
-                          const list = [...smartBill_WithdrawSave]
+                          const list = [...smartBill_Withdraw]
                           list[0]['ownercode'] = newValue
-                          setSmartBill_WithdrawSave(list)
+                          setSmartBill_Withdraw(list)
                         }
                       }}
                       renderInput={(params) => (
@@ -1708,65 +1823,35 @@ export default function AddressForm() {
                   <TableCell align="center" colSpan={4}>
                     [{smartBill_Withdraw[0].depcode}]
                   </TableCell>
-                  <TableCell align="center" colSpan={4}>
+                  <TableCell align="center" colSpan={3}>
                     {smartBill_Withdraw[0].createdate}
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell align="left" colSpan={1}>
-                    <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label">ใช้พาหนะเดินทางหรือไม่</InputLabel>
-                      <Select
-                        disabled
-                        sx={{
-                          "& .MuiInputBase-input.Mui-disabled": {
-                            WebkitTextFillColor: "#000000",
-                          },
-                        }}
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={typePay}
-                        label="ใช้พาหนะเดินทางหรือไม่"
-                        onChange={handleChangeTypePay}
+                  <TableCell align="left" colSpan={3}>
+                    <FormControl fullWidth align="center" required sx={{ ml: 1 }}>
+                      <RadioGroup
+                        row
+                        aria-labelledby="demo-row-radio-buttons-group-label"
+                        name="companny"
+                        value={smartBill_Withdraw[0].condition}
+                        onChange={handleChangeCondition}
                       >
-                        <MenuItem value={0}>ไม่ใช่</MenuItem>
-                        <MenuItem value={1}>ใช่</MenuItem>
-                      </Select>
+                        <FormControlLabel value={0} control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="รถยนต์ของบริษัท" />
+                        <FormControlLabel value={1} control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="รถยนต์ส่วนตัว" />
+                        <FormControlLabel value={2} control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="รถยนต์สาธารณะ" />
+                        <FormControlLabel value={3} control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="อื่น ๆ" />
+                      </RadioGroup>
                     </FormControl>
                   </TableCell>
-                  <TableCell align="left" colSpan={2}>
-                    {typePay === 0 || typePay === '0' ? null : (
-                      <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-label">ประเภทของพาหนะ</InputLabel>
-                        <Select
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          disabled
-                          sx={{
-                            "& .MuiInputBase-input.Mui-disabled": {
-                              WebkitTextFillColor: "#000000",
-                            },
-                          }}
-                          value={condition}
-                          label="ประเภทของพาหนะ"
-                          onChange={handleChangeCondition}
-                        >
-                          <MenuItem value={0}>พาหนะของบริษัท</MenuItem>
-                          <MenuItem value={1}>พาหนะส่วนตัว</MenuItem>
-                          <MenuItem value={2}>พาหนะสาธารณะ</MenuItem>
-                        </Select>
-                      </FormControl>
-                    )}
-                  </TableCell>
-                  <TableCell align="left" colSpan={4}>
-                    {(typePay == 0) || (condition == 2 && typePay == 1) ? null :
+                  <TableCell align="left" colSpan={3}>
+                    {smartBill_Withdraw[0].condition > 1 ? <Box component="main" sx={{ height: 51.63 }} /> :
                       (
                         <Grid item xs={6} sm={6}>
                           <Autocomplete
                             autoHighlight
                             id="free-solo-demo"
                             freeSolo
-                            disabled
                             sx={{
                               "& .MuiInputBase-input.Mui-disabled": {
                                 WebkitTextFillColor: "#000000",
@@ -1793,9 +1878,9 @@ export default function AddressForm() {
                                 list[0]['car_payname'] = ''
                                 setCarInfo(list)
 
-                                const listCar = [...smartBill_WithdrawSave]
+                                const listCar = [...smartBill_Withdraw]
                                 listCar[0]['car_infocode'] = ''
-                                setSmartBill_WithdrawSave(listCar)
+                                setSmartBill_Withdraw(listCar)
 
                               } else {
                                 const body = { car_infocode: newInputValue }
@@ -1814,9 +1899,9 @@ export default function AddressForm() {
                                       list[0]['car_payname'] = response.data[0].car_payname
                                       setCarInfo(list)
 
-                                      const listCar = [...smartBill_WithdrawSave]
+                                      const listCar = [...smartBill_Withdraw]
                                       listCar[0]['car_infocode'] = newInputValue
-                                      setSmartBill_WithdrawSave(listCar)
+                                      setSmartBill_Withdraw(listCar)
                                     }
                                   })
                               }
@@ -1839,57 +1924,58 @@ export default function AddressForm() {
                     รุ่น: {carInfo[0]['car_tier']}
                   </TableCell>
                   <TableCell align="center" colSpan={2}>
-                    {typePay == 0 ? "" : (!carInfo[0]['car_payname'] && condition == 2 ? 'เบิกตามจริง' : carInfo[0]['car_payname'])}
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell colSpan={15}>
-                    <Button
-                      variant="text"
-                      onClick={handleOpenSmartBill_WithdrawDtlSave}
-                      disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
-                    >
-                      เพิ่มรายการ
-                    </Button>
+                    {(!carInfo[0]['car_payname'] && smartBill_Withdraw[0].condition > 1 ? 'เบิกตามจริง' : carInfo[0]['car_payname'])}
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableHead>
+                {smartBill_Withdraw[0].lock_status === false ? (
+                  <TableRow>
+                    <TableCell colSpan={14}>
+                      <Button
+                        variant="text"
+                        fullWidth
+                        onClick={handleOpenSmartBill_WithdrawDtlSave}
+                      >
+                        เพิ่มรายการ
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ) : null}
                 <TableRow>
-                  <TableCell align="center" sx={{ width: '12.5%' }}>วันที่เริ่มต้น</TableCell>
-                  <TableCell align="center" sx={{ width: '12.5%' }}>วันที่สิ้นสุด</TableCell>
-                  <TableCell align="center" sx={{ width: '10%' }}>บันทึกกิจกรรม</TableCell>
-                  <TableCell align="center" sx={{ width: '5.6%' }}>เริ่มต้น</TableCell>
-                  <TableCell align="center" sx={{ width: '5.6%' }}>สิ้นสุด</TableCell>
-                  <TableCell align="center" sx={{ width: '5.6%' }}>ระยะทาง</TableCell>
-                  <TableCell align="center" sx={{ width: '5.6%' }}>อัตราชดเชย</TableCell>
-                  <TableCell align="center" sx={{ width: '5.6%' }}>เบิกตามไมล์เรท</TableCell>
-                  <TableCell align="center" sx={{ width: '5.6%' }}>เบิกตามบิลจริง</TableCell>
-                  <TableCell align="center" sx={{ width: '5.6%' }}>เบี้ยเลี้ยง</TableCell>
-                  <TableCell align="center" sx={{ width: '5.6%' }}>ที่พัก</TableCell>
-                  <TableCell align="center" sx={{ width: '5.6%' }}>ทางด่วน</TableCell>
-                  <TableCell align="center" sx={{ width: '5.6%' }}>อื่น ๆ</TableCell>
-                  <TableCell align="center" sx={{ width: '5.6%' }}>รวม</TableCell>
-                  <TableCell align="center" sx={{ width: '3%' }}>Action</TableCell>
+                  <TableCell align="center" sx={{ width: '15%' }}>ช่วงเวลาที่เดินทาง</TableCell>
+                  <TableCell align="center" sx={{ width: '18%' }}>บันทึกกิจกรรม</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>เริ่มต้น</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>สิ้นสุด</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>ระยะทาง</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>อัตราชดเชย</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>เบิกตามไมล์เรท</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>เบิกตามบิล</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>เบี้ยเลี้ยง</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>ที่พัก</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>ทางด่วน</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>อื่น ๆ</TableCell>
+                  <TableCell align="center" sx={{ width: '5.9%' }}>รวม</TableCell>
+                  <TableCell sx={{ width: '5.9%' }} />
                 </TableRow>
               </TableHead>
               <TableBody>
                 {smartBill_WithdrawDtl.map((res, index) => (
-                  <TableRow>
+                  <TableRow key={res.sbwdtl_id}>
                     {res.sbwdtl_id === '' ?
-                      <>
-                        <TableCell
-                          align="center"
-                          colSpan={15}
-                          sx={{ fontFamily: 'monospace', color: 'red', fontWeight: 700, "&:disabled": { color: 'red' } }}
-                        >
-                          * กรุณาเพิ่มรายการที่ต้องการเบิก
-                        </TableCell>
-                      </>
+                      <TableCell
+                        align="center"
+                        colSpan={14}
+                        sx={{ fontFamily: 'monospace', color: 'red', fontWeight: 700, "&:disabled": { color: 'red' } }}
+                      >
+                        * กรุณาเพิ่มรายการที่ต้องการเบิก
+                      </TableCell>
                       :
                       <>
-                        <TableCell align="center">{dayjs(res.sbwdtl_operationid_startdate).add(7, 'hour').format('YYYY-MM-DD HH:mm')}</TableCell>
-                        <TableCell align="center">{dayjs(res.sbwdtl_operationid_enddate).add(7, 'hour').format('YYYY-MM-DD HH:mm')}</TableCell>
+                        <TableCell align="center">
+                          Start Date: {dayjs(res.sbwdtl_operationid_startdate).add(7, 'hour').format('DD/MM/YYYY HH:mm')} <br />
+                          End Date  : {dayjs(res.sbwdtl_operationid_enddate).add(7, 'hour').format('DD/MM/YYYY HH:mm')}
+                        </TableCell>
                         <TableCell >{res.remark}</TableCell>
                         <TableCell align="center">{res.sbwdtl_operationid_startmile.toLocaleString("en-US")}</TableCell>
                         <TableCell align="center">{res.sbwdtl_operationid_endmile.toLocaleString("en-US")}</TableCell>
@@ -1983,14 +2069,14 @@ export default function AddressForm() {
                         </TableCell>
                         <TableCell align="center">{res.sb_paystatus === false ? 0 : res.amouthAll.toLocaleString("en-US")}</TableCell>
                         <TableCell>
-                          <Button
+                          <IconButton
                             key={index}
                             variant="text"
                             color="error"
                             onClick={(e) => removeSmartBill_wddtl(e, index)}
                           >
-                            <DeleteIcon />
-                          </Button>
+                            <DeleteIcon sx={{ fontSize: '1.2rem !important' }} />
+                          </IconButton>
                         </TableCell>
                       </>
                     }
@@ -1999,9 +2085,7 @@ export default function AddressForm() {
               </TableBody>
               <TableHead>
                 <TableRow>
-                  <TableCell align="left" colSpan={5}><b>รวม</b></TableCell>
-                  <TableCell align="center" colSpan={1}></TableCell>
-                  <TableCell align="center" colSpan={1}></TableCell>
+                  <TableCell align="left" colSpan={6}><b>รวม</b></TableCell>
                   <TableCell align="center" colSpan={1}>
                     <b>
                       {smartBill_WithdrawDtl[0].sbwdtl_id ? smartBill_WithdrawDtl.map(function (elt) {
@@ -2072,12 +2156,12 @@ export default function AddressForm() {
                       }).toLocaleString("en-US") : 0}
                     </b>
                   </TableCell>
-                  <TableCell align="center" colSpan={1} />
+                  <TableCell />
                 </TableRow>
               </TableHead>
               <TableHead>
                 <TableRow>
-                  <TableCell align="left" colSpan={15}>
+                  <TableCell align="left" colSpan={14}>
                     <Grid
                       container
                       spacing={2}
@@ -2218,13 +2302,12 @@ export default function AddressForm() {
           <DialogContent dividers>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">เลือกวิธีสร้างรายการ</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
+                <FormControl fullWidth align="center" required sx={{ ml: 1 }}>
+                  <RadioGroup
+                    row
+                    aria-labelledby="demo-row-radio-buttons-group-label"
+                    name="companny"
                     value={case_WithdrawDtlSave}
-                    label="วิธีสร้างรายการ"
                     onChange={(e) => {
                       const list = [...smartBill_WithdrawDtlSave]
                       list[0]['sb_operationid'] = ''
@@ -2237,63 +2320,62 @@ export default function AddressForm() {
                       setCase_WithdrawDtlSave(e.target.value)
                     }}
                   >
-                    <MenuItem value={0}>สร้างจากรายการที่มีอยู่แล้ว</MenuItem>
-                    <MenuItem value={1}>สร้างรายการใหม่</MenuItem>
-                  </Select>
+                    <FormControlLabel value={0} control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="เลือกรายการจาก SmartCar" />
+                    <FormControlLabel value={1} control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28, }, }} />} label="สร้างรายการใหม่" />
+                  </RadioGroup>
                 </FormControl>
               </Grid>
-              {case_WithdrawDtlSave === 0 ? (
-                <React.Fragment>
-                  <Grid item xs={12}>
-                    <Autocomplete
-                      autoHighlight
-                      id="free-solo-demo"
-                      freeSolo
-                      options={sb_operationid}
-                      disabled={!sb_operationid ? true : false}
-                      getOptionLabel={(options) =>
-                        `[${options.createby}] [${options.sb_code}] [${options.sb_operationid}] ${options.sb_operationid_location}`
-                      }
-                      sx={{
-                        "& .MuiInputBase-input.Mui-disabled": {
-                          WebkitTextFillColor: "#000000",
-                        },
-                      }}
-                      onChange={(event, newInputValue, reason) => {
-                        if (reason === 'clear') {
-                          const list = [...smartBill_WithdrawDtlSave]
-                          list[0]['sb_operationid'] = ''
-                          setSmartBill_WithdrawDtlSave(list)
-                        } else {
-                          const list = [...smartBill_WithdrawDtlSave]
-                          list[0]['sb_operationid'] = newInputValue.sb_operationid
-                          list[0]['sbwdtl_operationid_startdate'] = dayjs(newInputValue.sb_operationid_startdate).add(7, "hour")
-                          list[0]['sbwdtl_operationid_enddate'] = dayjs(newInputValue.sb_operationid_enddate).add(7, "hour")
-                          list[0]['sbwdtl_operationid_endmile'] = newInputValue.sb_operationid_endmile
-                          list[0]['sbwdtl_operationid_startmile'] = newInputValue.sb_operationid_startmile
-                          list[0]['remark'] = newInputValue.sb_operationid_location
-                          setSmartBill_WithdrawDtlSave(list)
-                        }
-                      }}
-                      renderInput={(params) => <TextField {...params} fullWidth label="เลือกรายการ" />}
-                    />
-                  </Grid>
-                </React.Fragment>
-              ) : null}
-              <Grid item xs={12} sm={6}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DateTimePicker
-                    format="YYYY-MM-DD HH:mm"
-                    name="sbwdtl_operationid_startdate"
-                    label={`วันที่เริ่มต้น`}
-                    //timezone='UTC'
+              {case_WithdrawDtlSave == 0 ? (
+                <Grid item xs={12}>
+                  <Autocomplete
+                    autoHighlight
+                    id="free-solo-demo"
+                    freeSolo
+                    options={sb_operationid ?? []}
+                    disabled={!sb_operationid}
+                    getOptionLabel={(options) =>
+                      `[${options.createby}] [${options.sb_code}] [${options.sb_operationid}] ${options.sb_operationid_location}`
+                    }
                     sx={{
-                      width: '100%',
                       "& .MuiInputBase-input.Mui-disabled": {
                         WebkitTextFillColor: "#000000",
                       },
                     }}
+                    onChange={(event, newInputValue, reason) => {
+                      if (reason === 'clear') {
+                        const list = [...smartBill_WithdrawDtlSave]
+                        list[0]['sb_operationid'] = ''
+                        setSmartBill_WithdrawDtlSave(list)
+                      } else {
+                        const list = [...smartBill_WithdrawDtlSave]
+                        list[0]['sb_operationid'] = newInputValue.sb_operationid
+                        list[0]['sbwdtl_operationid_startdate'] = dayjs(newInputValue.sb_operationid_startdate).add(7, "hour")
+                        list[0]['sbwdtl_operationid_enddate'] = dayjs(newInputValue.sb_operationid_enddate).add(7, "hour")
+                        list[0]['sbwdtl_operationid_endmile'] = newInputValue.sb_operationid_endmile
+                        list[0]['sbwdtl_operationid_startmile'] = newInputValue.sb_operationid_startmile
+                        list[0]['remark'] = newInputValue.sb_operationid_location
+                        setSmartBill_WithdrawDtlSave(list)
+                      }
+                    }}
+                    renderInput={(params) => <TextField {...params} fullWidth label="เลือกรายการ" />}
+                  />
+                </Grid>
+              ) : null}
+              <Grid item xs={12} sm={6}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateTimePicker
+                    format="DD/MM/YYYY HH:mm"
+                    name="sbwdtl_operationid_startdate"
+                    closeOnSelect={true}
+                    views={['day', 'hours']}
+                    label={`วันที่เริ่มต้น`}
+                    viewRenderers={{ hours: renderDigitalClockTimeView }}
                     value={smartBill_WithdrawDtlSave[0].sb_operationid ? smartBill_WithdrawDtlSave[0].sbwdtl_operationid_startdate : null}
+                    slots={{
+                      layout: CustomLayout,
+                      actionBar: ActionList,
+                    }}
+                    sx={{ width: '100%' }}
                     onChange={(newValue) => {
                       const list = [...smartBill_WithdrawDtlSave]
                       list[0]['sbwdtl_operationid_startdate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
@@ -2306,17 +2388,18 @@ export default function AddressForm() {
               <Grid item xs={12} sm={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    format="YYYY-MM-DD HH:mm"
+                    format="DD/MM/YYYY HH:mm"
                     name="sbwdtl_operationid_enddate"
-                    label={`วันที่สิ้นสุด`}
-                    //timezone='UTC'
-                    sx={{
-                      width: '100%',
-                      "& .MuiInputBase-input.Mui-disabled": {
-                        WebkitTextFillColor: "#000000",
-                      },
-                    }}
+                    closeOnSelect={true}
+                    views={['day', 'hours']}
+                    label={`วันที่เริ่มต้น`}
+                    viewRenderers={{ hours: renderDigitalClockTimeView }}
                     value={smartBill_WithdrawDtlSave[0].sb_operationid ? smartBill_WithdrawDtlSave[0].sbwdtl_operationid_enddate : null}
+                    slots={{
+                      layout: CustomLayout,
+                      actionBar: ActionList,
+                    }}
+                    sx={{ width: '100%' }}
                     onChange={(newValue) => {
                       const list = [...smartBill_WithdrawDtlSave]
                       list[0]['sbwdtl_operationid_enddate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
@@ -2401,8 +2484,8 @@ export default function AddressForm() {
           fullWidth
           maxWidth="md"
         >
-          <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-            เบิกค่าทางด่วน ?
+          <DialogTitle sx={{ m: 0, p: 2, fontWeight: 'bold' }} id="customized-dialog-title">
+            ค่าทางด่วน
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -2423,35 +2506,8 @@ export default function AddressForm() {
               justifyContent="flex-start"
               alignItems="center"
               spacing={2}
+              sx={{ px: 5 }}
             >
-              <Grid item xs={12}>
-                <RadioGroup
-                  row
-                  value={payRush.payTrueDtl_satatus}
-                  onChange={(event) => {
-                    if (event.target.value === 0 || event.target.value === "0") {
-                      setPayRush({
-                        sbwdtl_id: payRush.sbwdtl_id,
-                        cost_id: '',
-                        payTrueDtl_satatus: event.target.value,
-                        category_id: 2,
-                        amount: '',
-                      });
-                    } else {
-                      setPayRush({
-                        sbwdtl_id: payRush.sbwdtl_id,
-                        cost_id: payRush.cost_id,
-                        payTrueDtl_satatus: event.target.value,
-                        category_id: 2,
-                        amount: payRush.amount,
-                      });
-                    }
-                  }}
-                >
-                  <FormControlLabel value={0} control={<Radio />} label="ไม่เบิก" />
-                  <FormControlLabel value={1} control={<Radio />} label="เบิก" />
-                </RadioGroup>
-              </Grid>
               <Grid item xs={12}>
                 <TextField
                   InputProps={{
@@ -2464,6 +2520,7 @@ export default function AddressForm() {
                       sbwdtl_id: payRush.sbwdtl_id,
                       cost_id: payRush.cost_id,
                       payTrueDtl_satatus: payRush.payTrueDtl_satatus,
+                      usercode: data.UserCode,
                       category_id: 2,
                       amount: event.target.value,
                     });
@@ -2493,8 +2550,8 @@ export default function AddressForm() {
           fullWidth
           maxWidth="md"
         >
-          <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-            เบิกค่าอื่น ๆ ?
+          <DialogTitle sx={{ m: 0, p: 2, fontWeight: 'bold' }} id="customized-dialog-title">
+            ค่าใช้จ่ายอื่น ๆ
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -2514,87 +2571,113 @@ export default function AddressForm() {
               direction="row"
               justifyContent="flex-start"
               alignItems="center"
-              spacing={2}
             >
               <Grid item xs={12}>
-                <RadioGroup
-                  row
-                  value={payOtherCase}
-                  onChange={(event) => setPayOtherCase(event.target.value)}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'flex-start',
+                    flexWrap: 'wrap',
+                    listStyle: 'none',
+                    pb: 2,
+                    px: 5,
+                    m: 0,
+                    color: '#E15554',
+                    fontSize: '16px !important'
+                  }}
+                  component="ul"
                 >
-                  <FormControlLabel value={0} control={<Radio />} label="ไม่เบิก" />
-                  <FormControlLabel value={1} control={<Radio />} label="เบิก" />
-                </RadioGroup>
+                  กดปุ่มเพิ่มหัวข้อที่ต้องการเบิกจากหัวข้อด้านล่างนี้*
+                </Box>
               </Grid>
               <Grid item xs={12}>
-                <Button
-                  autoFocus
-                  disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
-                  variant='outlined'
-                  onClick={addPayOther}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'flex-start',
+                    flexWrap: 'wrap',
+                    listStyle: 'none',
+                    p: 0.5,
+                    px: 5,
+                    m: 0,
+                  }}
+                  component="ul"
                 >
-                  เพิ่มรายการ
-                </Button>
-              </Grid>
-              {payOther.map((res, index) => (
-                <React.Fragment>
-                  <Grid item xs={7}>
-                    <Autocomplete
-                      autoHighlight
-                      id="free-solo-demo"
-                      freeSolo
-                      name="costOther"
-                      value={res.category_name}
-                      options={costOther.map((option) => option.category_name)}
-                      onChange={(event, newValue, reason) => {
-                        if (reason === 'clear') {
-                          const list = [...payOther]
-                          list[index]['category_name'] = ''
-                          setPayOther(list)
-                        } else {
-                          const list = [...payOther]
-                          list[index]['category_name'] = newValue
-                          setPayOther(list)
-                        }
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label={`รายละเอียด`}
-                          fullWidth
+                  {costOther.map((data, index) => {
+                    return (
+                      <ListItem key={index}>
+                        <Chip
+                          label={data.category_name}
+                          sx={{ backgroundColor: green[200] }}
+                          onClick={(e) => handleAddOtherChip(e, data)}
                         />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <TextField
-                      InputProps={{
-                        inputComponent: NumericFormatCustom,
-                      }}
-                      value={res.amount}
-                      onChange={(e) => {
-                        const list = [...payOther]
-                        list[index]['amount'] = e.target.value
-                        setPayOther(list)
-                      }}
-                      key={index}
-                      label="ยอดเงินตามบิล"
-                      fullWidth
-                    />
-                  </Grid>
-                  <Grid item xs={2}>
-                    <Button
-                      autoFocus
-                      variant='outlined'
-                      color="error"
-                      onClick={(e) => reMovePayOther(e, index)}
-                      disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
-                    >
-                      DELETE
-                    </Button>
-                  </Grid>
-                </React.Fragment>
-              ))}
+                      </ListItem>
+                    );
+                  })}
+                </Box>
+              </Grid>
+              <Grid item xs={12}>
+                <TableContainer sx={{ px: 5, py: 1 }}>
+                  <Table sx={{ width: '100%', border: '1px solid', }} size="small" aria-label="a dense table">
+                    <TableHead>
+                      <TableRow sx={{ backgroundColor: green[100] }}>
+                        <TableCell sx={{ fontWeight: 'bold', color: green[900] }}>รายการที่เบิก</TableCell>
+                        <TableCell colSpan={2} />
+                        <TableCell align="right" sx={{ fontWeight: 'bold', color: green[900] }}>เบิกได้&nbsp;(บาท)</TableCell>
+                        <TableCell />
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {(payOther.length > 0) ? payOther.map((res, index) => (
+                        <TableRow key={res.sbwdtl_id}>
+                          <TableCell>{res.category_name ?? ''}</TableCell>
+                          <TableCell colSpan={2} />
+                          <TableCell align="right">
+                            <TextField
+                              InputProps={{
+                                inputComponent: NumericFormatCustom,
+                              }}
+                              inputProps={{ style: { textAlign: 'right' } }}
+                              value={res.amount}
+                              onChange={(e) => {
+                                const list = [...payOther]
+                                list[index]['amount'] = e.target.value
+                                setPayOther(list)
+                              }}
+                              variant='standard'
+                            />
+                          </TableCell>
+                          <TableCell align="right">
+                            <IconButton
+                              key={index}
+                              onClick={(e) => reMovePayOther(e, index)}
+                              variant="outlined"
+                              color="error"
+                            >
+                              <DeleteIcon sx={{ fontSize: '1.2rem !important' }} />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      )) : []}
+                    </TableBody>
+                    <TableHead>
+                      <TableRow sx={{ backgroundColor: green[100] }}>
+                        <TableCell sx={{ fontWeight: 'bold' }} colSpan={3}>
+                          ยอดรวมจาหค่าอื่น ๆ ทั้งหมด
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                          {payOther.map(function (item) {
+                            return parseFloat((item.amount === '' ? 0 : item.amount))
+                          }).reduce(function (a, b) { // sum all resulting numbers
+                            return a + b
+                          }).toLocaleString()}
+                        </TableCell>
+                        <TableCell />
+                      </TableRow>
+                    </TableHead>
+                  </Table>
+                </TableContainer>
+              </Grid>
             </Grid>
           </DialogContent>
           <DialogActions>
@@ -2615,8 +2698,8 @@ export default function AddressForm() {
           fullWidth
           maxWidth="md"
         >
-          <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-            ต้องการเบิกตามจริงหรือไม่ ?
+          <DialogTitle sx={{ m: 0, p: 2, fontWeight: 'bold' }} id="customized-dialog-title">
+            ค่าน้ำมันรถเบิกตามจริง
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -2637,35 +2720,8 @@ export default function AddressForm() {
               justifyContent="flex-start"
               alignItems="center"
               spacing={2}
+              sx={{ px: 5 }}
             >
-              <Grid item xs={12}>
-                <RadioGroup
-                  row
-                  value={payTrueDtl.payTrueDtl_satatus}
-                  onChange={(event) => {
-                    if (event.target.value === 0 || event.target.value === "0") {
-                      setPayTrueDtl({
-                        sbwdtl_id: payTrueDtl.sbwdtl_id,
-                        cost_id: '',
-                        payTrueDtl_satatus: event.target.value,
-                        category_id: 1,
-                        amount: '',
-                      });
-                    } else {
-                      setPayTrueDtl({
-                        sbwdtl_id: payTrueDtl.sbwdtl_id,
-                        cost_id: payTrueDtl.cost_id,
-                        payTrueDtl_satatus: event.target.value,
-                        category_id: 1,
-                        amount: payTrueDtl.amount,
-                      });
-                    }
-                  }}
-                >
-                  <FormControlLabel value={0} control={<Radio />} label="ไม่เบิก" />
-                  <FormControlLabel value={1} control={<Radio />} label="เบิก" />
-                </RadioGroup>
-              </Grid>
               <Grid item xs={12}>
                 <TextField
                   InputProps={{
@@ -2678,6 +2734,7 @@ export default function AddressForm() {
                       sbwdtl_id: payTrueDtl.sbwdtl_id,
                       cost_id: payTrueDtl.cost_id,
                       payTrueDtl_satatus: payTrueDtl.payTrueDtl_satatus,
+                      usercode: data.UserCode,
                       category_id: 1,
                       amount: event.target.value,
                     });
@@ -2707,8 +2764,8 @@ export default function AddressForm() {
           fullWidth
           maxWidth="md"
         >
-          <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-            ต้องการเบิกค่าเบี้ยเลี้ยงหรือไม่ ?
+          <DialogTitle sx={{ m: 0, p: 2, fontWeight: 'bold' }} id="customized-dialog-title">
+            ค่าเบี้ยเลี้ยง
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -2730,243 +2787,196 @@ export default function AddressForm() {
               alignItems="center"
               spacing={2}
             >
-              <Grid item xs={12}>
-                <RadioGroup
-                  row
-                  value={payAllowanceCase}
-                  onChange={(event) => {
-                    if (event.target.value === 0 || event.target.value === "0") {
-                      setSmartBill_CostAllowance([{
-                        sbwdtl_id: '',
-                        cost_id: '',
-                        id: '',
-                        category_id: 4,
-                        count: '',
-                        startdate: '',
-                        enddate: '',
-                        usercode: '',
-                        foodStatus: 0,
-                        amount: '',
-                      }]);
-                      setPayAllowanceCase(0)
-                    } else {
-                      setPayAllowanceCase(event.target.value)
-                    }
-                  }}
-                >
-                  <FormControlLabel value={0} control={<Radio />} label="ไม่เบิก" />
-                  <FormControlLabel value={1} control={<Radio />} label="เบิก" />
-                </RadioGroup>
-              </Grid>
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  <Grid item>
-                    <Button
-                      disabled={
-                        (payAllowanceCase === 0 || payAllowanceCase === "0") ||
-                          smartBill_Withdraw[0].lock_status === true
-                          ? true : false
-                      }
-                      onClick={handleServiceAddAllowance}
-                      variant="outlined"
-                      startIcon={<ArticleIcon />}
-                    >
-                      เพิ่มผู้เบิกเบี้ยเลี้ยง
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Grid>
-              {smartBill_CostAllowance.map((res, index) => (
-                <React.Fragment>
-                  <Grid item xs={12}>
-                    <Divider sx={{ py: 3 }} textAlign="left">
-                      <Typography className="payment-Forms">
-                        ค่าเบี้ยเลี้ยงรายการที่ {index + 1}
-                      </Typography>
-                    </Divider>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Autocomplete
-                      autoHighlight
-                      id="free-solo-demo"
-                      freeSolo
-                      key={index}
-                      name="usercode"
-                      value={res.usercode}
-                      disabled={payAllowanceCase === 0 || payAllowanceCase === "0" ? true : false}
-                      options={users.map((option) => option.UserCode)}
-                      onChange={async (event, newValue, reason) => {
-                        if (reason === 'clear') {
-                          const list = [...smartBill_CostAllowance]
-                          list[index]['usercode'] = ''
-                          list[index]['amount'] = ''
-                          setSmartBill_CostAllowance(list)
-                        } else {
-                          const list = [...smartBill_CostAllowance]
-                          await Axios.post(config.http + '/useright_getWelfare', { welfaretypeid: 1, usercode: newValue }, config.headers)
-                            .then((res) => {
-                              if (res.data.data.length > 0) {
-                                list[index]['usercode'] = newValue
-                                list[index]['amount'] = res.data.data.filter((getWelFare) => getWelFare.usercode === newValue)[0].amount ?? 0
+              <TableContainer sx={{ px: 5, py: 1 }}>
+                <Table sx={{ width: '100%', border: '1px solid', }} size="small" aria-label="a dense table">
+                  <TableHead>
+                    <TableRow sx={{ backgroundColor: orange[100] }}>
+                      <TableCell align="center" sx={{ fontWeight: 'bold', color: orange[900], width: 120 }}>ผู้เบิกรายการ</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', color: orange[900], width: 150 }}>StartDate</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', color: orange[900], width: 150 }}>EndDate</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold', color: orange[900], width: 100 }}>Day:hour</TableCell>
+                      <TableCell align="center" sx={{ fontWeight: 'bold', color: orange[900], width: 100 }}>อาหาร</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold', color: orange[900], width: 120 }}>เบิกได้&nbsp;(บาท)</TableCell>
+                      <TableCell align="right" />
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {smartBill_CostAllowance.map((res, index) => (
+                      <TableRow key={res.sbwdtl_id}>
+                        <TableCell align="center" component="th" scope="row">
+                          <Autocomplete
+                            autoHighlight
+                            id="free-solo-demo"
+                            freeSolo
+                            name="usercode"
+                            value={res.usercode}
+                            disabled={payAllowanceCase == 0 ? true : false}
+                            options={users.map((option) => option.UserCode)}
+                            onChange={async (event, newValue, reason) => {
+                              if (reason === 'clear') {
+                                const list = [...smartBill_CostAllowance]
+                                list[index]['usercode'] = ''
+                                list[index]['amount'] = ''
                                 setSmartBill_CostAllowance(list)
                               } else {
-                                list[index]['usercode'] = newValue
-                                list[index]['amount'] = 0
-                                setSmartBill_CostAllowance(list)
+                                const list = [...smartBill_CostAllowance]
+                                await Axios.post(config.http + '/useright_getWelfare', { welfaretypeid: 1, usercode: newValue }, config.headers)
+                                  .then((res) => {
+                                    if (res.data.data.length > 0) {
+                                      list[index]['usercode'] = newValue
+                                      list[index]['amount'] = res.data.data.filter((getWelFare) => getWelFare.usercode === newValue)[0].amount ?? 0
+                                      setSmartBill_CostAllowance(list)
+                                    } else {
+                                      list[index]['usercode'] = newValue
+                                      list[index]['amount'] = 0
+                                      setSmartBill_CostAllowance(list)
+                                    }
+                                  })
                               }
-                            })
-                        }
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label={`ผู้เบิกเบี้ยเลี้ยง คนที่ ${index + 1}`}
-                          fullWidth
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={4}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DateTimePicker
-                        format="YYYY-MM-DD HH:mm"
-                        name="startdate"
-                        label={`วันที่เริ่มต้น`}
-                        //timezone='UTC'
-                        key={index}
-                        sx={{ width: '100%' }}
-                        disabled={payAllowanceCase === 0 || payAllowanceCase === "0" ? true : false}
-                        value={res.startdate}
-                        onChange={(newValue) => {
-                          const list = [...smartBill_CostAllowance]
-                          list[index]['startdate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
-                          list[index]['count'] = Math.trunc((new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600))
-                          setSmartBill_CostAllowance(list)
-                        }}
-                        ampm={false}
-                      />
-                    </LocalizationProvider>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DateTimePicker
-                        format="YYYY-MM-DD HH:mm"
-                        name="enddate"
-                        label={`วันที่สิ้นสุด`}
-                        //timezone='UTC'
-                        key={index}
-                        sx={{ width: '100%' }}
-                        disabled={payAllowanceCase === 0 || payAllowanceCase === "0" ? true : false}
-                        value={res.enddate}
-                        onChange={(newValue) => {
-                          const list = [...smartBill_CostAllowance]
-                          list[index]['enddate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
-                          list[index]['count'] = Math.trunc((new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600))
-                          setSmartBill_CostAllowance(list)
-                        }}
-                        ampm={false}
-                      />
-                    </LocalizationProvider>
-                  </Grid>
-                  <Grid item xs={2}>
-                    <FormControl fullWidth>
-                      <InputLabel>ค่าอาหาร</InputLabel>
-                      <Select
-                        value={res.foodStatus}
-                        key={index}
-                        label="ค่าอาหาร"
-                        onChange={(event) => {
-                          const list = [...smartBill_CostAllowance]
-                          list[index]['foodStatus'] = event.target.value
-                          setSmartBill_CostAllowance(list)
-                        }}
-                      >
-                        <MenuItem value={0}>ไม่มีอาหารเลี้ยง</MenuItem>
-                        <MenuItem value={1}>มีอาหารเลี้ยง</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <TextField
-                      disabled
-                      InputProps={{
-                        inputComponent: NumericFormatCustom,
-                      }}
-                      key={index}
-                      value={res.count}
-                      sx={{
-                        "& .MuiInputBase-input.Mui-disabled": {
-                          WebkitTextFillColor: "#000000",
-                        },
-                      }}
-                      label="จำนวน ชม."
-                      fullWidth
-                      name="count"
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <TextField
-                      disabled
-                      InputProps={{
-                        inputComponent: NumericFormatCustom,
-                      }}
-                      key={index}
-                      sx={{
-                        "& .MuiInputBase-input.Mui-disabled": {
-                          WebkitTextFillColor: "#000000",
-                        },
-                      }}
-                      value={res.amount}
-                      label="ค่าเบี้ยเลี้ยง"
-                      fullWidth
-                      name="amount"
-                    />
-                  </Grid>
-                  <Grid item xs={2}>
-                    <TextField
-                      disabled
-                      InputProps={{
-                        inputComponent: NumericFormatCustom,
-                      }}
-                      sx={{
-                        "& .MuiInputBase-input.Mui-disabled": {
-                          WebkitTextFillColor: "#000000",
-                        },
-                      }}
-                      key={index}
-                      value={
-                        res.foodStatus === 1 ? (res.amount / 2) * Math.ceil(Math.trunc((res.count / 12)) / 2) :
-                          res.amount * Math.ceil(Math.trunc((res.count / 12)) / 2)
-                      }
-                      label="ยอดเงินที่เบิกได้"
-                      fullWidth
-                    />
-                  </Grid>
-                  <Grid item xs={2}>
-                    <Button
-                      disabled={
-                        (payAllowanceCase === 0 || payAllowanceCase === "0") ||
-                          smartBill_CostAllowance.length === 1 ||
-                          smartBill_Withdraw[0].lock_status === true ? true : false
-                      }
-                      key={index}
-                      onClick={(e) => handleServiceRemoveAllowance(e, index)}
-                      variant="outlined"
-                      startIcon={<DeleteIcon />}
-                      color="error"
-                    >
-                      DELETE
-                    </Button>
-                  </Grid>
-                </React.Fragment>
-              ))}
+                            }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                variant='standard'
+                                fullWidth
+                              />
+                            )}
+                          />
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 'bold', color: orange[900] }}>
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DateTimePicker
+                              format="DD/MM/YYYY HH:mm"
+                              name="sbwdtl_operationid_enddate"
+                              closeOnSelect={true}
+                              views={['day', 'hours']}
+                              viewRenderers={{ hours: renderDigitalClockTimeView }}
+                              slots={{
+                                layout: CustomLayout,
+                                actionBar: ActionList,
+                              }}
+                              slotProps={{
+                                field: { size: 'small' }, textField: {
+                                  variant: 'standard',
+                                },
+                              }}
+                              sx={{ width: '100%' }}
+                              value={res.startdate ? dayjs(res.startdate) : undefined}
+                              onChange={(newValue) => {
+                                const list = [...smartBill_CostAllowance]
+                                list[index]['startdate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
+                                list[index]['count'] = Math.trunc((new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600))
+                                setSmartBill_CostAllowance(list)
+                              }}
+                              ampm={false}
+                            />
+                          </LocalizationProvider>
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 'bold', color: orange[900] }}>
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DateTimePicker
+                              format="DD/MM/YYYY HH:mm"
+                              name="sbwdtl_operationid_enddate"
+                              closeOnSelect={true}
+                              views={['day', 'hours']}
+                              viewRenderers={{ hours: renderDigitalClockTimeView }}
+                              slots={{
+                                layout: CustomLayout,
+                                actionBar: ActionList,
+                              }}
+                              slotProps={{
+                                field: { size: 'small' }, textField: {
+                                  variant: 'standard',
+                                },
+                              }}
+                              sx={{ width: '100%' }}
+                              value={res.enddate ? dayjs(res.enddate) : undefined}
+                              onChange={(newValue) => {
+                                const list = [...smartBill_CostAllowance]
+                                list[index]['enddate'] = dayjs.tz(newValue, "YYYY-MM-DD HH:mm", "Asia/Bangkok")
+                                list[index]['count'] = Math.trunc((new Date(res.enddate) - new Date(res.startdate)) / (1000 * 3600))
+                                setSmartBill_CostAllowance(list)
+                              }}
+                              ampm={false}
+                            />
+                          </LocalizationProvider>
+                        </TableCell>
+                        <TableCell align="right">
+                          {Math.trunc((res.count / 24))}D : {Math.ceil((res.count % 24))}H
+                        </TableCell>
+                        <TableCell align="center">
+                          <Stack direction="row" alignItems="center" justifyContent="center">
+                            <Typography>ไม่มี</Typography>
+                            <Switch
+                              checked={res.foodStatus === 1}
+                              inputProps={{ 'aria-label': 'ant design' }}
+                              onChange={(event) => {
+                                const list = [...smartBill_CostAllowance]
+                                list[index]['foodStatus'] = event.target.checked ? 1 : 0
+                                setSmartBill_CostAllowance(list)
+                              }}
+                            />
+                            <Typography>มี</Typography>
+                          </Stack>
+                        </TableCell>
+                        <TableCell align="right">
+                          {(res.foodStatus === 1 ? ((res.amount === '' ? 0 : res.amount) / 2) * Math.ceil(Math.trunc((res.count / 12)) / 2) :
+                            (res.amount === '' ? 0 : res.amount) * Math.ceil(Math.trunc((res.count / 12)) / 2)).toLocaleString()}
+                        </TableCell>
+                        <TableCell align="center">
+                          <IconButton
+                            key={index}
+                            onClick={(e) => handleServiceRemoveAllowance(e, index)}
+                            variant="outlined"
+                            color="error"
+                          >
+                            <DeleteIcon sx={{ fontSize: '1.2rem !important' }} />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell colSpan={7}>
+                        <Button
+                          disabled={!!(payAllowanceCase == 0 || smartBill_Withdraw[0].lock_status === true)}
+                          onClick={handleServiceAddAllowance}
+                          variant="text"
+                          startIcon={<ArticleIcon />}
+                        >
+                          + เพิ่มรายการผู้เบิกเบี้ยเลี้ยง
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableHead>
+                    <TableRow sx={{ backgroundColor: orange[100] }}>
+                      <TableCell align="left" colSpan={5}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: orange[900] }}>
+                          ยอดรวมจากค่าเบี้ยเลี้ยงทั้งหมด
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold', color: orange[900] }}>
+                        {smartBill_CostAllowance.map(function (item) {
+                          return item.foodStatus === 1 ? (((item.amount === '' ? 0 : item.amount) * Math.ceil(Math.trunc(((item.count === '' ? 0 : item.count) / 12)) / 2)) / 2) :
+                            ((item.amount === '' ? 0 : item.amount) * Math.ceil(Math.trunc(((item.count === '' ? 0 : item.count) / 12)) / 2));
+                        }).reduce(function (a, b) { // sum all resulting numbers
+                          return a + b
+                        }).toLocaleString()}
+                      </TableCell>
+                      <TableCell />
+                    </TableRow>
+                  </TableHead>
+                </Table>
+              </TableContainer>
             </Grid>
           </DialogContent>
           <DialogActions>
             <Button
               autoFocus
               onClick={handleSaveAllowance}
-              disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
+              disabled={smartBill_Withdraw[0].lock_status !== false}
             >
               Save changes
             </Button>
@@ -2980,8 +2990,8 @@ export default function AddressForm() {
           fullWidth
           maxWidth="md"
         >
-          <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-            ต้องการเบิกค่าที่พักหรือไม่ ?
+          <DialogTitle sx={{ m: 0, p: 2, fontWeight: 'bold' }} id="customized-dialog-title">
+            ค่าที่พัก
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -3003,348 +3013,322 @@ export default function AddressForm() {
               alignItems="center"
               spacing={2}
             >
-              <Grid item xs={12}>
-                <RadioGroup
-                  row
-                  value={payHotelCase}
-                  onChange={(event) => {
-                    if (event.target.value === 0 || event.target.value === "0") {
-                      setSmartBill_CostHotel([{
-                        sbwdtl_id: '',
-                        cost_id: '',
-                        id: '',
-                        category_id: 3,
-                        count: '',
-                        startdate: '',
-                        enddate: '',
-                        sbc_hotelProvince: '',
-                        sbc_hotelname: '',
-                        amount: '',
-                        smartBill_CostHotelGroup: [{
-                          sbc_hotelid: '',
-                          sbc_hotelgroupid: '',
-                          usercode: '',
-                          amount: '',
-                        }],
-                      }]);
-                      setPayHotelCase(0)
-                    } else {
-                      setPayHotelCase(event.target.value)
-                    }
-                  }}
-                >
-                  <FormControlLabel value={0} control={<Radio />} label="ไม่เบิก" />
-                  <FormControlLabel value={1} control={<Radio />} label="เบิก" />
-                </RadioGroup>
-              </Grid>
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  <Grid item>
-                    <Button
-                      disabled={
-                        (payHotelCase === 0 || payHotelCase === "0") ||
-                          smartBill_Withdraw[0].lock_status === true
-                          ? true : false
-                      }
-                      onClick={handleServiceAddCostHotel}
-                      variant="outlined"
-                      startIcon={<ArticleIcon />}
-                    >
-                      เพิ่มห้องพัก
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Grid>
+              <TableContainer sx={{ px: 5, py: 2 }}>
+                <Table sx={{ width: '100%', }} size="small" aria-label="a dense table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ color: purple[800], fontWeight: 'bold' }}>
+                        ค่าที่พักรวมทั้งหมดปัจจุบัน: {smartBill_CostHotel.map(function (item) {
+                          const total = item.amount === '' ? 0 : item.amount;
+                          const totalGroup = item.smartBill_CostHotelGroup.map(function (itemGroup) {
+                            return parseFloat((itemGroup.amount === '' ? 0 : itemGroup.amount)) * parseFloat((item.count === '' ? 0 : item.count))
+                          }).reduce(function (a, b) {
+                            return a + b
+                          })
+                          if (totalGroup > total) {
+                            return total;
+                          } else {
+                            return totalGroup;
+                          }
+                        }).reduce(function (a, b) {
+                          return a + b
+                        }).toLocaleString()} บาท
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                </Table>
+              </TableContainer>
               {smartBill_CostHotel.map((res, index) => (
-                <React.Fragment>
-                  <Grid item xs={12}>
-                    <Divider sx={{ py: 3 }} textAlign="left">
-                      <Typography className="payment-Forms">
-                        ค่าที่พักรายการที่ {index + 1}
-                      </Typography>
-                    </Divider>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DateTimePicker
-                        format="YYYY-MM-DD"
-                        name="startdate"
-                        label={`(ห้องพัก ${index + 1}) วันที่เข้าพัก`}
-                        key={index}
-                        //timezone='UTC'
-                        sx={{ width: '100%' }}
-                        disabled={payHotelCase === 0 || payHotelCase === "0" ? true : false}
-                        value={res.startdate ? dayjs(res.startdate) : undefined}
-                        onChange={(newValue) => {
-                          const list = [...smartBill_CostHotel]
-                          list[index]['startdate'] = dayjs(newValue).format('YYYY-MM-DD 00:00:00')
-                          list[index]['count'] = Math.trunc((new Date(res.enddate) - new Date(res.startdate)) / (1000 * 60 * 60 * 24))
-                          setSmartBill_CostHotel(list)
-                        }}
-                        ampm={false}
-                      />
-                    </LocalizationProvider>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DateTimePicker
-                        format="YYYY-MM-DD"
-                        name="enddate"
-                        label={`(ห้องพัก ${index + 1}) วันที่ออก`}
-                        //timezone='UTC'
-                        key={index}
-                        sx={{ width: '100%' }}
-                        disabled={payHotelCase === 0 || payHotelCase === "0" ? true : false}
-                        value={res.enddate ? dayjs(res.enddate) : undefined}
-                        onChange={(newValue) => {
-                          const list = [...smartBill_CostHotel]
-                          list[index]['enddate'] = dayjs(newValue).format('YYYY-MM-DD 00:00:00')
-                          list[index]['count'] = Math.trunc((new Date(res.enddate) - new Date(res.startdate)) / (1000 * 60 * 60 * 24))
-                          setSmartBill_CostHotel(list)
-                        }}
-                        ampm={false}
-                      />
-                    </LocalizationProvider>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <Autocomplete
-                      autoHighlight
-                      id="free-solo-demo"
-                      freeSolo
-                      name="sbc_hotelProvince"
-                      disabled={payHotelCase === 0 || payHotelCase === "0" ? true : false}
-                      value={res.sbc_hotelProvince}
-                      options={province}
-                      onChange={async (event, newValue, reason) => {
-                        if (reason === 'clear') {
-                          const list = [...smartBill_CostHotel]
-                          list[index]['sbc_hotelProvince'] = ''
-                          setSmartBill_CostHotel(list)
-                        } else {
-                          const list = [...smartBill_CostHotel]
-                          list[index]['sbc_hotelProvince'] = newValue
-                          if (list[index]['smartBill_CostHotelGroup'].filter((filterGroup) => filterGroup.usercode !== '')[0]) {
-                            const CostHotelGroup = []
-                            for (let i = 0; i < list[index]['smartBill_CostHotelGroup'].length; i++) {
-                              CostHotelGroup.push({
-                                sbc_hotelid: list[index]['smartBill_CostHotelGroup'][i].sbc_hotelid,
-                                sbc_hotelgroupid: list[index]['smartBill_CostHotelGroup'][i].sbc_hotelgroupid,
-                                usercode: list[index]['smartBill_CostHotelGroup'][i].usercode,
-                                amount: await Axios.post(config.http + '/useright_getWelfare',
-                                  {
-                                    sbc_hotelProvince: list[index]['sbc_hotelProvince'],
-                                    usercode: list[index]['smartBill_CostHotelGroup'][i].usercode
-                                  },
-                                  config.headers)
-                                  .then((resAxios) => resAxios.data.data[0].amount),
-                              })
-                            }
-                            list[index]['smartBill_CostHotelGroup'] = CostHotelGroup
-                            setSmartBill_CostHotel(list)
-                          }
-                        }
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label={`จังหวัด`}
-                          fullWidth
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <TextField
-                      disabled={payHotelCase === 0 || payHotelCase === "0" ? true : false}
-                      key={index}
-                      value={res.sbc_hotelname}
-                      label={`ชื่อที่พัก`}
-                      onChange={(event) => {
-                        const list = [...smartBill_CostHotel]
-                        list[index]['sbc_hotelname'] = event.target.value
-                        setSmartBill_CostHotel(list)
-                      }}
-                      fullWidth
-                      name="sbc_hotelname"
-                    />
-                  </Grid>
-                  <Grid item xs={5}>
-                    <TextField
-                      disabled={payHotelCase === 0 || payHotelCase === "0" ? true : false}
-                      InputProps={{
-                        inputComponent: NumericFormatCustom,
-                      }}
-                      key={index}
-                      value={res.count}
-                      label={`จำนวนคืนที่พัก`}
-                      fullWidth
-                      name="count"
-                    />
-                  </Grid>
-                  <Grid item xs={5}>
-                    <TextField
-                      disabled={payHotelCase === 0 || payHotelCase === "0" ? true : false}
-                      InputProps={{
-                        inputComponent: NumericFormatCustom,
-                      }}
-                      key={index}
-                      value={res.amount}
-                      label={`(ห้องพัก ${index + 1}) ยอดเงินจากบิล`}
-                      onChange={(event) => {
-                        const list = [...smartBill_CostHotel]
-                        list[index]['amount'] = event.target.value
-                        setSmartBill_CostHotel(list)
-                      }}
-                      fullWidth
-                      name="amount"
-                    />
-                  </Grid>
-                  <Grid item xs={2}>
-                    <Button
-                      disabled={
-                        (payHotelCase === 0 || payHotelCase === "0") ||
-                          smartBill_Withdraw[0].lock_status === true ||
-                          smartBill_CostHotel.length === 1
-                          ? true : false
-                      }
-                      key={index}
-                      onClick={(e) => handleServiceRemoveCostHotel(e, index)}
-                      variant="outlined"
-                      startIcon={<DeleteIcon />}
-                      color="error"
-                    >
-                      DELETE
-                    </Button>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Button
-                      // disabled={
-                      //   (payHotelCase === 0 || payHotelCase === "0") ||
-                      //     smartBill_Withdraw[0].lock_status === true ||
-                      //     smartBill_CostHotel[index]['sbc_hotelProvince'] === ''
-                      //     ? true : false
-                      // }
-                      key={index}
-                      onClick={(e) => handleServiceAddCostHotelGroup(e, index)}
-                      variant="outlined"
-                      startIcon={<NoteAddIcon />}
-                    >
-                      เพิ่มผู้ร่วมพักของห้องพักที่ {index + 1}
-                    </Button>
-                  </Grid>
-                  {res.smartBill_CostHotelGroup.map((resGroup, indexGroup) => (
-                    <React.Fragment>
-                      <Grid item xs={5}>
-                        <Autocomplete
-                          autoHighlight
-                          id="free-solo-demo"
-                          freeSolo
-                          key={indexGroup}
-                          // disabled={(payHotelCase === 0 || payHotelCase === "0") || smartBill_CostHotel[index]['sbc_hotelProvince'] === '' ? true : false}
-                          name="usercode"
-                          value={resGroup.usercode}
-                          options={users.map((option) => option.UserCode)}
-                          onChange={async (event, newValue, reason) => {
-                            if (reason === 'clear') {
-                              const list = [...smartBill_CostHotel]
-                              list[index]['smartBill_CostHotelGroup'][indexGroup]['usercode'] = ''
-                              list[index]['smartBill_CostHotelGroup'][indexGroup]['amount'] = ''
-                              setSmartBill_CostHotel(list)
-                            } else {
-                              const list = [...smartBill_CostHotel]
-                              await Axios.post(config.http + '/useright_getWelfare', { sbc_hotelProvince: list[index]['sbc_hotelProvince'], usercode: newValue }, config.headers)
-                                .then((res) => {
-                                  if (res.data.data.length > 0) {
-                                    list[index]['smartBill_CostHotelGroup'][indexGroup]['usercode'] = newValue
-                                    list[index]['smartBill_CostHotelGroup'][indexGroup]['amount'] = res.data.data.filter((getWelFare) => getWelFare.usercode === newValue)[0].amount ?? 0
-                                    setSmartBill_CostHotel(list)
-                                  } else {
-                                    list[index]['smartBill_CostHotelGroup'][indexGroup]['usercode'] = newValue
-                                    list[index]['smartBill_CostHotelGroup'][indexGroup]['amount'] = 0
-                                    setSmartBill_CostHotel(list)
+                <TableContainer key={res.cost_id} sx={{ px: 5, py: 2 }}>
+                  <Table sx={{ width: '100%', border: '1px solid', }} size="small" aria-label="a dense table">
+                    <TableHead>
+                      <TableRow sx={{ backgroundColor: purple[100] }}>
+                        <TableCell colSpan={3}>
+                          <Typography variant='h2' sx={{ color: purple[800], fontWeight: 'bold' }}>
+                            บิลค่าที่พักรายการที่ {index + 1}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="right">
+                          <IconButton
+                            key={index}
+                            disabled={smartBill_CostHotel.length > 1 ? false : true}
+                            onClick={(e) => handleServiceRemoveCostHotel(e, index)}
+                            variant="outlined"
+                            startIcon={<DeleteIcon />}
+                            color="error"
+                          >
+                            <DeleteIcon sx={{ fontSize: '1.2rem !important' }} />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow sx={{ backgroundColor: purple[100] }}>
+                        <TableCell sx={{ width: 150 }}>
+                          <Autocomplete
+                            autoHighlight
+                            id="free-solo-demo"
+                            freeSolo
+                            name="sbc_hotelProvince"
+                            disabled={payHotelCase == 0 ? true : false}
+                            value={res.sbc_hotelProvince}
+                            options={province}
+                            onChange={async (event, newValue, reason) => {
+                              if (reason === 'clear') {
+                                const list = [...smartBill_CostHotel]
+                                list[index]['sbc_hotelProvince'] = ''
+                                setSmartBill_CostHotel(list)
+                              } else {
+                                const list = [...smartBill_CostHotel]
+                                list[index]['sbc_hotelProvince'] = newValue
+                                if (list[index]['smartBill_CostHotelGroup'].filter((filterGroup) => filterGroup.usercode !== '')[0]) {
+                                  const CostHotelGroup = []
+                                  for (let i = 0; i < list[index]['smartBill_CostHotelGroup'].length; i++) {
+                                    CostHotelGroup.push({
+                                      sbc_hotelid: list[index]['smartBill_CostHotelGroup'][i].sbc_hotelid,
+                                      sbc_hotelgroupid: list[index]['smartBill_CostHotelGroup'][i].sbc_hotelgroupid,
+                                      usercode: list[index]['smartBill_CostHotelGroup'][i].usercode,
+                                      amount: await Axios.post(config.http + '/useright_getWelfare',
+                                        {
+                                          sbc_hotelProvince: list[index]['sbc_hotelProvince'],
+                                          usercode: list[index]['smartBill_CostHotelGroup'][i].usercode
+                                        },
+                                        config.headers)
+                                        .then((resAxios) => resAxios.data.data[0].amount),
+                                    })
                                   }
-                                })
-                            }
-                          }}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label={`ผู้ร่วมที่พักคนที่ ${indexGroup + 1} ห้องพักที่ ${index + 1}`}
-                              fullWidth
+                                  list[index]['smartBill_CostHotelGroup'] = CostHotelGroup
+                                  setSmartBill_CostHotel(list)
+                                }
+                              }
+                            }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                InputProps={{
+                                  ...params.InputProps,
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      จังหวัด:
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                variant='standard'
+                                fullWidth
+                              />
+                            )}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ width: 200 }}>
+                          <TextField
+                            disabled={payHotelCase == 0 ? true : false}
+                            key={index}
+                            value={res.sbc_hotelname}
+                            onChange={(event) => {
+                              const list = [...smartBill_CostHotel]
+                              list[index]['sbc_hotelname'] = event.target.value
+                              setSmartBill_CostHotel(list)
+                            }}
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  ชื่อที่พัก:
+                                </InputAdornment>
+                              ),
+                            }}
+                            fullWidth
+                            variant='standard'
+                            name="sbc_hotelname"
+                          />
+                        </TableCell>
+                        <TableCell align="right">
+                          <TextField
+                            disabled={payHotelCase == 0 ? true : false}
+                            InputProps={{
+                              inputComponent: NumericFormatCustom,
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  จำนวนคืนที่พัก:
+                                </InputAdornment>
+                              ),
+                            }}
+                            onChange={(event) => {
+                              const list = [...smartBill_CostHotel]
+                              list[index]['count'] = event.target.value
+                              setSmartBill_CostHotel(list)
+                            }}
+                            key={index}
+                            value={res.count}
+                            variant='standard'
+                            fullWidth
+                            name="count"
+                          />
+                        </TableCell>
+                        <TableCell align="right" sx={{ width: 50 }}>
+                          <TextField
+                            disabled={payHotelCase == 0 ? true : false}
+                            InputProps={{
+                              inputComponent: NumericFormatCustom,
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  ยอดตามบิล:
+                                </InputAdornment>
+                              ),
+                            }}
+                            key={index}
+                            value={res.amount === 0 ? '' : res.amount}
+                            onChange={(event) => {
+                              const list = [...smartBill_CostHotel]
+                              list[index]['amount'] = parseFloat(event.target.value)
+                              setSmartBill_CostHotel(list)
+                            }}
+                            variant='standard'
+                            fullWidth
+                            name="amount"
+                          />
+                        </TableCell>
+                      </TableRow>
+                      <TableRow sx={{ backgroundColor: purple[200] }}>
+                        <TableCell sx={{ color: purple[900], fontWeight: 'bold', width: 100 }}>
+                          ผู้เบิกรายการ
+                        </TableCell>
+                        <TableCell align="right" sx={{ color: purple[900], fontWeight: 'bold', width: 100 }}>
+                          ค่าที่พัก/คืน
+                        </TableCell>
+                        <TableCell align="right" sx={{ color: purple[900], fontWeight: 'bold', width: 100 }}>
+                          เบิกได้&nbsp;(บาท)
+                        </TableCell>
+                        <TableCell />
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {res.smartBill_CostHotelGroup.map((resGroup, indexGroup) => (
+                        <TableRow key={indexGroup}>
+                          <TableCell sx={{ width: 100 }}>
+                            <Autocomplete
+                              autoHighlight
+                              id="free-solo-demo"
+                              freeSolo
+                              name="usercode"
+                              value={resGroup.usercode}
+                              options={users.map((option) => option.UserCode)}
+                              onChange={async (event, newValue, reason) => {
+                                if (reason === 'clear') {
+                                  const list = [...smartBill_CostHotel]
+                                  list[index]['smartBill_CostHotelGroup'][indexGroup]['usercode'] = ''
+                                  list[index]['smartBill_CostHotelGroup'][indexGroup]['amount'] = ''
+                                  setSmartBill_CostHotel(list)
+                                } else {
+                                  const list = [...smartBill_CostHotel]
+                                  await Axios.post(config.http + '/useright_getWelfare', { sbc_hotelProvince: list[index]['sbc_hotelProvince'], usercode: newValue }, config.headers)
+                                    .then((res) => {
+                                      if (res.data.data.length > 0) {
+                                        list[index]['smartBill_CostHotelGroup'][indexGroup]['usercode'] = newValue
+                                        list[index]['smartBill_CostHotelGroup'][indexGroup]['amount'] = res.data.data.filter((getWelFare) => getWelFare.usercode === newValue)[0].amount ?? 0
+                                        setSmartBill_CostHotel(list)
+                                      } else {
+                                        list[index]['smartBill_CostHotelGroup'][indexGroup]['usercode'] = newValue
+                                        list[index]['smartBill_CostHotelGroup'][indexGroup]['amount'] = 0
+                                        setSmartBill_CostHotel(list)
+                                      }
+                                    })
+                                }
+                              }}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  variant='standard'
+                                  label={`ผู้พักคนที่ ${indexGroup + 1}`}
+                                />
+                              )}
                             />
-                          )}
-                        />
-                      </Grid>
-                      <Grid item xs={3}>
-                        <TextField
-                          InputProps={{
-                            inputComponent: NumericFormatCustom,
-                          }}
-                          key={indexGroup}
-                          disabled
-                          sx={{
-                            "& .MuiInputBase-input.Mui-disabled": {
-                              WebkitTextFillColor: "#000000",
-                            },
-                          }}
-                          value={resGroup.amount}
-                          label="ค่าที่พัก/คืน"
-                          onChange={(event) => {
-                            const list = [...smartBill_CostHotel]
-                            list[index]['smartBill_CostHotelGroup'][indexGroup]['amount'] = event.target.value
-                            setSmartBill_CostHotel(list)
-                          }}
-                          fullWidth
-                          name="amount"
-                        />
-                      </Grid>
-                      <Grid item xs={2}>
-                        <TextField
-                          InputProps={{
-                            inputComponent: NumericFormatCustom,
-                          }}
-                          key={indexGroup}
-                          disabled
-                          sx={{
-                            "& .MuiInputBase-input.Mui-disabled": {
-                              WebkitTextFillColor: "#000000",
-                            },
-                          }}
-                          value={resGroup.amount * res.count}
-                          label="ยอดเงินที่เบิกได้"
-                          fullWidth
-                          name="amount"
-                        />
-                      </Grid>
-                      <Grid item xs={2}>
-                        <Button
-                          disabled={
-                            (payHotelCase === 0 || payHotelCase === "0") ||
-                              res.smartBill_CostHotelGroup.length === 1 ||
-                              smartBill_Withdraw[0].lock_status === true
-                              ? true : false
-                          }
-                          key={indexGroup}
-                          value={`${index},${resGroup.sbc_hotelgroupid}`}
-                          onClick={(e) => handleServiceRemoveHotelGroup(e, indexGroup)}
-                          variant="outlined"
-                          startIcon={<DeleteIcon />}
-                          color="error"
-                        >
-                          DELETE
-                        </Button>
-                      </Grid>
-                    </React.Fragment>
-                  ))}
-                </React.Fragment>
+                          </TableCell >
+                          <TableCell align="right" sx={{ width: 100 }}>
+                            {(resGroup.amount === '' ? 0 : resGroup.amount).toLocaleString()}
+                          </TableCell>
+                          <TableCell align="right">
+                            {((resGroup.amount === '' ? 0 : resGroup.amount) * (res.count === '' ? 0 : res.count)).toLocaleString()}
+                          </TableCell>
+                          <TableCell align="right">
+                            <IconButton
+                              key={indexGroup}
+                              onClick={(e) => handleServiceRemoveHotelGroup(e, index, indexGroup, resGroup)}
+                              variant="outlined"
+                              startIcon={<DeleteIcon />}
+                              color="error"
+                            >
+                              <DeleteIcon sx={{ fontSize: '1.2rem !important' }} />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      <TableRow>
+                        <TableCell sx={{ width: '100%' }} colSpan={4}>
+                          <Button
+                            key={index}
+                            onClick={(e) => handleServiceAddCostHotelGroup(e, index)}
+                            variant="text"
+                            startIcon={<NoteAddIcon />}
+                          >
+                            + เพิ่มผู้พัก
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                    <TableHead>
+                      <TableRow sx={{ backgroundColor: purple[100] }}>
+                        <TableCell colSpan={2} sx={{ color: purple[800], fontWeight: 'bold' }}>
+                          ยอดรวมจากผู้เข้าพัก
+                        </TableCell>
+                        <TableCell align='right' sx={{ color: purple[800], fontWeight: 'bold' }}>
+                          {smartBill_CostHotel[index]['smartBill_CostHotelGroup'].map(function (item) {
+                            return parseFloat((item.amount === '' ? 0 : item.amount) * (smartBill_CostHotel[index].count === '' ? 0 : smartBill_CostHotel[index].count))
+                          }).reduce(function (a, b) { // sum all resulting numbers
+                            return a + b
+                          }).toLocaleString()}
+                        </TableCell>
+                        <TableCell />
+                      </TableRow>
+                      <TableRow sx={{ backgroundColor: purple[100] }}>
+                        <TableCell colSpan={2} sx={{ color: purple[800], fontWeight: 'bold' }}>
+                          ยอดที่เบิกได้
+                        </TableCell>
+                        <TableCell align='right' sx={{ color: purple[800], fontWeight: 'bold' }}>
+                          {((smartBill_CostHotel[index]['smartBill_CostHotelGroup'].map(function (item) {
+                            return parseFloat((item.amount === '' ? 0 : item.amount) * (smartBill_CostHotel[index].count === '' ? 0 : smartBill_CostHotel[index].count))
+                          }).reduce(function (a, b) { // sum all resulting numbers
+                            return a + b
+                          }) ?? 0) >= (smartBill_CostHotel[index].amount === '' ? 0 : smartBill_CostHotel[index].amount)) ? smartBill_CostHotel[index].amount.toLocaleString() :
+                            (smartBill_CostHotel[index]['smartBill_CostHotelGroup'].map(function (item) {
+                              return parseFloat((item.amount === '' ? 0 : item.amount) * (smartBill_CostHotel[index].count === '' ? 0 : smartBill_CostHotel[index].count))
+                            }).reduce(function (a, b) { // sum all resulting numbers
+                              return a + b
+                            })).toLocaleString()}
+                        </TableCell>
+                        <TableCell />
+                      </TableRow>
+                    </TableHead>
+                  </Table>
+                  <br />
+                  <br />
+                </TableContainer>
               ))}
+              <TableContainer sx={{ px: 5, pb: 1 }}>
+                <Table sx={{ width: '100%' }} size="small" aria-label="a dense table">
+                  <Button
+                    fullWidth
+                    onClick={handleServiceAddCostHotel}
+                    title="เพิ่มบิลค่าที่พัก"
+                    sx={{ color: purple[800], '&:hover': { border: `1px solid ${purple[200]}` } }}
+                  >
+                    <AddCircleIcon sx={{ fontSize: '1.5rem !important' }} />
+                  </Button>
+                </Table>
+              </TableContainer>
             </Grid>
           </DialogContent>
           <DialogActions>
             <Button
               autoFocus
               onClick={handleSaveCostHotel}
-              disabled={smartBill_Withdraw[0].lock_status === false ? false : true}
             >
               Save changes
             </Button>

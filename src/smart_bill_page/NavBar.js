@@ -10,6 +10,25 @@ import IconButton from '@mui/material/IconButton';
 import swal from 'sweetalert';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Tooltip from '@mui/material/Tooltip';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import CloseIcon from '@mui/icons-material/Close';
+import ReactPlayer from 'react-player'
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
 
 const pages = ['Smart-Car', 'Smart-Bill', 'ESG'];
 
@@ -29,6 +48,21 @@ const handleLogout = () => {
 function ResponsiveAppBar() {
 
   const data = JSON.parse(localStorage.getItem('data'));
+  const [open, setOpen] = React.useState(false);
+  const [alignment, setAlignment] = React.useState('คู่มือ Smart-Car');
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleChange = (event, newAlignment) => {
+    setAlignment(newAlignment);
+    console.log(newAlignment);
+  };
 
 
   const handleRoutePage = (e) => {
@@ -79,6 +113,19 @@ function ResponsiveAppBar() {
                 {page}
               </Button>
             ))}
+            <Button
+              onClick={handleClickOpen}
+              sx={{
+                my: 2,
+                color: 'inherit',
+                display: 'block',
+                fontFamily: 'monospace',
+                fontWeight: 700,
+                textDecoration: 'none',
+              }}
+            >
+              คู่มือ
+            </Button>
           </Box>
           <Tooltip
             title={
@@ -113,6 +160,54 @@ function ResponsiveAppBar() {
           </Tooltip>
         </Toolbar>
       </Container>
+      <BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+        maxWidth="xl"
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+          Modal title
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers>
+          <ToggleButtonGroup
+            color="primary"
+            value={alignment}
+            exclusive
+            onChange={handleChange}
+            aria-label="Platform"
+          >
+            <ToggleButton value="คู่มือ Smart-Car">คู่มือ Smart-Car</ToggleButton>
+            <ToggleButton value="คู่มือ Smart-Bill">คู่มือ Smart-Bill</ToggleButton>
+          </ToggleButtonGroup>
+          <ReactPlayer
+            url={
+              alignment === 'คู่มือ Smart-Car' ?
+                `https://www.youtube.com/watch?v=QbOzrwDkKL4` :
+                `https://www.youtube.com/watch?v=Xvwfct8ZEO0`
+            }
+            width="750px"
+            height="430px"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleClose} color="error">
+            Exit
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
     </AppBar>
   );
 }

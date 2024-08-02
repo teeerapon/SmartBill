@@ -9,9 +9,12 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { renderDigitalClockTimeView, } from '@mui/x-date-pickers/timeViewRenderers';
+import { usePickerLayout, pickersLayoutClasses, PickersLayoutRoot, PickersLayoutContentWrapper, } from '@mui/x-date-pickers/PickersLayout';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Stack from '@mui/material/Stack';
@@ -43,6 +46,66 @@ import Chip from '@mui/material/Chip';
 import Picture1 from '../image/Picture1.png'
 import Picture2 from '../image/Picture2.png'
 
+
+function ActionList(props) {
+  const { onAccept, onClear, onCancel, onSetToday } = props;
+  const actions = [
+    { text: 'Clear', method: onClear },
+    { text: 'Today', method: onSetToday },
+    { text: 'Cancel', method: onCancel },
+    { text: 'Accept', method: onAccept },
+  ];
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        '& > *': {
+          m: 1,
+        },
+      }}
+    >
+      <ButtonGroup size="small" aria-label="Small button group">
+        {actions.map(({ text, method }) => (
+          <Button key={text} onClick={method} disablePadding>
+            {text}
+          </Button>
+        ))}
+      </ButtonGroup>
+    </Box >
+  );
+}
+
+function CustomLayout(props) {
+  const { tabs, content, actionBar } = usePickerLayout(props);
+  return (
+    <PickersLayoutRoot
+      ownerState={props}
+      sx={{
+        overflow: 'auto',
+        [`.${pickersLayoutClasses.actionBar}`]: {
+          gridColumn: 1,
+          gridRow: 2,
+        },
+        [`.${pickersLayoutClasses.toolbar}`]: {
+          gridColumn: 2,
+          gridRow: 1,
+        },
+      }}
+    >
+      <PickersLayoutContentWrapper className={pickersLayoutClasses.contentWrapper}>
+        {/* <BootstrapDialog aria-labelledby="customized-dialog-title" className={pickersLayoutClasses.contentWrapper}> */}
+        {tabs}
+        {content}
+        <Divider />
+        {actionBar}
+        {/* </BootstrapDialog> */}
+      </PickersLayoutContentWrapper>
+    </PickersLayoutRoot>
+  );
+}
 
 const NumericFormatCustom = React.forwardRef(function NumericFormatCustom(
   props,
@@ -161,9 +224,9 @@ export default function FormsStart() {
   const handleServiceAddDate = (index) => {
     setSmartBill_Operation([...smartBill_Operation, {
       sb_operationid_startdate: undefined,
-      sb_operationid_startmile: '',
+      sb_operationid_startmile: smartBill_Operation[index - 1] ? smartBill_Operation[index - 1].sb_operationid_endmile : smartBill_Operation[0].sb_operationid_endmile,
       sb_operationid_startoil: '',
-      sb_operationid_enddate: smartBill_Operation[index - 1] ? smartBill_Operation[index - 1].sb_operationid_startmile : undefined,
+      sb_operationid_enddate: undefined,
       sb_operationid_endoil: '',
       sb_operationid_endmile: '',
       sb_paystatus: '',
@@ -713,17 +776,12 @@ export default function FormsStart() {
                             closeOnSelect={true}
                             views={['day', 'hours']}
                             label={`วันที่ออกเดินทางของการใช้งานครั้งที่ (${index + 1})`}
-                            //timezone='UTC'
+                            viewRenderers={{ hours: renderDigitalClockTimeView }}
                             key={index}
                             value={row.sb_operationid_startdate}
-                            slotProps={{
-                              textField: () => ({
-                                color: !row.sb_operationid_startdate ? 'error' : null,
-                                focused: !row.sb_operationid_startdate,
-                              }),
-                              actionBar: {
-                                actions: ['today', 'clear', 'cancel', 'accept'],
-                              },
+                            slots={{
+                              layout: CustomLayout,
+                              actionBar: ActionList,
                             }}
                             sx={{ width: '100%' }}
                             onChange={(newValue) => {
@@ -746,6 +804,12 @@ export default function FormsStart() {
                           InputProps={{
                             inputComponent: NumericFormatCustom,
                           }}
+                          sx={{
+                            "& .MuiInputBase-input.Mui-disabled": {
+                              WebkitTextFillColor: "#000000",
+                            },
+                          }}
+                          disabled
                           value={row.sb_operationid_startmile}
                           onChange={(e) => {
                             const list = [...smartBill_Operation]
@@ -762,7 +826,7 @@ export default function FormsStart() {
                           <Select
                             labelId="demo-simple-select-label"
                             name="sb_operationid_startoil"
-                            label={`น้ำมันเริ่มต้น (${index + 1})`} สิ้นสุด
+                            label={`น้ำมันเริ่มต้น (${index + 1})`}
                             key={index}
                             value={row.sb_operationid_startoil}
                             onChange={(e) => {
@@ -783,21 +847,16 @@ export default function FormsStart() {
                           <DateTimePicker
                             format="DD/MM/YYYY HH:mm"
                             name="sb_operationid_enddate"
-                            //timezone='UTC'
+                            viewRenderers={{ hours: renderDigitalClockTimeView }}
                             key={index}
                             closeOnSelect={true}
                             views={['day', 'hours']}
                             label={`วันที่สิ้นสุดเดินทางของการใช้งานครั้งที่ (${index + 1})`}
                             value={row.sb_operationid_enddate}
                             sx={{ width: '100%' }}
-                            slotProps={{
-                              textField: () => ({
-                                color: !row.sb_operationid_enddate ? 'error' : null,
-                                focused: !row.sb_operationid_enddate,
-                                actionBar: {
-                                  actions: ['today', 'clear', 'cancel', 'accept'],
-                                },
-                              }),
+                            slots={{
+                              layout: CustomLayout,
+                              actionBar: ActionList,
                             }}
                             onChange={(newValue) => {
                               const list = [...smartBill_Operation]

@@ -12,7 +12,73 @@ import Grid from '@mui/material/Grid';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { renderDigitalClockTimeView, } from '@mui/x-date-pickers/timeViewRenderers';
+import { usePickerLayout, pickersLayoutClasses, PickersLayoutRoot, PickersLayoutContentWrapper, } from '@mui/x-date-pickers/PickersLayout';
+import Divider from '@mui/material/Divider';
+import ButtonGroup from '@mui/material/ButtonGroup';
+
+
 import NavBar from './NavBar'
+
+function ActionList(props) {
+  const { onAccept, onClear, onCancel, onSetToday } = props;
+  const actions = [
+    { text: 'Clear', method: onClear },
+    { text: 'Today', method: onSetToday },
+    { text: 'Cancel', method: onCancel },
+    { text: 'Accept', method: onAccept },
+  ];
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        '& > *': {
+          m: 1,
+        },
+      }}
+    >
+      <ButtonGroup size="small" aria-label="Small button group">
+        {actions.map(({ text, method }) => (
+          <Button key={text} onClick={method} disablePadding>
+            {text}
+          </Button>
+        ))}
+      </ButtonGroup>
+    </Box >
+  );
+}
+
+function CustomLayout(props) {
+  const { tabs, content, actionBar } = usePickerLayout(props);
+  return (
+    <PickersLayoutRoot
+      ownerState={props}
+      sx={{
+        overflow: 'auto',
+        [`.${pickersLayoutClasses.actionBar}`]: {
+          gridColumn: 1,
+          gridRow: 2,
+        },
+        [`.${pickersLayoutClasses.toolbar}`]: {
+          gridColumn: 2,
+          gridRow: 1,
+        },
+      }}
+    >
+      <PickersLayoutContentWrapper className={pickersLayoutClasses.contentWrapper}>
+        {/* <BootstrapDialog aria-labelledby="customized-dialog-title" className={pickersLayoutClasses.contentWrapper}> */}
+        {tabs}
+        {content}
+        <Divider />
+        {actionBar}
+        {/* </BootstrapDialog> */}
+      </PickersLayoutContentWrapper>
+    </PickersLayoutRoot>
+  );
+}
 
 const other = {
   autoHeight: true,
@@ -154,13 +220,19 @@ export default function Esg() {
             <Grid item xs={4} sm={3}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
-                  format="YYYY-MM-DD HH:mm"
+                  format="DD/MM/YYYY HH:mm"
                   name="startDate"
                   sx={{ width: '100%' }}
                   value={dateTimeESG.startDate}
                   onChange={(newValue) => {
                     setDateTimeESG({ startDate: `${newValue.format('YYYY-MM-DD')}T${newValue.format('HH:mm:ss')}`, endDate: dateTimeESG.endDate })
                   }}
+                  slots={{
+                    layout: CustomLayout,
+                    actionBar: ActionList,
+                  }}
+                  viewRenderers={{ hours: renderDigitalClockTimeView }}
+                  views={['day', 'hours']}
                   slotProps={{ textField: { size: 'small' } }}
                   ampm={false}
                 />
@@ -169,13 +241,19 @@ export default function Esg() {
             <Grid item xs={4} sm={3}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
-                  format="YYYY-MM-DD HH:mm"
+                  format="DD/MM/YYYY HH:mm"
                   name="endDate"
                   sx={{ width: '100%' }}
                   value={dateTimeESG.endDate}
                   onChange={(newValue) => {
                     setDateTimeESG({ startDate: dateTimeESG.startDate, endDate: `${newValue.format('YYYY-MM-DD')}T${newValue.format('HH:mm:ss')}` })
                   }}
+                  slots={{
+                    layout: CustomLayout,
+                    actionBar: ActionList,
+                  }}
+                  viewRenderers={{ hours: renderDigitalClockTimeView }}
+                  views={['day', 'hours']}
                   slotProps={{ textField: { size: 'small' } }}
                   ampm={false}
                 />
