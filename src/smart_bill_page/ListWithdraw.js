@@ -229,7 +229,7 @@ export default function AddressForm() {
       renderCell: (params) => {
         return (
           <Chip
-            sx={{ width: '100%', color: params.row.lock_status === true ? '#FAFDF6' : '#C73E1D', border: `1px solid ${params.row.lock_status === true ? '#FAFDF6' : '#C73E1D'}` }}
+            sx={{ width: '100%', color: params.row.lock_status === true ? '#A0A0A0' : '#C73E1D', border: `1px solid ${params.row.lock_status === true ? '#A0A0A0' : '#C73E1D'}` }}
             label={params.row.lock_status === true ? 'LOCK' : 'UNLOCK'}
             size="small"
             variant="outlined"

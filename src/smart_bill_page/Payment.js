@@ -1231,7 +1231,10 @@ export default function AddressForm() {
     const body = {
       sbw_code: sbw_code,
       usercode: smartBill_Withdraw[0].ownercode,
+      condition: smartBill_Withdraw[0].condition,
+      car_infocode: smartBill_Withdraw[0].car_infocode,
       pure_card: smartBill_Withdraw[0].pure_card,
+      typePay: smartBill_Withdraw[0].typePay,
       lock_status: 1
     }
     await Axios.post(config.http + '/SmartBill_Withdraw_updateSBW', body, config.headers)
@@ -1248,13 +1251,16 @@ export default function AddressForm() {
     const body = {
       sbw_code: sbw_code,
       usercode: smartBill_Withdraw[0].ownercode,
+      condition: smartBill_Withdraw[0].condition,
+      car_infocode: smartBill_Withdraw[0].car_infocode,
       pure_card: smartBill_Withdraw[0].pure_card,
+      typePay: smartBill_Withdraw[0].typePay,
       lock_status: 0
     }
     await Axios.post(config.http + '/SmartBill_Withdraw_updateSBW', body, config.headers)
       .then((response) => {
         const searchTerm = 'กรุณายกเลิก';
-        if (response.status === 200 && !response.data.toLowerCase().includes(searchTerm.toLowerCase())) {
+        if (response.status === 200 && response.data.length === 0) {
           window.location.href = '/Payment?' + sbw_code;
         } else if (response.status === 200 && response.data.toLowerCase().includes(searchTerm.toLowerCase())) {
           swal("แจ้งเตือน", response.data, "error")
@@ -1313,7 +1319,7 @@ export default function AddressForm() {
                           </Grid>
                           <Grid item xs={12}>
                             <Typography className="payment-Forms">
-                              {smartBill_Withdraw[0].typePay === "PTEC" ? 'PURE THAI ENERGY CO.,LTD.': 'SCT SAHAPAN COMPANY LIMITED'}
+                              {smartBill_Withdraw[0].typePay === "PTEC" ? 'PURE THAI ENERGY CO.,LTD.' : 'SCT SAHAPAN COMPANY LIMITED'}
                             </Typography>
                           </Grid>
                         </Grid>
@@ -1751,7 +1757,7 @@ export default function AddressForm() {
                           </Grid>
                           <Grid item xs={12}>
                             <Typography className="payment-Forms">
-                              {smartBill_Withdraw[0].typePay === "PTEC" ? 'PURE THAI ENERGY CO.,LTD.': 'SCT SAHAPAN COMPANY LIMITED'}
+                              {smartBill_Withdraw[0].typePay === "PTEC" ? 'PURE THAI ENERGY CO.,LTD.' : 'SCT SAHAPAN COMPANY LIMITED'}
                             </Typography>
                           </Grid>
                         </Grid>
@@ -2392,7 +2398,7 @@ export default function AddressForm() {
                     name="sbwdtl_operationid_enddate"
                     closeOnSelect={true}
                     views={['day', 'hours']}
-                    label={`วันที่เริ่มต้น`}
+                    label={`วันที่สิ้นสุด`}
                     viewRenderers={{ hours: renderDigitalClockTimeView }}
                     value={smartBill_WithdrawDtlSave[0].sb_operationid ? smartBill_WithdrawDtlSave[0].sbwdtl_operationid_enddate : null}
                     slots={{
@@ -2792,8 +2798,8 @@ export default function AddressForm() {
                   <TableHead>
                     <TableRow sx={{ backgroundColor: orange[100] }}>
                       <TableCell align="center" sx={{ fontWeight: 'bold', color: orange[900], width: 120 }}>ผู้เบิกรายการ</TableCell>
-                      <TableCell sx={{ fontWeight: 'bold', color: orange[900], width: 150 }}>StartDate</TableCell>
-                      <TableCell sx={{ fontWeight: 'bold', color: orange[900], width: 150 }}>EndDate</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', color: orange[900], width: 150 }}>วันที่เริ่มต้น</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', color: orange[900], width: 150 }}>วันที่สิ้นสุด</TableCell>
                       <TableCell align="right" sx={{ fontWeight: 'bold', color: orange[900], width: 100 }}>Day:hour</TableCell>
                       <TableCell align="center" sx={{ fontWeight: 'bold', color: orange[900], width: 100 }}>อาหาร</TableCell>
                       <TableCell align="right" sx={{ fontWeight: 'bold', color: orange[900], width: 120 }}>เบิกได้&nbsp;(บาท)</TableCell>

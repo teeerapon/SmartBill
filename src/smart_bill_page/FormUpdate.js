@@ -155,7 +155,6 @@ export default function UpdateForms() {
 
   const dataUser = JSON.parse(localStorage.getItem('data'));
   const [typeCar, setTypeCar] = React.useState('');
-  const [typeGroup, setTypeGroup] = React.useState(0);
   const [carInfoDataCompanny, setCarInfoDataCompanny] = React.useState([]);
   const [carInfoData, setCarInfoData] = React.useState([]);
   const [users, setUsers] = React.useState([]);
@@ -337,8 +336,6 @@ export default function UpdateForms() {
             sb_status_name: res.data[0][0].sb_status_name,
             usercheck_code: res.data[0][0].usercheck_code
           }])
-
-          setTypeGroup(res.data[0][0].group_status === true ? 1 : 0)
 
           const body = { car_infocode: null }
           await Axios.post(config.http + '/SmartBill_CarInfoSearch', body, config.headers)
@@ -874,7 +871,7 @@ export default function UpdateForms() {
                 </Grid>
                 <Grid item xs={12}>
                   {smartBill_Operation.map((row, index) => (
-                    <React.Fragment>
+                    <Box component="main" key={index}>
                       <Grid item xs={12}>
                         <Divider textAlign="center" sx={{ pb: 1 }}>
                           <Typography variant="body2" gutterBottom sx={{ fontWeight: 'bold' }}>
@@ -888,7 +885,6 @@ export default function UpdateForms() {
                           row
                           aria-labelledby="demo-row-radio-buttons-group-label"
                           name="sb_paystatus"
-                          key={index}
                           onChange={(e) => {
                             const list = [...smartBill_Operation]
                             list[index]['sb_paystatus'] = e.target.value
@@ -902,26 +898,18 @@ export default function UpdateForms() {
                       </FormControl>
                       <TextField
                         required
-                        sx={{
-                          mt: 1,
-                          "& .MuiInputBase-input.Mui-disabled": {
-                            WebkitTextFillColor: "#000000",
-                          },
-                        }}
                         name="sb_operationid_location"
-                        key={index}
                         label={`บันทึกกิจกรรมการใช้งานครี่งที่ (${index + 1})`}
                         fullWidth
                         multiline
                         rows={5}
                         maxRows={5}
-                        value={row.sb_operationid_location}
+                        value={row.sb_operationid_location ?? ''}
                         onChange={(e) => {
                           const list = [...smartBill_Operation]
                           list[index]['sb_operationid_location'] = e.target.value
                           setSmartBill_Operation(list)
                         }}
-                        autoComplete="shipping address-line1"
                       // variant="standard"
                       />
                       <Grid
@@ -941,7 +929,6 @@ export default function UpdateForms() {
                               views={['day', 'hours']}
                               label={`วันที่ออกเดินทางของการใช้งานครั้งที่ (${index + 1})`}
                               viewRenderers={{ hours: renderDigitalClockTimeView }}
-                              key={index}
                               value={row.sb_operationid_startdate}
                               slots={{
                                 layout: CustomLayout,
@@ -962,7 +949,6 @@ export default function UpdateForms() {
                           <TextField
                             required
                             name="sb_operationid_startmile"
-                            key={index}
                             label={`ไมล์เริ่มต้น (${index + 1})`}
                             fullWidth
                             InputProps={{
@@ -998,8 +984,7 @@ export default function UpdateForms() {
                               }}
                               labelId="demo-simple-select-label"
                               name="sb_operationid_startoil"
-                              label={`น้ำมันเริ่มต้น (${index + 1})`} สิ้นสุด
-                              key={index}
+                              label={`น้ำมันเริ่มต้น (${index + 1})`}
                               value={row.sb_operationid_startoil}
                               onChange={(e) => {
                                 const list = [...smartBill_Operation]
@@ -1008,8 +993,8 @@ export default function UpdateForms() {
                               }}
                             // variant="standard"
                             >
-                              {oil_persent.map((res) => (
-                                <MenuItem value={res}>{res} %</MenuItem>
+                              {oil_persent.map((res, index) => (
+                                <MenuItem key={index} value={res}>{res} %</MenuItem>
                               ))}
                             </Select>
                           </FormControl>
@@ -1020,7 +1005,6 @@ export default function UpdateForms() {
                               format="DD/MM/YYYY HH:mm"
                               name="sb_operationid_enddate"
                               viewRenderers={{ hours: renderDigitalClockTimeView }}
-                              key={index}
                               closeOnSelect={true}
                               views={['day', 'hours']}
                               label={`วันที่สิ้นสุดเดินทางของการใช้งานครั้งที่ (${index + 1})`}
@@ -1048,7 +1032,6 @@ export default function UpdateForms() {
                               },
                             }}
                             name="sb_operationid_endmile"
-                            key={index}
                             label={`ไมล์สิ้นสุด (${index + 1})`}
                             fullWidth
                             InputProps={{
@@ -1081,7 +1064,6 @@ export default function UpdateForms() {
                               }}
                               labelId="demo-simple-select-label"
                               name="sb_operationid_endoil"
-                              key={index}
                               label={`น้ำมันสิ้นสุด (${index + 1})`}
                               value={row.sb_operationid_endoil}
                               onChange={(e) => {
@@ -1091,14 +1073,14 @@ export default function UpdateForms() {
                               }}
                             // variant="standard"
                             >
-                              {oil_persent.map((res) => (
-                                <MenuItem value={res}>{res} %</MenuItem>
+                              {oil_persent.map((res, index) => (
+                                <MenuItem key={index} value={res}>{res} %</MenuItem>
                               ))}
                             </Select>
                           </FormControl>
                         </Grid>
                       </Grid>
-                    </React.Fragment>
+                    </Box>
                   ))}
                 </Grid>
                 <Grid item xs={12}>
@@ -1112,7 +1094,7 @@ export default function UpdateForms() {
                     }}
                     label={`ระบุสถานที่จอดรถหลังจากใช้งานแล้ว`}
                     fullWidth
-                    value={smartBill_Header[0].reamarks}
+                    value={smartBill_Header[0].reamarks ?? ''}
                     onChange={(e) => {
                       const list = [...smartBill_Header]
                       list[0]['reamarks'] = e.target.value
@@ -1154,7 +1136,7 @@ export default function UpdateForms() {
                 <Grid item xs={12}>
                   <ImageList cols={6} variant="quilted">
                     {dataFilesCount ? dataFilesCount.map((item, index) => (
-                      <ImageListItem key={item.img}>
+                      <ImageListItem key={index}>
                         <a target="_blank" href={item.file}>
                           <img
                             src={item.file}

@@ -195,8 +195,8 @@ function ResponsiveAppBar() {
           <ReactPlayer
             url={
               alignment === 'คู่มือ Smart-Car' ?
-                `https://www.youtube.com/watch?v=QbOzrwDkKL4` :
-                `https://www.youtube.com/watch?v=Xvwfct8ZEO0`
+                `https://www.youtube.com/watch?v=C2zu7LA_tjE` :
+                `https://www.youtube.com/watch?v=DWBfKyUHVzg`
             }
             width="750px"
             height="430px"
