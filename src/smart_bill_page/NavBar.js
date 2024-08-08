@@ -167,7 +167,7 @@ function ResponsiveAppBar() {
         maxWidth="xl"
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Modal title
+          คู่มือการใช้งาน
         </DialogTitle>
         <IconButton
           aria-label="close"

@@ -173,14 +173,16 @@ export default function AddressForm() {
 
   const columns = [
     { field: 'sb_code', headerName: 'เลขที่ดำเนินการ', flex: 1, minWidth: 100 },
-    { field: 'usercode', headerName: 'ผู้ทำรายการ', flex: 1, minWidth: 80 },
+    { field: 'usercode', headerName: 'ผู้ทำรายการ', width: 100 },
     { field: 'createdate', headerName: 'วันที่ทำรายการ', flex: 1, minWidth: 150 },
     { field: 'car_infocode', headerName: 'บะเทียนรถ', flex: 1 },
+    { field: 'sb_operationid_startmile', headerName: 'ไมล์เริ่มต้น', width: 80 },
+    { field: 'sb_operationid_endmile', headerName: 'ไมล์สิ้นสุด', width: 80 },
     { field: 'reamarks', headerName: 'สถานที่จอดหลังใช้', flex: 1 },
     {
       field: 'car_categary_name',
       headerName: 'ประเภทรถ',
-      minWidth: 200,
+      minWidth: 170,
       flex: 1,
       renderCell: (params) => {
         if (params.row.car_categaryid == 1) {
@@ -219,20 +221,17 @@ export default function AddressForm() {
       headerName: 'action',
       align: 'center',
       headerAlign: 'center',
-      flex: 1,
-      minWidth: 120,
+      width: 60,
       renderCell: (params) => {
         return (
-          <React.Fragment>
-            <Stack direction="row" spacing={1}>
-              <IconButton onClick={() => window.location.href = `/FormUpdate?${params.row.sb_code}`} size="large">
-                <ArticleIcon fontSize="inherit" color='primary' />
-              </IconButton>
-              {/* <IconButton size="large">
+          <Stack direction="row" spacing={1}>
+            <IconButton onClick={() => window.location.href = `/FormUpdate?${params.row.sb_code}`} size="large">
+              <ArticleIcon fontSize="inherit" color='primary' />
+            </IconButton>
+            {/* <IconButton size="large">
                 <DeleteIcon fontSize="inherit" color='error' />
               </IconButton> */}
-            </Stack>
-          </React.Fragment>
+          </Stack>
         )
       }
     },
@@ -381,6 +380,13 @@ export default function AddressForm() {
               initialState={{
                 pagination: {
                   paginationModel: { page: 0, pageSize: 10 },
+                },
+                columns: {
+                  columnVisibilityModel: {
+                    // Hide columns status and traderName, the other columns will remain visible
+                    sb_operationid_startmile: false,
+                    sb_operationid_endmile: false,
+                  },
                 },
               }}
               sx={{
