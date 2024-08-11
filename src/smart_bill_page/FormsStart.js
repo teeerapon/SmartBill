@@ -293,24 +293,25 @@ export default function FormsStart() {
         smartBill_Operation: smartBill_Operation,
         smartBill_Associate: smartBill_Associate,
       }
-      console.log(carInfo);
-      // await Axios.post(config.http + '/SmartBill_CreateForms', body, config.headers)
-      //   .then(async (response) => {
-      //     for (let i = 0; i < dataFilesCount.length; i++) {
+      await Axios.post(config.http + '/SmartBill_CreateForms', body, config.headers)
+        .then(async (response) => {
+          for (let i = 0; i < dataFilesCount.length; i++) {
 
-      //       let formData_1 = new FormData();
-      //       formData_1.append('file', dataFilesCount[i].fileData);
-      //       formData_1.append('sb_code', response.data);
+            let formData_1 = new FormData();
+            formData_1.append('file', dataFilesCount[i].fileData);
+            formData_1.append('sb_code', response.data);
 
-      //       await Axios.post(config.http + '/SmartBill_files', formData_1, config.headers)
-      //         .then((res) => {
-      //           swal("แจ้งเตือน", 'บันทึกรายการแล้ว', "success")
-      //             .then((res) => {
-      //               window.location.href = '/FormUpdate?' + response.data;
-      //             })
-      //         })
-      //     }
-      //   })
+            await Axios.post(config.http + '/SmartBill_files', formData_1, config.headers)
+              .then((res) => {
+                swal("แจ้งเตือน", 'บันทึกรายการแล้ว', "success", {
+                  buttons: false,
+                  timer: 1500,
+                }).then((res) => {
+                    window.location.href = '/FormUpdate?' + response.data;
+                  })
+              })
+          }
+        })
     }
   }
 
