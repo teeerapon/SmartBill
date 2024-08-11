@@ -47,6 +47,8 @@ const handleLogout = () => {
 
 function ResponsiveAppBar() {
 
+  const [titleNavBar, setTitleNavBar] = React.useState("");
+
   const data = JSON.parse(localStorage.getItem('data'));
   const [open, setOpen] = React.useState(false);
   const [alignment, setAlignment] = React.useState('คู่มือ Smart-Car');
@@ -82,6 +84,14 @@ function ResponsiveAppBar() {
       window.location.href = '/ListWithdraw'
     }
   };
+
+  React.useEffect(() => {
+    if (window.location.pathname === '/' || window.location.pathname === '/FormUpdate') {
+      setTitleNavBar('SMART-CAR LIST')
+    } else {
+      setTitleNavBar('SMART-BILL LIST')
+    }
+  }, [])
 
   return (
     <AppBar
@@ -127,14 +137,9 @@ function ResponsiveAppBar() {
               คู่มือ
             </Button>
           </Box>
-          <Tooltip
-            title={
-              window.location.pathname === '/' || window.location.pathname === '/FormUpdate' ? 'SMART-CAR LIST'
-                : 'SMART-BILL LIST'
-            }>
-            <IconButton sx={{ mx: 10 }}>
+          <Tooltip title={titleNavBar}>
+            <IconButton sx={{ mx: 10 }} onClick={handleClickList}>
               <ArticleIcon
-                onClick={handleClickList}
                 sx={{
                   fontSize: '1.5em !important',
                   color: 'inherit',
