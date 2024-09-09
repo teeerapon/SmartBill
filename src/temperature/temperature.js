@@ -31,7 +31,7 @@ const Temperature = () => {
           <Stack>
             <TextField
               fullWidth
-              placeholder="Density (15'C)"
+              label="Density (15'C)"
               id="fullWidth"
               type="number"
               step="any"  // Allow decimal numbers
@@ -47,8 +47,11 @@ const Temperature = () => {
                   fontSize: '0.7rem !important',  // ขนาดของ input
                 },
                 '& .MuiInputLabel-root': {
-                  fontSize: '0.7rem !important',  // ขนาดของ label
+                  fontSize: '1rem !important',  // ขนาดของ label
                 },
+              }}
+              InputLabelProps={{
+                shrink: true,  // Make label always float
               }}
             />
           </Stack>
@@ -56,7 +59,7 @@ const Temperature = () => {
           <Stack>
             <TextField
               fullWidth
-              placeholder="API (60'F)"
+              label="API (60'F)"
               id="fullWidth"
               type="number"
               step="any"  // Allow decimal numbers
@@ -66,13 +69,21 @@ const Temperature = () => {
                 const formattedValue = new Intl.NumberFormat('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(newValue);
                 setDensity(formattedValue)
               }}
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                },
+              }}
               sx={{
                 '& .MuiInputBase-input': {
                   fontSize: '0.7rem !important',  // ขนาดของ input
                 },
                 '& .MuiInputLabel-root': {
-                  fontSize: '0.7rem !important',  // ขนาดของ label
+                  fontSize: '1rem !important',  // ขนาดของ label
                 },
+              }}
+              InputLabelProps={{
+                shrink: true,  // Make label always float
               }}
             />
           </Stack>
@@ -81,7 +92,7 @@ const Temperature = () => {
           <Stack>
             <TextField
               fullWidth
-              placeholder="Temp'C"
+              label="Temp'C"
               id="fullWidth"
               type="number"
               step="any"  // Allow decimal numbers
@@ -92,13 +103,21 @@ const Temperature = () => {
                 setTempC(e.target.value)
                 setTempF(formattedValue)
               }}
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                },
+              }}
               sx={{
                 '& .MuiInputBase-input': {
                   fontSize: '0.7rem !important',  // ขนาดของ input
                 },
                 '& .MuiInputLabel-root': {
-                  fontSize: '0.7rem !important',  // ขนาดของ label
+                  fontSize: '1rem !important',  // ขนาดของ label
                 },
+              }}
+              InputLabelProps={{
+                shrink: true,  // Make label always float
               }}
             />
           </Stack>
@@ -106,7 +125,7 @@ const Temperature = () => {
           <Stack>
             <TextField
               fullWidth
-              placeholder="Temp'F"
+              label="Temp'F"
               id="fullWidth"
               type="number"
               step="any"  // Allow decimal numbers
@@ -117,13 +136,21 @@ const Temperature = () => {
                 setTempF(e.target.value)
                 setTempC(formattedValue)
               }}
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                },
+              }}
               sx={{
                 '& .MuiInputBase-input': {
                   fontSize: '0.7rem !important',  // ขนาดของ input
                 },
                 '& .MuiInputLabel-root': {
-                  fontSize: '0.7rem !important',  // ขนาดของ label
+                  fontSize: '1rem !important',  // ขนาดของ label
                 },
+              }}
+              InputLabelProps={{
+                shrink: true,  // Make label always float
               }}
             />
           </Stack>
