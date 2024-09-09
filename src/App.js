@@ -17,6 +17,7 @@ import Esg from './smart_bill_page/Esg'
 import Payment from './smart_bill_page/Payment'
 import ListWithdraw from './smart_bill_page/ListWithdraw'
 import Signin from './Sign-in'
+import Temperature from './temperature/temperature'
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -73,6 +74,7 @@ function App() {
           <Route path="/Payment" element={<Payment />} />
           <Route path="/ListWithdraw" element={<ListWithdraw />} />
           <Route path="/Sign-In" element={<Signin />} />
+          <Route path="/temperature" element={<Temperature />} />
         </Routes>
         <BootstrapDialog onClose={handleClosePopupOnce} open={showPopupOnce} aria-labelledby="customized-dialog-title">
           <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
