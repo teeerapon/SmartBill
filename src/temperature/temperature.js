@@ -67,6 +67,7 @@ const Temperature = () => {
               onChange={(e) => {
                 const newValue = e.target.value ? 141.5 / (parseFloat(e.target.value) + 131.5) : 0;
                 const formattedValue = new Intl.NumberFormat('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(newValue);
+                setApi(e.target.value)
                 setDensity(formattedValue)
               }}
               slotProps={{
