@@ -332,18 +332,30 @@ export default function AddressForm() {
   }]);
 
   const handleOpenSmartBill_WithdrawDtlSave = async () => {
-    const body = { car_infocode: carInfo[0].car_infocode }
-    await Axios.post(config.http + '/SmartBill_Withdraw_Addrow', body, config.headers)
-      .then((res) => {
-        if (res.status === 200) {
-          setSb_operationid(res.data[0])
-          setOpenSmartBill_WithdrawDtlSave(true);
-          gettingData();
-        } else {
-          setSb_operationid(null)
-          setOpenSmartBill_WithdrawDtlSave(true);
-        }
-      })
+    try {
+      // NonPO_PermisstionOperator
+      await Axios.post(config.http + '/NonPO_PermisstionOperator', { category_nonpo: 'SCAD' }, config.headers)
+        .then(async (Operator) => {
+
+          const dataBody = ((Operator.data[0][0].acc).includes(data.UserCode) && [2, 3].includes(smartBill_Withdraw[0].condition)) ? null :
+            carInfo[0].car_infocode
+
+          const body = { car_infocode: dataBody }
+          await Axios.post(config.http + '/SmartBill_Withdraw_Addrow', body, config.headers)
+            .then((res) => {
+              if (res.status === 200) {
+                setSb_operationid(res.data[0])
+                setOpenSmartBill_WithdrawDtlSave(true);
+                gettingData();
+              } else {
+                setSb_operationid(null)
+                setOpenSmartBill_WithdrawDtlSave(true);
+              }
+            })
+        })
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   const handleSaveSmartBill_WithdrawDtl = async () => {
@@ -1189,7 +1201,7 @@ export default function AddressForm() {
   }, [])
 
   const handleSmartBill_Withdraw_Save = async () => {
-    if (!smartBill_Withdraw[0].car_infocode && smartBill_Withdraw[0].condition != 2) {
+    if (!smartBill_Withdraw[0].car_infocode && [2, 3].includes(smartBill_Withdraw[0].condition)) {
       swal("แจ้งเตือน", 'กรุณาระบุเลขทะเบียนรถ', "warning")
     } else {
       await Axios.post(config.http + '/SmartBill_Withdraw_Save', smartBill_Withdraw[0], config.headers)

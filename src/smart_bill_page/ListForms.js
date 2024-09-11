@@ -12,7 +12,6 @@ import Stack from '@mui/material/Stack';
 import NavBar from './NavBar'
 import { styled } from '@mui/system';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
@@ -95,7 +94,6 @@ const other = {
   showCellVerticalBorder: true,
   showColumnVerticalBorder: true,
   rowSelection: false,
-  pageSizeOptions: false,
   checkboxSelection: false,
 };
 
@@ -143,6 +141,86 @@ NumericFormatCustom.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
+const getChipByCategoryId = (carCategoryId, carCategoryName) => {
+  const categoryMap = {
+    1: 'info',
+    2: 'secondary',
+    3: 'primary',
+    4: 'success',
+    5: 'warning',
+  };
+  const color = categoryMap[carCategoryId] || 'default'; // ถ้าไม่มี id ที่ map จะใช้ 'default'
+  return (
+    <Chip
+      sx={{ width: '100%' }}
+      size="small"
+      label={carCategoryName}
+      variant="filled"
+      color={color}
+    />
+  );
+};
+
+const filterData = (data, localStorageKeys, userCode, permission, acc) => {
+  // กรองข้อมูลตาม localStorage keys
+  localStorageKeys.forEach((key) => {
+    const value = localStorage.getItem(key);
+    if (value) {
+      data = data.filter((res) => res[key] === value);
+    }
+  });
+
+  // ตรวจสอบสิทธิ์ permission
+  if (acc.includes(userCode)) {
+    return data;
+  } else if (permission.includes(18)) {
+    return data.filter((res) => parseInt(res.car_categaryid) === 3);
+  } else {
+    return data.filter((res) => res.usercode === userCode);
+  }
+};
+
+const CustomAutocomplete = ({ label, localStorageKey, filterKey, rowHeader, setRowHeader, SelectHeaders }) => {
+  const handleChange = (e, newInputValue, reason) => {
+    if (reason === 'clear') {
+      localStorage.setItem(localStorageKey, '');
+      SelectHeaders();
+    } else {
+      localStorage.setItem(localStorageKey, newInputValue);
+      setRowHeader(rowHeader.filter((res) => res[filterKey] === newInputValue));
+    }
+  };
+
+  return (
+    <Autocomplete
+      autoHighlight
+      disablePortal
+      size="small"
+      value={localStorage.getItem(localStorageKey) ?? ''}
+      isOptionEqualToValue={(option, value) => value === '' || option === value}
+      sx={{ py: 1 }}
+      onChange={handleChange}
+      options={
+        rowHeader
+          ? rowHeader.map((res) => res[filterKey]).filter((x) => !!x)
+            .reduce((unique, item) => (unique.includes(item) ? unique : [...unique, item]), [])
+          : []
+      }
+      renderInput={(params) => <TextField label={label} {...params} />}
+    />
+  );
+};
+
+// Adding propTypes for prop validation
+CustomAutocomplete.propTypes = {
+  label: PropTypes.string.isRequired,             // Ensuring label is a required string
+  localStorageKey: PropTypes.string.isRequired,   // Ensuring localStorageKey is a required string
+  filterKey: PropTypes.string.isRequired,         // Ensuring filterKey is a required string
+  rowHeader: PropTypes.arrayOf(PropTypes.object).isRequired,  // Ensuring rowHeader is an array of objects
+  setRowHeader: PropTypes.func.isRequired,        // Ensuring setRowHeader is a function
+  SelectHeaders: PropTypes.func.isRequired,       // Ensuring SelectHeaders is a function
+};
+
 export default function AddressForm() {
 
   const [rowHeader, setRowHeader] = React.useState();
@@ -150,21 +228,20 @@ export default function AddressForm() {
   const permission = JSON.parse(localStorage.getItem('permission_MenuID'));
 
   const SelectHeaders = async () => {
-    await Axios.get(config.http + '/SmartBill_SelectHeaders', config.headers)
-      .then((res) => {
-        res.data = localStorage.getItem('sb_code') ? res.data.filter((res) => res.sb_code === localStorage.getItem('sb_code')) : res.data
-        res.data = localStorage.getItem('usercode') ? res.data.filter((res) => res.usercode === localStorage.getItem('usercode')) : res.data
-        res.data = localStorage.getItem('sb_name') ? res.data.filter((res) => res.sb_name === localStorage.getItem('sb_name')) : res.data
-        res.data = localStorage.getItem('car_infocode') ? res.data.filter((res) => res.car_infocode === localStorage.getItem('car_infocode')) : res.data
-        res.data = localStorage.getItem('sb_status_name') ? res.data.filter((res) => res.sb_status_name === localStorage.getItem('sb_status_name')) : res.data
-        if (permission.filter((res) => res === 19)[0]) {
-          setRowHeader(res.data)
-        } else if (permission.filter((res) => res === 18)[0]) {
-          setRowHeader(res.data.filter((res) => parseInt(res.car_categaryid) === 3))
-        } else {
-          setRowHeader(res.data.filter((res) => res.usercode === data.UserCode))
+    try {
+      // NonPO_PermisstionOperator
+      await Axios.post(config.http + '/NonPO_PermisstionOperator', { category_nonpo: 'SCAD' }, config.headers)
+        .then(async (res) => {
+          // ListForms
+          const response = await Axios.get(config.http + '/SmartBill_SelectHeaders', config.headers);
+          const localStorageKeys = ['sb_code', 'usercode', 'sb_name', 'car_infocode', 'sb_status_name'];
+          const filteredData = filterData(response.data, localStorageKeys, data.UserCode, permission, res.data[0][0].acc);
+          setRowHeader(filteredData);
         }
-      })
+        )
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   React.useEffect(() => {
@@ -185,17 +262,7 @@ export default function AddressForm() {
       minWidth: 170,
       flex: 1,
       renderCell: (params) => {
-        if (params.row.car_categaryid == 1) {
-          return <Chip sx={{ width: '100%' }} size="small" label={params.row.car_categary_name} variant="filled" color="info" />
-        } else if (params.row.car_categaryid == 2) {
-          return <Chip sx={{ width: '100%' }} size="small" label={params.row.car_categary_name} variant="filled" color="secondary" />
-        } else if (params.row.car_categaryid == 3) {
-          return <Chip sx={{ width: '100%' }} size="small" label={params.row.car_categary_name} variant="filled" color="primary" />
-        } else if (params.row.car_categaryid == 4) {
-          return <Chip sx={{ width: '100%' }} size="small" label={params.row.car_categary_name} variant="filled" color="success" />
-        } else if (params.row.car_categaryid == 5) {
-          return <Chip sx={{ width: '100%' }} size="small" label={params.row.car_categary_name} variant="filled" color="warning" />
-        }
+        return getChipByCategoryId(params.row.car_categaryid, params.row.car_categary_name);
       }
     },
     {
@@ -244,160 +311,83 @@ export default function AddressForm() {
         <NavBar />
         <Container component="main" maxWidth="lg" fixed sx={{ mb: 4 }}>
           <Box sx={{ py: 5 }}>
-            <Grid
-              container
-              direction="row"
-              justifyContent="center"
-              alignItems="flex-start"
-              spacing={1}
-            >
+            <Grid container direction="row" justifyContent="center" alignItems="flex-start" spacing={1}>
               <Grid item xs>
-                <Autocomplete
-                  autoHighlight
-                  disablePortal
-                  id="combo-box-demo"
-                  size='small'
-                  value={localStorage.getItem('sb_code') ?? ''}
-                  sx={{ py: 1 }}
-                  onChange={(e, newInputValue, reason) => {
-                    if (reason === 'clear') {
-                      localStorage.setItem('sb_code', '');
-                      SelectHeaders();
-                    } else {
-                      localStorage.setItem('sb_code', newInputValue);
-                      setRowHeader(rowHeader.filter((res, index) => res.sb_code === newInputValue))
-                    }
-                  }}
-                  options={
-                    rowHeader ? rowHeader.map((res) => res.sb_code).filter(x => !!x)
-                      .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
-                  }
-                  renderInput={(params) => <TextField label="เลขที่ดำเนินการ" {...params} />}
+                <CustomAutocomplete
+                  label="เลขที่ดำเนินการ"
+                  localStorageKey="sb_code"
+                  filterKey="sb_code"
+                  rowHeader={rowHeader}
+                  setRowHeader={setRowHeader}
+                  SelectHeaders={SelectHeaders}
                 />
               </Grid>
               <Grid item xs>
-                <Autocomplete
-                  autoHighlight
-                  disablePortal
-                  id="combo-box-demo"
-                  size='small'
-                  sx={{ py: 1 }}
-                  value={localStorage.getItem('usercode') ?? ''}
-                  onChange={(e, newInputValue, reason) => {
-                    if (reason === 'clear') {
-                      localStorage.setItem('usercode', '');
-                      SelectHeaders();
-                    } else {
-                      localStorage.setItem('usercode', newInputValue);
-                      setRowHeader(rowHeader.filter((res, index) => res.usercode === newInputValue))
-                    }
-                  }}
-                  options={
-                    rowHeader ? rowHeader.map((res) => res.usercode).filter(x => !!x)
-                      .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
-                  }
-                  renderInput={(params) => <TextField label="ผู้ทำรายการ" {...params} />}
+                <CustomAutocomplete
+                  label="ผู้ทำรายการ"
+                  localStorageKey="usercode"
+                  filterKey="usercode"
+                  rowHeader={rowHeader}
+                  setRowHeader={setRowHeader}
+                  SelectHeaders={SelectHeaders}
                 />
               </Grid>
               <Grid item xs>
-                <Autocomplete
-                  autoHighlight
-                  disablePortal
-                  id="combo-box-demo"
-                  size='small'
-                  value={localStorage.getItem('car_infocode') ?? ''}
-                  sx={{ py: 1 }}
-                  onChange={(e, newInputValue, reason) => {
-                    if (reason === 'clear') {
-                      localStorage.setItem('car_infocode', '');
-                      SelectHeaders();
-                    } else {
-                      localStorage.setItem('car_infocode', newInputValue);
-                      setRowHeader(rowHeader.filter((res, index) => res.car_infocode === newInputValue))
-                    }
-                  }}
-                  options={
-                    rowHeader ? rowHeader.map((res) => res.car_infocode).filter(x => !!x)
-                      .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
-                  }
-                  renderInput={(params) => <TextField label="ทะเบียนรถ" {...params} />}
+                <CustomAutocomplete
+                  label="ทะเบียนรถ"
+                  localStorageKey="car_infocode"
+                  filterKey="car_infocode"
+                  rowHeader={rowHeader}
+                  setRowHeader={setRowHeader}
+                  SelectHeaders={SelectHeaders}
                 />
               </Grid>
               <Grid item xs>
-                <Autocomplete
-                  autoHighlight
-                  disablePortal
-                  id="combo-box-demo"
-                  size='small'
-                  value={localStorage.getItem('car_categary_name') ?? ''}
-                  sx={{ py: 1 }}
-                  onChange={(e, newInputValue, reason) => {
-                    if (reason === 'clear') {
-                      localStorage.setItem('car_categary_name', '');
-                      SelectHeaders();
-                    } else {
-                      localStorage.setItem('car_categary_name', newInputValue);
-                      setRowHeader(rowHeader.filter((res, index) => res.car_categary_name === newInputValue))
-                    }
-                  }}
-                  options={
-                    rowHeader ? rowHeader.map((res) => res.car_categary_name).filter(x => !!x)
-                      .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
-                  }
-                  renderInput={(params) => <TextField label="ประเภทรถ" {...params} />}
+                <CustomAutocomplete
+                  label="ประเภทรถ"
+                  localStorageKey="car_categary_name"
+                  filterKey="car_categary_name"
+                  rowHeader={rowHeader}
+                  setRowHeader={setRowHeader}
+                  SelectHeaders={SelectHeaders}
                 />
               </Grid>
               <Grid item xs>
-                <Autocomplete
-                  autoHighlight
-                  disablePortal
-                  id="combo-box-demo"
-                  size='small'
-                  sx={{ py: 1 }}
-                  value={localStorage.getItem('sb_status_name') ?? ''}
-                  onChange={(e, newInputValue, reason) => {
-                    if (reason === 'clear') {
-                      localStorage.setItem('sb_status_name', '');
-                      SelectHeaders();
-                    } else {
-                      localStorage.setItem('sb_status_name', newInputValue);
-                      setRowHeader(rowHeader.filter((res, index) => res.sb_status_name === newInputValue))
-                    }
-                  }}
-                  options={
-                    rowHeader ? rowHeader.map((res) => res.sb_status_name).filter(x => !!x)
-                      .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
-                  }
-                  renderInput={(params) => <TextField label="สถานะรายการ" {...params} />}
+                <CustomAutocomplete
+                  label="สถานะรายการ"
+                  localStorageKey="sb_status_name"
+                  filterKey="sb_status_name"
+                  rowHeader={rowHeader}
+                  setRowHeader={setRowHeader}
+                  SelectHeaders={SelectHeaders}
                 />
               </Grid>
             </Grid>
             <DataGrid
               rows={rowHeader}
               columns={columns}
-              getRowId={(res) => res.sb_id}
+              getRowId={(row) => row.sb_id}
               getRowHeight={() => 'auto'}
+              pageSizeOptions={[10, 25, 50, 100]} // Add this line to specify page size options
               initialState={{
-                pagination: {
-                  paginationModel: { page: 0, pageSize: 10 },
-                },
+                ...data.initialState,
+                pagination: { paginationModel: { pageSize: 10 } },
                 columns: {
                   columnVisibilityModel: {
-                    // Hide columns status and traderName, the other columns will remain visible
                     sb_operationid_startmile: false,
                     sb_operationid_endmile: false,
                   },
                 },
               }}
               sx={{
-                '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': {
+                '& .MuiDataGrid-cell': {
                   py: '0.25rem',
                 },
-                '--DataGrid-overlayHeight': '300px'
+                '--DataGrid-overlayHeight': '300px',
               }}
               slots={{
-                toolbar: CustomToolbar,
-                noRowsOverlay: CustomNoRowsOverlay,
+                Toolbar: CustomToolbar,
+                NoRowsOverlay: CustomNoRowsOverlay,
               }}
               {...other}
             />

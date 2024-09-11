@@ -111,7 +111,6 @@ const other = {
   showCellVerticalBorder: true,
   showColumnVerticalBorder: true,
   rowSelection: false,
-  pageSizeOptions: false,
   checkboxSelection: false,
 };
 
@@ -157,6 +156,47 @@ const NumericFormatCustom = React.forwardRef(function NumericFormatCustom(
 NumericFormatCustom.propTypes = {
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+};
+
+const CustomAutocomplete = ({ label, localStorageKey, filterKey, rowHeader, setRowHeader, SelectHeaders }) => {
+  const handleChange = (e, newInputValue, reason) => {
+    if (reason === 'clear') {
+      localStorage.setItem(localStorageKey, '');
+      SelectHeaders();
+    } else {
+      localStorage.setItem(localStorageKey, newInputValue);
+      setRowHeader(rowHeader.filter((res) => res[filterKey] === newInputValue));
+    }
+  };
+
+  return (
+    <Autocomplete
+      autoHighlight
+      disablePortal
+      size="small"
+      value={localStorage.getItem(localStorageKey) ?? ''}
+      isOptionEqualToValue={(option, value) => value === '' || option === value}
+      sx={{ py: 1 }}
+      onChange={handleChange}
+      options={
+        rowHeader
+          ? rowHeader.map((res) => res[filterKey]).filter((x) => !!x)
+            .reduce((unique, item) => (unique.includes(item) ? unique : [...unique, item]), [])
+          : []
+      }
+      renderInput={(params) => <TextField label={label} {...params} />}
+    />
+  );
+};
+
+// Adding propTypes for prop validation
+CustomAutocomplete.propTypes = {
+  label: PropTypes.string.isRequired,             // Ensuring label is a required string
+  localStorageKey: PropTypes.string.isRequired,   // Ensuring localStorageKey is a required string
+  filterKey: PropTypes.string.isRequired,         // Ensuring filterKey is a required string
+  rowHeader: PropTypes.arrayOf(PropTypes.object).isRequired,  // Ensuring rowHeader is an array of objects
+  setRowHeader: PropTypes.func.isRequired,        // Ensuring setRowHeader is a function
+  SelectHeaders: PropTypes.func.isRequired,       // Ensuring SelectHeaders is a function
 };
 
 export default function AddressForm() {
@@ -274,99 +314,43 @@ export default function AddressForm() {
               spacing={1}
             >
               <Grid item xs>
-                <Autocomplete
-                  autoHighlight
-                  disablePortal
-                  id="combo-box-demo"
-                  size='small'
-                  value={localStorage.getItem('sbw_code') ?? ''}
-                  sx={{ py: 1 }}
-                  onChange={(e, newInputValue, reason) => {
-                    if (reason === 'clear') {
-                      localStorage.setItem('sbw_code', '');
-                      SelectHeaders();
-                    } else {
-                      localStorage.setItem('sbw_code', newInputValue);
-                      setRowHeader(rowHeader.filter((res, index) => res.sbw_code === newInputValue))
-                    }
-                  }}
-                  options={
-                    rowHeader ? rowHeader.map((res) => res.sbw_code).filter(x => !!x)
-                      .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
-                  }
-                  renderInput={(params) => <TextField label="เลขที่ดำเนินการ" {...params} />}
+                <CustomAutocomplete
+                  label="เลขที่ดำเนินการ"
+                  localStorageKey="sbw_code"
+                  filterKey="sbw_code"
+                  rowHeader={rowHeader}
+                  setRowHeader={setRowHeader}
+                  SelectHeaders={SelectHeaders}
                 />
               </Grid>
               <Grid item xs>
-                <Autocomplete
-                  autoHighlight
-                  disablePortal
-                  id="combo-box-demo"
-                  size='small'
-                  value={localStorage.getItem('typePay') ?? ''}
-                  sx={{ py: 1 }}
-                  onChange={(e, newInputValue, reason) => {
-                    if (reason === 'clear') {
-                      localStorage.setItem('typePay', '');
-                      SelectHeaders();
-                    } else {
-                      localStorage.setItem('typePay', newInputValue);
-                      setRowHeader(rowHeader.filter((res, index) => res.typePay === newInputValue))
-                    }
-                  }}
-                  options={
-                    rowHeader ? rowHeader.map((res) => res.typePay).filter(x => !!x)
-                      .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
-                  }
-                  renderInput={(params) => <TextField label="Companny" {...params} />}
+                <CustomAutocomplete
+                  label="Companny"
+                  localStorageKey="typePay"
+                  filterKey="typePay"
+                  rowHeader={rowHeader}
+                  setRowHeader={setRowHeader}
+                  SelectHeaders={SelectHeaders}
                 />
               </Grid>
               <Grid item xs>
-                <Autocomplete
-                  autoHighlight
-                  disablePortal
-                  id="combo-box-demo"
-                  size='small'
-                  sx={{ py: 1 }}
-                  value={localStorage.getItem('ownercode') ?? ''}
-                  onChange={(e, newInputValue, reason) => {
-                    if (reason === 'clear') {
-                      localStorage.setItem('ownercode', '');
-                      SelectHeaders();
-                    } else {
-                      localStorage.setItem('ownercode', newInputValue);
-                      setRowHeader(rowHeader.filter((res, index) => res.ownercode === newInputValue))
-                    }
-                  }}
-                  options={
-                    rowHeader ? rowHeader.map((res) => res.ownercode).filter(x => !!x)
-                      .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
-                  }
-                  renderInput={(params) => <TextField label="ผู้ทำรายการ" {...params} />}
+                <CustomAutocomplete
+                  label="ผู้ทำรายการ"
+                  localStorageKey="ownercode"
+                  filterKey="ownercode"
+                  rowHeader={rowHeader}
+                  setRowHeader={setRowHeader}
+                  SelectHeaders={SelectHeaders}
                 />
               </Grid>
               <Grid item xs>
-                <Autocomplete
-                  autoHighlight
-                  disablePortal
-                  id="combo-box-demo"
-                  size='small'
-                  sx={{ py: 1 }}
-                  value={localStorage.getItem('car_infocode') ?? ''}
-                  onChange={(e, newInputValue, reason) => {
-                    if (reason === 'clear') {
-                      localStorage.setItem('car_infocode', '');
-                      SelectHeaders();
-                    } else {
-                      localStorage.setItem('car_infocode', newInputValue);
-                      setRowHeader(rowHeader.filter((res, index) => res.car_infocode === newInputValue))
-                    }
-                  }}
-                  options={
-                    rowHeader ? rowHeader.map((res) => res.car_infocode).filter(x => !!x)
-                      .reduce((x, y) => x.includes(y) ? x : [...x, y], []) : []
-                  }
-                  renderInput={(params) => <TextField label="ทะเบียนรถ" {...params} />}
+                <CustomAutocomplete
+                  label="ทะเบียยนรถ"
+                  localStorageKey="car_infocode"
+                  filterKey="car_infocode"
+                  rowHeader={rowHeader}
+                  setRowHeader={setRowHeader}
+                  SelectHeaders={SelectHeaders}
                 />
               </Grid>
             </Grid>
@@ -375,10 +359,10 @@ export default function AddressForm() {
               columns={columns}
               getRowId={(res) => res.sbw_code}
               getRowHeight={() => 'auto'}
+              pageSizeOptions={[10, 25, 50, 100]} // Add this line to specify page size options
               initialState={{
-                pagination: {
-                  paginationModel: { page: 0, pageSize: 10 },
-                },
+                ...data.initialState,
+                pagination: { paginationModel: { pageSize: 10 } },
               }}
               sx={{
                 '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': {
