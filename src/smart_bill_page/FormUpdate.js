@@ -446,7 +446,7 @@ export default function UpdateForms() {
             sx={{ mt: { xs: 3, md: 6 } }}
             color={smartBill_Header[0].sb_status_name === 'รอ Admin ตรวจสอบ' ? 'red' : 'green'}
           >
-            ({smartBill_Header[0].sb_status_name} {smartBill_Header[0].usercheck_code ? ', ผู้ตรวจ:' + smartBill_Header[0].usercheck_code : ''})
+            ({smartBill_Header[0].sb_status_name})
           </Typography>
           <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 } }}>
             <Grid container spacing={3} sx={{ pt: 5, pb: 10 }}>
