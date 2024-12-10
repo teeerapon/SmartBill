@@ -428,7 +428,7 @@ export default function AddressForm() {
           setCarInfoDataCompanny(response.data.filter((res) => res.car_infostatus_companny === true)); // 1 รถบริษัท
           setCarInfoData(null)
           const condition = [...smartBill_Withdraw]
-          condition[0].condition = event.target.value
+          condition[0].condition = 0
           setSmartBill_Withdraw(condition)
         })
     } else if (event.target.value === 1 || event.target.value === '1') {
@@ -450,7 +450,7 @@ export default function AddressForm() {
           setCarInfoData(response.data.filter((res) => res.car_infostatus_companny === false)); //  0 รถส่วนตัว
           setCarInfoDataCompanny(null)
           const condition = [...smartBill_Withdraw]
-          condition[0].condition = event.target.value
+          condition[0].condition = 1
           setSmartBill_Withdraw(condition)
         })
     } else {
@@ -1201,9 +1201,9 @@ export default function AddressForm() {
   }, [])
 
   const handleSmartBill_Withdraw_Save = async () => {
-    if (!smartBill_Withdraw[0].car_infocode && [2, 3].includes(smartBill_Withdraw[0].condition)) {
-      swal("แจ้งเตือน", 'กรุณาระบุเลขทะเบียนรถ', "warning")
-    } else {
+    if([0,1].includes(smartBill_Withdraw[0].condition) && !smartBill_Withdraw[0].car_infocode){
+      swal("แจ้งเตือน", 'กรุณาใส่เลขทะเบียนรถ', "warning")
+    }else {
       await Axios.post(config.http + '/SmartBill_Withdraw_Save', smartBill_Withdraw[0], config.headers)
         .then((response) => {
           if (response.data[0][0].code) {
