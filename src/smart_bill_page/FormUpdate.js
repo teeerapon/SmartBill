@@ -1186,7 +1186,7 @@ export default function UpdateForms() {
                 <Button
                   variant="contained"
                   color="success"
-                  disabled={!(dataUser.DepCode === '101GAD' || dataUser.DepCode === '101ITO')}
+                  disabled={!(dataUser.depcode === '101GAD' || dataUser.depcode === '101ITO')}
                   onClick={handleSubmitAccept}
                   sx={{ mt: 3, ml: 1 }}
                 >
