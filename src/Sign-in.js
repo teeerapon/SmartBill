@@ -103,7 +103,7 @@ export default function SignInSide() {
           sm={4}
           md={7}
           sx={{
-            backgroundImage: 'url(http://vpnptec.dyndns.org:10280/OPS_Fileupload/ATT_240900652.jpg)',
+            backgroundImage: 'url(https://images.pexels.com/photos/1173770/pexels-photo-1173770.jpeg)',
             backgroundRepeat: 'no-repeat',
             backgroundColor: (t) =>
               t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],

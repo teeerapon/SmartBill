@@ -284,7 +284,8 @@ export default function FormsStart() {
         , "error")
     } else if (!dataFilesCount) {
       swal("แจ้งเตือน", 'อัปโหลดรูปภาพอย่างน้อย 1 รูป', "error")
-    } else if (smartBill_Operation.filter((res) => (res.sb_operationid_startmile ? parseFloat(res.sb_operationid_startmile) : 0) > (res.sb_operationid_endmile ? parseFloat(res.sb_operationid_endmile) : 0))[0]) {
+    } 
+    else if (smartBill_Operation.filter((res) => (res.sb_operationid_startmile ? parseFloat(res.sb_operationid_startmile) : 0) > (res.sb_operationid_endmile ? parseFloat(res.sb_operationid_endmile) : 0))[0]) {
       swal("แจ้งเตือน", 'เกิดข้อผิดพลาด *(ไมลล์สิ้นสุด < ไมลล์เริ่มต้น)', "error")
     } else {
       const body = {
